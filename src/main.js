@@ -80,8 +80,8 @@ const getNonCoreProp = function (error, propName) {
 }
 
 // We apply `normalize-exception` to ensure a strict output
-export const parse = function (object) {
-  const error = objectToError(object)
+export const parse = function (object, { types } = {}) {
+  const error = objectToError(object, types)
   const errorA = normalizeException(error)
   return errorA
 }
@@ -91,30 +91,30 @@ export const parse = function (object) {
 //  - It does not reuse `normalize-exception`'s object parsing logic
 //  - reason: keep projects separate since they have different purposes and
 //    features
-const objectToError = function (object) {
+const objectToError = function (object, types) {
   const ErrorType = Error
   const error = new ErrorType(object.message)
-  setCoreProps(error, object)
+  setCoreProps(error, object, types)
   const nonCoreProps = excludeKeys(object, CORE_PROPS)
   // eslint-disable-next-line fp/no-mutating-assign
   Object.assign(error, nonCoreProps)
   return error
 }
 
-const setCoreProps = function (error, object) {
+const setCoreProps = function (error, object, types) {
   Object.keys(CORE_PROPS).forEach((propName) => {
-    setCoreProp(error, object, propName)
+    setCoreProp({ error, object, propName, types })
   })
 }
 
-const setCoreProp = function (error, object, propName) {
+const setCoreProp = function ({ error, object, propName, types }) {
   const value = object[propName]
 
   if (value === undefined) {
     return
   }
 
-  const valueA = recurseCorePropToError(value, propName)
+  const valueA = recurseCorePropToError(value, propName, types)
   // eslint-disable-next-line fp/no-mutating-methods
   Object.defineProperty(error, propName, {
     value: valueA,
@@ -126,13 +126,13 @@ const setCoreProp = function (error, object, propName) {
 
 // Convert `object.cause|errors` to errors recursively.
 // `normalize-exception` will normalize those recursively.
-const recurseCorePropToError = function (value, propName) {
+const recurseCorePropToError = function (value, propName, types) {
   if (propName === 'cause') {
-    return objectToError(value)
+    return objectToError(value, types)
   }
 
   if (propName === 'errors') {
-    return value.map(objectToError)
+    return value.map((item) => objectToError(item, types))
   }
 
   return value
