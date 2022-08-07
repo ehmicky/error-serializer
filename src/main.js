@@ -136,7 +136,13 @@ const createError = function (object, types) {
   }
 }
 
-// Custom error types can be passed to the `types` option
+// Custom error types can be passed to the `types` option.
+// The option is an object instead of an array, as this allows dissociating
+// error names from their types, since:
+//  - The parsing logic might have different sets of error instances than the
+//    serializing logic
+//  - This is more consistent with `modern-errors` which discourages
+//    exporting types
 const getErrorType = function (object, types) {
   const name = safeGetProp(object, 'name')
 
