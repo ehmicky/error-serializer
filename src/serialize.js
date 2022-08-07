@@ -1,5 +1,4 @@
 import { CORE_PROPS, getNonCoreProps } from './core.js'
-import { safeGetProp } from './safe.js'
 
 // Convert an error instance to a plain object.
 // We exclude non-core error properties that either:
@@ -24,10 +23,10 @@ const getCoreProps = function (error) {
 }
 
 const getCoreProp = function (error, propName) {
-  const value = safeGetProp(error, propName)
+  const value = error[propName]
   return value === undefined
     ? undefined
-    : [propName, recurseCorePropToObject(value)]
+    : [propName, recurseCorePropToObject(value, propName)]
 }
 
 // Convert `error.cause|errors` to plain objects recursively.

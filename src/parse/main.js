@@ -11,13 +11,14 @@ import { createError } from './create.js'
 export const parseError = function (object, types) {
   const error = createError(object, types)
   setCoreProps(error, object, types)
+  const nonCoreProps = Object.fromEntries(getNonCoreProps(object))
   // eslint-disable-next-line fp/no-mutating-assign
-  Object.assign(error, getNonCoreProps(object))
+  Object.assign(error, nonCoreProps)
   return error
 }
 
 const setCoreProps = function (error, object, types) {
-  Object.keys(CORE_PROPS).forEach((propName) => {
+  CORE_PROPS.forEach((propName) => {
     setCoreProp({ error, object, propName, types })
   })
 }

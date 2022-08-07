@@ -15,7 +15,7 @@ import { serializeError } from './serialize.js'
 export const serialize = function (error) {
   const errorA = normalizeException(error)
   const object = serializeError(errorA)
-  const objectA = safeJsonValue(object)
+  const { value: objectA } = safeJsonValue(object)
   return objectA
 }
 
