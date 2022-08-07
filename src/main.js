@@ -80,7 +80,7 @@ const getNonCoreProp = function (error, propName) {
 }
 
 // We apply `normalize-exception` to ensure a strict output
-export const parse = function (object, { types } = {}) {
+export const parse = function (object, { types = {} } = {}) {
   const error = objectToError(object, types)
   const errorA = normalizeException(error)
   return errorA
@@ -92,14 +92,38 @@ export const parse = function (object, { types } = {}) {
 //  - reason: keep projects separate since they have different purposes and
 //    features
 const objectToError = function (object, types) {
-  const ErrorType = Error
-  const error = new ErrorType(object.message)
+  const error = createError(object, types)
   setCoreProps(error, object, types)
   const nonCoreProps = excludeKeys(object, CORE_PROPS)
   // eslint-disable-next-line fp/no-mutating-assign
   Object.assign(error, nonCoreProps)
   return error
 }
+
+const createError = function (object, types) {
+  const ErrorType = getErrorType(object, types)
+  return new ErrorType(object.message)
+}
+
+const getErrorType = function ({ name }, types) {
+  if (typeof types[name] === 'function') {
+    return types[name]
+  }
+
+  return BUILTIN_TYPES.has(name) ? globalThis[name] : Error
+}
+
+const BUILTIN_TYPES = new Set([
+  'Error',
+  'ReferenceError',
+  'TypeError',
+  'SyntaxError',
+  'RangeError',
+  'URIError',
+  'EvalError',
+  'AggregateError',
+  'DOMException',
+])
 
 const setCoreProps = function (error, object, types) {
   Object.keys(CORE_PROPS).forEach((propName) => {
