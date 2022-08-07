@@ -3,7 +3,12 @@ import { excludeKeys } from 'filter-obj'
 import normalizeException from 'normalize-exception'
 import safeJsonValue from 'safe-json-value'
 
-// We apply `normalize-exception` to ensure a strict input
+// Normalize and convert an error instance into a plain object, ready to be
+// serialized.
+// The logic is JSON-focused.
+//  - This fits most serialization formats, while still being opinionated
+//    enough to provide features like ensuring the types are correct
+// We apply `normalize-exception` to ensure a strict input.
 export const serialize = function (error) {
   const errorA = normalizeException(error)
   const object = errorToObject(errorA)
@@ -79,7 +84,9 @@ const getNonCoreProp = function (error, propName) {
   } catch {}
 }
 
-// We apply `normalize-exception` to ensure a strict output
+// Normalize and convert an already parsed plain object representing an error
+// into an error instance.
+// We apply `normalize-exception` to ensure a strict output.
 export const parse = function (object, { types = {} } = {}) {
   const error = objectToError(object, types)
   const errorA = normalizeException(error)
