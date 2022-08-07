@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { excludeKeys } from 'filter-obj'
 import normalizeException from 'normalize-exception'
 import safeJsonValue from 'safe-json-value'
@@ -34,13 +35,15 @@ const getCoreProps = function (error) {
 
 const getCoreProp = function (error, propName) {
   const value = error[propName]
-  return value === undefined ? undefined : [propName, recurseCoreProp(value)]
+  return value === undefined
+    ? undefined
+    : [propName, recurseCorePropToObject(value)]
 }
 
 // Convert `error.cause|errors` to plain objects recursively.
 // `normalize-exception` already normalized those recursively, including
 // handling cycles.
-const recurseCoreProp = function (value, propName) {
+const recurseCorePropToObject = function (value, propName) {
   if (propName === 'cause') {
     return errorToObject(value)
   }
@@ -111,14 +114,30 @@ const setCoreProp = function (error, object, propName) {
     return
   }
 
+  const valueA = recurseCorePropToError(value, propName)
   // eslint-disable-next-line fp/no-mutating-methods
   Object.defineProperty(error, propName, {
-    value,
+    value: valueA,
     enumerable: false,
     writable: true,
     configurable: true,
   })
 }
 
+// Convert `object.cause|errors` to errors recursively.
+// `normalize-exception` will normalize those recursively.
+const recurseCorePropToError = function (value, propName) {
+  if (propName === 'cause') {
+    return objectToError(value)
+  }
+
+  if (propName === 'errors') {
+    return value.map(objectToError)
+  }
+
+  return value
+}
+
 const CORE_PROPS = ['name', 'message', 'stack', 'cause', 'errors']
 const CORE_PROPS_SET = new Set(CORE_PROPS)
+/* eslint-enable max-lines */
