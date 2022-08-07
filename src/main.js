@@ -9,6 +9,7 @@ import safeJsonValue from 'safe-json-value'
 //  - This fits most serialization formats, while still being opinionated
 //    enough to provide features like ensuring the types are correct
 // We apply `normalize-exception` to ensure a strict input.
+//  - We allow arguments that are not `error` instances
 export const serialize = function (error) {
   const errorA = normalizeException(error)
   const object = errorToObject(errorA)
@@ -39,7 +40,7 @@ const getCoreProps = function (error) {
 }
 
 const getCoreProp = function (error, propName) {
-  const value = error[propName]
+  const value = safeGetProp(error, propName)
   return value === undefined
     ? undefined
     : [propName, recurseCorePropToObject(value)]
@@ -74,23 +75,40 @@ const isNonCorePropName = function (propName) {
 // We ignore `error.toJSON()` to ensure the plain object can be parsed back
 const IGNORED_PROPS = new Set(['toJSON'])
 
-// We handle error properties which throw when retrieved due to being getters
-// or proxies.
-//  - This is already done for core error properties by `normalize-exception`
 const getNonCoreProp = function (error, propName) {
-  try {
-    const value = error[propName]
-    return value === undefined ? undefined : [propName, value]
-  } catch {}
+  const value = safeGetProp(error, propName)
+  return value === undefined ? undefined : [propName, value]
 }
 
 // Normalize and convert an already parsed plain object representing an error
 // into an error instance.
 // We apply `normalize-exception` to ensure a strict output.
-export const parse = function (object, { types = {} } = {}) {
+export const parse = function (value, { types = {} } = {}) {
+  const object = ensureObject(value)
   const error = objectToError(object, types)
   const errorA = normalizeException(error)
   return errorA
+}
+
+// We allow invalid `object`, silently normalizing it
+//  - This prevents throwing exceptions which would be a problem if used inside
+//    some error handling logic
+// `normalize-exception` also normalizes those afterwards.
+const ensureObject = function (value) {
+  return isObject(value) ? value : handleNonObject(value)
+}
+
+const isObject = function (value) {
+  return typeof value === 'object' && value !== null
+}
+
+const handleNonObject = function (value) {
+  try {
+    const message = String(value)
+    return { message }
+  } catch (error) {
+    return normalizeException(error)
+  }
 }
 
 // Convert a plain object to an error instance.
@@ -109,8 +127,9 @@ const objectToError = function (object, types) {
 
 // Custom error types might throw due to missing parameters in the constructor.
 // When this happens, we silently revert to `Error`.
-const createError = function ({ name, message }, types) {
-  const ErrorType = getErrorType(name, types)
+const createError = function (object, types) {
+  const ErrorType = getErrorType(object, types)
+  const message = getMessage(object)
 
   try {
     return new ErrorType(message)
@@ -120,7 +139,13 @@ const createError = function ({ name, message }, types) {
 }
 
 // Custom error types can be passed to the `types` option
-const getErrorType = function (name, types) {
+const getErrorType = function (object, types) {
+  const name = safeGetProp(object, 'name')
+
+  if (typeof name !== 'string') {
+    return Error
+  }
+
   if (typeof types[name] === 'function') {
     return types[name]
   }
@@ -145,6 +170,11 @@ const BUILTIN_TYPES = new Set([
   'DOMException',
 ])
 
+const getMessage = function (object) {
+  const message = safeGetProp(object, 'message')
+  return typeof message === 'string' ? message : ''
+}
+
 const setCoreProps = function (error, object, types) {
   Object.keys(CORE_PROPS).forEach((propName) => {
     setCoreProp({ error, object, propName, types })
@@ -152,7 +182,7 @@ const setCoreProps = function (error, object, types) {
 }
 
 const setCoreProp = function ({ error, object, propName, types }) {
-  const value = object[propName]
+  const value = safeGetProp(object, propName)
 
   if (value === undefined) {
     return
@@ -166,6 +196,13 @@ const setCoreProp = function ({ error, object, propName, types }) {
     writable: true,
     configurable: true,
   })
+}
+
+// Ensure retrieving a property does not throw due to a getter or proxy
+const safeGetProp = function (object, propName) {
+  try {
+    return object[propName]
+  } catch {}
 }
 
 // Convert `object.cause|errors` to errors recursively.
