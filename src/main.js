@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-import { excludeKeys } from 'filter-obj'
 import normalizeException from 'normalize-exception'
 import safeJsonValue from 'safe-json-value'
 
@@ -61,10 +60,10 @@ const recurseCorePropToObject = function (value, propName) {
   return value
 }
 
-const getNonCoreProps = function (error) {
-  return Object.keys(error)
+const getNonCoreProps = function (errorOrObject) {
+  return Object.keys(errorOrObject)
     .filter(isNonCorePropName)
-    .map((propName) => getNonCoreProp(error, propName))
+    .map((propName) => getNonCoreProp(errorOrObject, propName))
     .filter(Boolean)
 }
 
@@ -75,8 +74,8 @@ const isNonCorePropName = function (propName) {
 // We ignore `error.toJSON()` to ensure the plain object can be parsed back
 const IGNORED_PROPS = new Set(['toJSON'])
 
-const getNonCoreProp = function (error, propName) {
-  const value = safeGetProp(error, propName)
+const getNonCoreProp = function (errorOrObject, propName) {
+  const value = safeGetProp(errorOrObject, propName)
   return value === undefined ? undefined : [propName, value]
 }
 
@@ -119,9 +118,8 @@ const handleNonObject = function (value) {
 const objectToError = function (object, types) {
   const error = createError(object, types)
   setCoreProps(error, object, types)
-  const nonCoreProps = excludeKeys(object, CORE_PROPS)
   // eslint-disable-next-line fp/no-mutating-assign
-  Object.assign(error, nonCoreProps)
+  Object.assign(error, getNonCoreProps(object))
   return error
 }
 
