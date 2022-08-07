@@ -91,20 +91,20 @@ export const parse = function (object) {
 const objectToError = function (object) {
   const ErrorType = Error
   const error = new ErrorType(object.message)
-  setErrorProps(error, object)
+  setCoreProps(error, object)
   const nonCoreProps = excludeKeys(object, CORE_PROPS)
   // eslint-disable-next-line fp/no-mutating-assign
   Object.assign(error, nonCoreProps)
   return error
 }
 
-const setErrorProps = function (error, object) {
+const setCoreProps = function (error, object) {
   Object.keys(CORE_PROPS).forEach((propName) => {
-    setErrorProp(error, object, propName)
+    setCoreProp(error, object, propName)
   })
 }
 
-const setErrorProp = function (error, object, propName) {
+const setCoreProp = function (error, object, propName) {
   const value = object[propName]
 
   if (value === undefined) {
