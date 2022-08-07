@@ -32,7 +32,22 @@ const getCoreProps = function (error) {
 
 const getCoreProp = function (error, propName) {
   const value = error[propName]
-  return value === undefined ? undefined : [propName, value]
+  return value === undefined ? undefined : [propName, recurseCoreProp(value)]
+}
+
+// Convert `error.cause|errors` to plain objects recursively.
+// `normalize-exception` already normalized those recursively, including
+// handling cycles.
+const recurseCoreProp = function (value, propName) {
+  if (propName === 'cause') {
+    return errorToObject(value)
+  }
+
+  if (propName === 'errors') {
+    return value.map(errorToObject)
+  }
+
+  return value
 }
 
 const getNonCoreProps = function (error) {
