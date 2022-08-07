@@ -1,3 +1,4 @@
+import { excludeKeys } from 'filter-obj'
 import normalizeException from 'normalize-exception'
 import safeJsonValue from 'safe-json-value'
 
@@ -9,6 +10,7 @@ export const serialize = function (error) {
   return objectA
 }
 
+// Convert an error instance to a plain object.
 // We exclude non-core error properties that either:
 //  - Are non-enumerable
 //     - Reason: most likely not meant to be serialized
@@ -74,12 +76,49 @@ const getNonCoreProp = function (error, propName) {
   } catch {}
 }
 
-const CORE_PROPS = ['name', 'message', 'stack', 'cause', 'errors']
-const CORE_PROPS_SET = new Set(CORE_PROPS)
-
 // We apply `normalize-exception` to ensure a strict output
 export const parse = function (object) {
-  const error = object
+  const error = objectToError(object)
   const errorA = normalizeException(error)
   return errorA
 }
+
+// Convert a plain object to an error instance.
+// This is done before `normalize-exception`.
+//  - It does not reuse `normalize-exception`'s object parsing logic
+//  - reason: keep projects separate since they have different purposes and
+//    features
+const objectToError = function (object) {
+  const ErrorType = Error
+  const error = new ErrorType(object.message)
+  setErrorProps(error, object)
+  const nonCoreProps = excludeKeys(object, CORE_PROPS)
+  // eslint-disable-next-line fp/no-mutating-assign
+  Object.assign(error, nonCoreProps)
+  return error
+}
+
+const setErrorProps = function (error, object) {
+  Object.keys(CORE_PROPS).forEach((propName) => {
+    setErrorProp(error, object, propName)
+  })
+}
+
+const setErrorProp = function (error, object, propName) {
+  const value = object[propName]
+
+  if (value === undefined) {
+    return
+  }
+
+  // eslint-disable-next-line fp/no-mutating-methods
+  Object.defineProperty(error, propName, {
+    value,
+    enumerable: false,
+    writable: true,
+    configurable: true,
+  })
+}
+
+const CORE_PROPS = ['name', 'message', 'stack', 'cause', 'errors']
+const CORE_PROPS_SET = new Set(CORE_PROPS)
