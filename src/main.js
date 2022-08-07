@@ -100,12 +100,20 @@ const objectToError = function (object, types) {
   return error
 }
 
-const createError = function (object, types) {
-  const ErrorType = getErrorType(object, types)
-  return new ErrorType(object.message)
+// Custom error types might throw due to missing parameters in the constructor.
+// When this happens, we silently revert to `Error`.
+const createError = function ({ name, message }, types) {
+  const ErrorType = getErrorType(name, types)
+
+  try {
+    return new ErrorType(message)
+  } catch {
+    return new Error(message)
+  }
 }
 
-const getErrorType = function ({ name }, types) {
+// Custom error types can be passed to the `types` option
+const getErrorType = function (name, types) {
   if (typeof types[name] === 'function') {
     return types[name]
   }
@@ -113,6 +121,7 @@ const getErrorType = function ({ name }, types) {
   return BUILTIN_TYPES.has(name) ? globalThis[name] : Error
 }
 
+// Common global error types
 const BUILTIN_TYPES = new Set([
   'Error',
   'ReferenceError',
@@ -121,7 +130,11 @@ const BUILTIN_TYPES = new Set([
   'RangeError',
   'URIError',
   'EvalError',
+
+  // This might not exist on some older platforms
   'AggregateError',
+
+  // Browser-only
   'DOMException',
 ])
 
