@@ -19,7 +19,7 @@ export const serialize = function (error) {
 //     - Reason: not supported by JSON
 const errorToObject = function (error) {
   const coreProps = getCoreProps(error)
-  const nonCoreProps = Object.entries(error).filter(isNonCoreProp)
+  const nonCoreProps = getNonCoreProps(error)
   const object = Object.fromEntries([...coreProps, ...nonCoreProps])
   return object
 }
@@ -35,14 +35,32 @@ const getCoreProp = function (error, propName) {
   return value === undefined ? undefined : [propName, value]
 }
 
-const isNonCoreProp = function ([propName]) {
+const getNonCoreProps = function (error) {
+  return Object.keys(error)
+    .filter(isNonCorePropName)
+    .map((propName) => getNonCoreProp(error, propName))
+    .filter(Boolean)
+}
+
+const isNonCorePropName = function (propName) {
   return !CORE_PROPS_SET.has(propName) && !IGNORED_PROPS.has(propName)
+}
+
+// We ignore `error.toJSON()` to ensure the plain object can be parsed back
+const IGNORED_PROPS = new Set(['toJSON'])
+
+// We handle error properties which throw when retrieved due to being getters
+// or proxies.
+//  - This is already done for core error properties by `normalize-exception`
+const getNonCoreProp = function (error, propName) {
+  try {
+    const value = error[propName]
+    return value === undefined ? undefined : [propName, value]
+  } catch {}
 }
 
 const CORE_PROPS = ['name', 'message', 'stack', 'cause', 'errors']
 const CORE_PROPS_SET = new Set(CORE_PROPS)
-// We ignore `error.toJSON()` to ensure the plain object can be parsed back
-const IGNORED_PROPS = new Set(['toJSON'])
 
 // We apply `normalize-exception` to ensure a strict output
 export const parse = function (object) {
