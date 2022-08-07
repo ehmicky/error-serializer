@@ -11,7 +11,7 @@
   "scripts": {
     "test": "gulp test"
   },
-  "description": "",
+  "description": "Convert errors from/to plain objects",
   "keywords": [
     "convert",
     "error",
