@@ -19,7 +19,7 @@ export const serialize = function (error) {
 //     - Reason: not supported by JSON
 const errorToObject = function (error) {
   const coreProps = getCoreProps(error)
-  const nonCoreProps = Object.entries(error).filter(isNotCoreProp)
+  const nonCoreProps = Object.entries(error).filter(isNonCoreProp)
   const object = Object.fromEntries([...coreProps, ...nonCoreProps])
   return object
 }
@@ -35,12 +35,14 @@ const getCoreProp = function (error, propName) {
   return value === undefined ? undefined : [propName, value]
 }
 
-const isNotCoreProp = function ([propName]) {
-  return !CORE_PROPS_SET.has(propName)
+const isNonCoreProp = function ([propName]) {
+  return !CORE_PROPS_SET.has(propName) && !IGNORED_PROPS.has(propName)
 }
 
 const CORE_PROPS = ['name', 'message', 'stack', 'cause', 'errors']
 const CORE_PROPS_SET = new Set(CORE_PROPS)
+// We ignore `error.toJSON()` to ensure the plain object can be parsed back
+const IGNORED_PROPS = new Set(['toJSON'])
 
 // We apply `normalize-exception` to ensure a strict output
 export const parse = function (object) {
