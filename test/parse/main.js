@@ -40,18 +40,3 @@ test('Aggregate errors are set', (t) => {
   t.is(error.errors[0].message, message)
   t.is({ ...error }.errors, undefined)
 })
-
-each(['name', 'message', 'stack', 'cause', 'errors'], ({ title }, propName) => {
-  test(`Handle unsafe properties | ${title}`, (t) => {
-    t.is(
-      parse({
-        ...SIMPLE_ERROR_OBJECT,
-        // eslint-disable-next-line fp/no-get-set
-        get [propName]() {
-          throw new Error('unsafe')
-        },
-      }).name,
-      'Error',
-    )
-  })
-})

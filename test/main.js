@@ -24,6 +24,13 @@ each(
     { ...SIMPLE_ERROR_OBJECT, errors: true },
     { ...SIMPLE_ERROR_OBJECT, errors: [undefined] },
     { ...SIMPLE_ERROR_OBJECT, errors: [SIMPLE_ERROR_OBJECT, { name: true }] },
+    ...['name', 'message', 'stack', 'cause', 'errors'].flatMap((propName) => ({
+      ...SIMPLE_ERROR_OBJECT,
+      // eslint-disable-next-line fp/no-get-set
+      get [propName]() {
+        throw new Error('unsafe')
+      },
+    })),
     [],
     () => {},
   ],
