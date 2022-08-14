@@ -13,7 +13,7 @@ each(
   ({ title }, { propName, value }) => {
     test(`Core error properties are set | ${title}`, (t) => {
       const error = parse({ ...SIMPLE_ERROR_OBJECT, [propName]: value })
-      t.deepEqual(error[propName], value)
+      t.is(error[propName], value)
       t.is({ ...error }[propName], undefined)
     })
   },
