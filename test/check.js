@@ -48,13 +48,18 @@ each(
   },
 )
 
-test('Error instances are returned with parse() and "loose" option', (t) => {
+test('Parsing an error instances with "loose" option is a noop', (t) => {
   const error = new Error('test')
   t.is(parse(error, { loose: true }), error)
 })
 
-test('Error objects are returned with serialize() and "loose" option', (t) => {
+test('Serializing an error object with "loose" option is a noop', (t) => {
   t.is(serialize(SIMPLE_ERROR_OBJECT, { loose: true }), SIMPLE_ERROR_OBJECT)
+})
+
+test('Serializing a cross-realm error with "loose" option is not a noop', (t) => {
+  const error = runInNewContext('new Error("test")')
+  t.not(serialize(error, { loose: true }), error)
 })
 
 test('parse() and serialize() undo each other', (t) => {
@@ -63,19 +68,4 @@ test('parse() and serialize() undo each other', (t) => {
   t.deepEqual(error, FULL_ERROR)
   const objectA = serialize(error)
   t.deepEqual(objectA, object)
-})
-
-test('Serializing a cross-realm error with "loose" option is not a noop', (t) => {
-  const error = runInNewContext('new Error("test")')
-  t.not(serialize(error, { loose: true }), error)
-})
-
-test('Serializing error object with deep error instances is not a noop', (t) => {
-  const cause = new Error('causeMessage')
-  const errors = [new Error('errorsMessage')]
-  const object = { ...SIMPLE_ERROR_OBJECT, cause, errors }
-  const error = serialize(object)
-  t.not(error, object)
-  t.deepEqual(error.cause, serialize(cause))
-  t.deepEqual(error.errors[0], serialize(errors[0]))
 })
