@@ -1,3 +1,9 @@
+# 1.3.4
+
+## Bug fixes
+
+- Fix TypeScript types of `types` option
+
 # 1.3.3
 
 ## Bug fixes
