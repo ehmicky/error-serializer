@@ -1,3 +1,9 @@
+# 1.3.1
+
+## Bug fixes
+
+- Fix main function's return value's type
+
 # 1.3.0
 
 ## Features
