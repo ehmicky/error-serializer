@@ -48,6 +48,15 @@ each(
   },
 )
 
+test('Error instances are returned with parse() and "loose" option', (t) => {
+  const error = new Error('test')
+  t.is(parse(error, { loose: true }), error)
+})
+
+test('Error objects are returned with serialize() and "loose" option', (t) => {
+  t.is(serialize(SIMPLE_ERROR_OBJECT, { loose: true }), SIMPLE_ERROR_OBJECT)
+})
+
 test('Serializing a cross-realm error with "loose" option is not a noop', (t) => {
   const error = runInNewContext('new Error("test")')
   t.not(serialize(error, { loose: true }), error)
