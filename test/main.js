@@ -32,6 +32,18 @@ test('Parsing error is a noop', (t) => {
   t.is(parse(error), error)
 })
 
+test('Normalize invalid stack', (t) => {
+  t.is(typeof parse({ stack: 0 }).stack, 'string')
+})
+
+test('Normalize invalid cause', (t) => {
+  t.true(parse({ cause: 0 }).cause instanceof Error)
+})
+
+test('Normalize invalid aggregate errors', (t) => {
+  t.true(parse({ errors: [0] }).errors[0] instanceof Error)
+})
+
 test('Remove unsafe non-core properties when serializing', (t) => {
   const error = new Error('test')
   error.prop = 0n

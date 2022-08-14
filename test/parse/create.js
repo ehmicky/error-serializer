@@ -30,6 +30,11 @@ test('Does not re-use other error types by default', (t) => {
   t.is(parse({ name: 'CustomError' }).name, 'Error')
 })
 
+test('Handle non-string error.name', (t) => {
+  // eslint-disable-next-line unicorn/no-null
+  t.is(parse({ name: null }).name, 'Error')
+})
+
 test('Re-uses other error types if specified', (t) => {
   const types = { CustomError: TypeError }
   t.is(parse({ name: 'CustomError' }, { types }).name, types.CustomError.name)
