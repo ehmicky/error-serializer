@@ -21,7 +21,10 @@ each(
 
 test('Cause is set', (t) => {
   const message = 'test'
-  const error = parse({ ...SIMPLE_ERROR_OBJECT, cause: { message } })
+  const error = parse({
+    ...SIMPLE_ERROR_OBJECT,
+    cause: { ...SIMPLE_ERROR_OBJECT, message },
+  })
   t.true(error.cause instanceof Error)
   t.is(error.cause.message, message)
   t.is({ ...error }.cause, undefined)
@@ -29,7 +32,10 @@ test('Cause is set', (t) => {
 
 test('Aggregate errors are set', (t) => {
   const message = 'test'
-  const error = parse({ ...SIMPLE_ERROR_OBJECT, errors: [{ message }] })
+  const error = parse({
+    ...SIMPLE_ERROR_OBJECT,
+    errors: [{ ...SIMPLE_ERROR_OBJECT, message }],
+  })
   t.true(error.errors[0] instanceof Error)
   t.is(error.errors[0].message, message)
   t.is({ ...error }.errors, undefined)
