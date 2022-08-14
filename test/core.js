@@ -23,26 +23,23 @@ test('Does not parse non-core properties recursively', (t) => {
   t.false(parse({ ...SIMPLE_ERROR_OBJECT, prop: {} }).prop instanceof Error)
 })
 
+const DESCRIPTOR = {
+  value: true,
+  enumerable: false,
+  writable: true,
+  configurable: true,
+}
+
 test('Ignore non-enumerable properties when serializing', (t) => {
   const error = new Error('test')
   // eslint-disable-next-line fp/no-mutating-methods
-  Object.defineProperty(error, 'prop', {
-    value: true,
-    enumerable: false,
-    writable: true,
-    configurable: true,
-  })
+  Object.defineProperty(error, 'prop', DESCRIPTOR)
   t.is(serialize(error).prop, undefined)
 })
 
 test('Ignore non-enumerable properties when parsing', (t) => {
   // eslint-disable-next-line fp/no-mutating-methods
-  const object = Object.defineProperty(SIMPLE_ERROR_OBJECT, 'prop', {
-    value: true,
-    enumerable: false,
-    writable: true,
-    configurable: true,
-  })
+  const object = Object.defineProperty(SIMPLE_ERROR_OBJECT, 'prop', DESCRIPTOR)
   t.is(parse(object).prop, undefined)
 })
 
@@ -72,6 +69,16 @@ test('Ignore symbol properties when serializing', (t) => {
 test('Ignore symbol properties when parsing', (t) => {
   const symbol = Symbol('test')
   t.is(parse({ ...SIMPLE_ERROR_OBJECT, [symbol]: true })[symbol], undefined)
+})
+
+test('Ignore undefined properties when serializing', (t) => {
+  const error = new Error('test')
+  error.prop = undefined
+  t.false('prop' in serialize(error))
+})
+
+test('Ignore undefined properties when parsing', (t) => {
+  t.false('prop' in parse({ ...SIMPLE_ERROR_OBJECT, prop: undefined }))
 })
 
 test('Ignore toJSON() when serializing', (t) => {
