@@ -49,12 +49,25 @@ not `require()`.
 
 # API
 
-## serialize(errorInstance)
+## serialize(errorInstance, options?)
 
 `errorInstance` `any`\
+`options` [`Options?`](#options)\
 _Return value_: `object`
 
 Convert an `Error` instance into a plain object.
+
+### Options
+
+Object with the following optional properties.
+
+#### loose
+
+_Type_: `boolean`\
+_Default_: `false`
+
+If this option is `true` and `errorInstance` is not an `Error` instance, it is
+returned as is, instead of being converted to a plain object.
 
 ## parse(errorObject, options?)
 
@@ -86,6 +99,14 @@ const error = parse(errorObject, { types: { CustomError } })
 // Map `CustomError` to another type
 const otherError = parse(errorObject, { types: { CustomError: TypeError } })
 ```
+
+#### loose
+
+_Type_: `boolean`\
+_Default_: `false`
+
+If this option is `true` and `errorObject` is not an error plain object, it is
+returned as is, instead of being converted to an `Error` instance.
 
 # Usage
 
