@@ -1,5 +1,5 @@
 /**
- * `template-name` options
+ * `error-serializer` options
  */
 export interface Options {}
 
@@ -9,4 +9,4 @@ export interface Options {}
  * ```js
  * ```
  */
-export default function templateName(value: any, options?: Options): object
+export default function errorSerializer(value: any, options?: Options): object

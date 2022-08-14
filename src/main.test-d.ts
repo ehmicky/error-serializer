@@ -1,8 +1,8 @@
 import { expectType, expectAssignable } from 'tsd'
 
-import templateName, { Options } from './main.js'
+import errorSerializer, { Options } from './main.js'
 
-expectType<object>(templateName(true))
+expectType<object>(errorSerializer(true))
 
-templateName(true, {})
+errorSerializer(true, {})
 expectAssignable<Options>({})
