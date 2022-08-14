@@ -7,7 +7,9 @@ export const createError = function (object, types) {
   const message = getMessage(object)
 
   try {
-    return new ErrorType(message)
+    return ErrorType === globalThis.AggregateError
+      ? new ErrorType([], message)
+      : new ErrorType(message)
   } catch {
     return new Error(message)
   }
