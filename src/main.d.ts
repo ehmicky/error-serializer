@@ -58,6 +58,7 @@ export function serialize(error: unknown): ErrorObject
 export interface ParseOptions {
   readonly types?: {
     [ErrorType: string]: typeof Error
+    [_: symbol | number]: never
   }
 }
 
