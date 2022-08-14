@@ -61,19 +61,12 @@ each(
   },
 )
 
-each(
-  [
-    { ...SIMPLE_ERROR_OBJECT, errors: true },
-    { ...SIMPLE_ERROR_OBJECT, errors: [undefined] },
-    { ...SIMPLE_ERROR_OBJECT, errors: [{ name: true }] },
-  ],
-  ({ title }, object) => {
-    test(`Invalid aggregate errors are normalized | ${title}`, (t) => {
-      const { errors } = parse(object)
-      t.true(!Array.isArray(errors) || errors.every(isErrorInstance))
-    })
-  },
-)
+each([true, [undefined], [{ name: true }]], ({ title }, errors) => {
+  test(`Invalid aggregate errors are normalized | ${title}`, (t) => {
+    const { errors: errorsA } = parse({ ...SIMPLE_ERROR_OBJECT, errors })
+    t.true(!Array.isArray(errorsA) || errorsA.every(isErrorInstance))
+  })
+})
 
 each(['cause', 'errors'], ({ title }, propName) => {
   test(`Unsafe properties are ignored | ${title}`, (t) => {
