@@ -115,3 +115,6 @@ expectType<Error>(parse(errorObject, {}))
 expectType<Error>(parse(errorObject, { types: {} }))
 expectType<Error>(parse(errorObject, { types: { RangeError } }))
 expectType<TypeError>(parse(errorObject, { types: { TypeError } }))
+
+const newError = serialize(errorObject)
+expectType<ErrorObject['name']>(newError.name)
