@@ -87,27 +87,27 @@ test('Ignore toJSON() when serializing', (t) => {
   t.is(serialize(error).message, error.message)
 })
 
+const UNSAFE_DESCRIPTOR = {
+  get() {
+    throw new Error('unsafe')
+  },
+  enumerable: true,
+  configurable: true,
+}
+
 test('Ignore unsafe non-core properties when serializing', (t) => {
   const error = new Error('test')
   // eslint-disable-next-line fp/no-mutating-methods
-  Object.defineProperty(error, 'prop', {
-    get() {
-      throw new Error('unsafe')
-    },
-    enumerable: true,
-    configurable: true,
-  })
+  Object.defineProperty(error, 'prop', UNSAFE_DESCRIPTOR)
   t.is(serialize(error).prop, undefined)
 })
 
 test('Ignore unsafe non-core properties when parsing', (t) => {
   // eslint-disable-next-line fp/no-mutating-methods
-  const object = Object.defineProperty(SIMPLE_ERROR_OBJECT, 'prop', {
-    get() {
-      throw new Error('unsafe')
-    },
-    enumerable: true,
-    configurable: true,
-  })
+  const object = Object.defineProperty(
+    SIMPLE_ERROR_OBJECT,
+    'prop',
+    UNSAFE_DESCRIPTOR,
+  )
   t.is(parse(object).prop, undefined)
 })
