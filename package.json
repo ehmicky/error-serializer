@@ -46,7 +46,7 @@
     "test": "test"
   },
   "dependencies": {
-    "normalize-exception": "^1.4.2",
+    "normalize-exception": "^1.5.0",
     "safe-json-value": "^1.5.0"
   },
   "devDependencies": {
