@@ -6,7 +6,7 @@ each(
   [
     { propName: 'name', value: 'TypeError' },
     { propName: 'message', value: 'test' },
-    { propName: 'stack', value: new Error('test').stack },
+    { propName: 'stack', value: new Error('undefined').stack },
   ],
   ({ title }, { propName, value }) => {
     test(`Core error properties are set | ${title}`, (t) => {

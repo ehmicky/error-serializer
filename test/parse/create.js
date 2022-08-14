@@ -51,7 +51,20 @@ test('Handle unsafe constructors', (t) => {
 })
 
 each([undefined, true], ({ title }, message) => {
-  test(`Default to empty message | ${title}`, (t) => {
-    t.is(parse({ message }).message, '')
+  test(`Handle non-string messages | ${title}`, (t) => {
+    t.is(parse({ message }).message, String(message))
   })
+})
+
+test('Handle unsafe message.toString()', (t) => {
+  t.is(
+    parse({
+      message: {
+        toString() {
+          throw new Error('unsafe')
+        },
+      },
+    }).message,
+    '',
+  )
 })

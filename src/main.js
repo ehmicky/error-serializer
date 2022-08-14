@@ -2,7 +2,6 @@ import normalizeException from 'normalize-exception'
 import safeJsonValue from 'safe-json-value'
 
 import { parseError } from './parse/main.js'
-import { normalizeObject } from './parse/normalize.js'
 import { serializeError } from './serialize.js'
 
 // Normalize and convert an error instance into a plain object, ready to be
@@ -27,4 +26,18 @@ export const parse = function (value, { types = {} } = {}) {
   const error = parseError(object, types)
   const errorA = normalizeException(error)
   return errorA
+}
+
+// We allow invalid `object`, silently normalizing it
+//  - This prevents throwing exceptions which would be a problem if used inside
+//    some error handling logic
+// `normalize-exception` also normalizes those afterwards.
+const normalizeObject = function (value) {
+  return isObject(value) ? value : { message: String(value) }
+}
+
+const isObject = function (value) {
+  return (
+    (typeof value === 'object' || typeof value === 'function') && value !== null
+  )
 }

@@ -55,5 +55,14 @@ const BUILTIN_TYPES = new Set([
 
 const getMessage = function (object) {
   const message = safeGetProp(object, 'message')
-  return typeof message === 'string' ? message : ''
+
+  if (typeof message === 'string') {
+    return message
+  }
+
+  try {
+    return String(message)
+  } catch {
+    return ''
+  }
 }

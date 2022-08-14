@@ -9,6 +9,10 @@ import { createError } from './create.js'
 //  - reason: keep projects separate since they have different purposes and
 //    features
 export const parseError = function (object, types) {
+  if (object instanceof Error) {
+    return object
+  }
+
   const error = createError(object, types)
   setCoreProps(error, object, types)
   const nonCoreProps = Object.fromEntries(getNonCoreProps(object))
