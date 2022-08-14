@@ -128,8 +128,10 @@ export interface ParseOptions {
 export function parse<ArgType, Options extends ParseOptions>(
   errorObject: ArgType,
   options?: Options,
-): Options['loose'] extends true
-  ? ArgType extends MinimalErrorObject
-    ? Error
-    : ArgType
+): ArgType extends MinimalErrorObject
+  ? NonNullable<Options['types']>[ArgType['name']] extends typeof Error
+    ? InstanceType<NonNullable<Options['types']>[ArgType['name']]>
+    : Error
+  : Options['loose'] extends true
+  ? ArgType
   : Error

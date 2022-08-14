@@ -105,3 +105,10 @@ expectNotAssignable<ParseOptions>({ types: { [Symbol()]: true } })
 expectAssignable<ParseOptions>({ types: { Error } })
 expectNotAssignable<ParseOptions>({ types: { Error: true } })
 expectNotAssignable<ParseOptions>({ types: { Error: () => true } })
+
+expectType<TypeError>(
+  parse(
+    { name: 'TypeError' as const, message: '', stack: '' },
+    { types: { TypeError } },
+  ),
+)
