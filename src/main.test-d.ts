@@ -1,8 +1,5 @@
-import { expectType, expectAssignable } from 'tsd'
+import { expectType } from 'tsd'
 
-import errorSerializer, { Options } from './main.js'
+import { serialize, parse, ParseOptions, ErrorObject } from './main.js'
 
-expectType<object>(errorSerializer(true))
-
-errorSerializer(true, {})
-expectAssignable<Options>({})
+expectType<ErrorObject>(serialize({}))
