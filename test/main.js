@@ -15,6 +15,8 @@ each(
     {},
     { name: 'Error' },
     { message: '' },
+    { name: 'Error', message: true },
+    { name: true, message: '' },
     [],
     () => {},
   ],
