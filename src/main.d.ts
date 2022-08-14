@@ -105,7 +105,6 @@ export interface ParseOptions {
    */
   readonly types?: {
     [ErrorType: string]: typeof Error
-    [_: symbol | number]: never
   }
 }
 
