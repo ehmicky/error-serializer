@@ -4,6 +4,8 @@ import test from 'ava'
 import { serialize, parse } from 'error-serializer'
 import { each } from 'test-each'
 
+import { SIMPLE_ERROR_OBJECT } from './helpers/main.js'
+
 each(
   [
     undefined,
@@ -13,10 +15,15 @@ each(
     0n,
     'message',
     {},
-    { name: 'Error' },
-    { message: '' },
-    { name: 'Error', message: true },
-    { name: true, message: '' },
+    ...['name', 'message', 'stack'].flatMap((propName) => [
+      { ...SIMPLE_ERROR_OBJECT, [propName]: undefined },
+      { ...SIMPLE_ERROR_OBJECT, [propName]: true },
+    ]),
+    { ...SIMPLE_ERROR_OBJECT, cause: true },
+    { ...SIMPLE_ERROR_OBJECT, cause: { name: true } },
+    { ...SIMPLE_ERROR_OBJECT, errors: true },
+    { ...SIMPLE_ERROR_OBJECT, errors: [undefined] },
+    { ...SIMPLE_ERROR_OBJECT, errors: [SIMPLE_ERROR_OBJECT, { name: true }] },
     [],
     () => {},
   ],
@@ -56,21 +63,22 @@ each([true, false, undefined], ({ title }, loose) => {
   })
 
   test(`Serializing error object is a noop | ${title}`, (t) => {
-    const object = { name: 'Error', message: '' }
-    t.is(serialize(object, { loose }), object)
+    t.is(serialize(SIMPLE_ERROR_OBJECT, { loose }), SIMPLE_ERROR_OBJECT)
   })
 })
 
 test('Normalize invalid stack', (t) => {
-  t.is(typeof parse({ stack: 0 }).stack, 'string')
+  t.is(typeof parse({ ...SIMPLE_ERROR_OBJECT, stack: 0 }).stack, 'string')
 })
 
 test('Normalize invalid cause', (t) => {
-  t.true(parse({ cause: 0 }).cause instanceof Error)
+  t.true(parse({ ...SIMPLE_ERROR_OBJECT, cause: 0 }).cause instanceof Error)
 })
 
 test('Normalize invalid aggregate errors', (t) => {
-  t.true(parse({ errors: [0] }).errors[0] instanceof Error)
+  t.true(
+    parse({ ...SIMPLE_ERROR_OBJECT, errors: [0] }).errors[0] instanceof Error,
+  )
 })
 
 test('Remove unsafe non-core properties when serializing', (t) => {

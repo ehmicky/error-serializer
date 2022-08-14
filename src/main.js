@@ -1,9 +1,8 @@
-import isPlainObj from 'is-plain-obj'
 import normalizeException from 'normalize-exception'
 import safeJsonValue from 'safe-json-value'
 
+import { isErrorInstance, isErrorObject } from './check.js'
 import { parseError } from './parse/main.js'
-import { safeGetProp } from './safe.js'
 import { serializeError } from './serialize.js'
 
 // Normalize and convert an error instance into a plain object, ready to be
@@ -48,20 +47,4 @@ export const parse = function (value, { loose = false, types = {} } = {}) {
 
 const shouldSkipParse = function (value, loose, isObject) {
   return (loose && !isObject) || isErrorInstance(value)
-}
-
-const isErrorInstance = function (value) {
-  return Object.prototype.toString.call(value) === '[object Error]'
-}
-
-const isErrorObject = function (value) {
-  return (
-    isPlainObj(value) &&
-    isStringProp(value, 'name') &&
-    isStringProp(value, 'message')
-  )
-}
-
-const isStringProp = function (object, propName) {
-  return typeof safeGetProp(object, propName) === 'string'
 }

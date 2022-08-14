@@ -1,6 +1,8 @@
 import test from 'ava'
 import { serialize, parse } from 'error-serializer'
 
+import { SIMPLE_ERROR_OBJECT } from './helpers/main.js'
+
 test('Keep non-core properties when serializing', (t) => {
   const error = new Error('test')
   error.prop = true
@@ -8,7 +10,7 @@ test('Keep non-core properties when serializing', (t) => {
 })
 
 test('Keep non-core properties when parsing', (t) => {
-  t.true(parse({ name: 'Error', message: '', prop: true }).prop)
+  t.true(parse({ ...SIMPLE_ERROR_OBJECT, prop: true }).prop)
 })
 
 test('Does not serialize non-core properties recursively', (t) => {
@@ -18,7 +20,7 @@ test('Does not serialize non-core properties recursively', (t) => {
 })
 
 test('Does not parse non-core properties recursively', (t) => {
-  t.false(parse({ prop: {} }).prop instanceof Error)
+  t.false(parse({ ...SIMPLE_ERROR_OBJECT, prop: {} }).prop instanceof Error)
 })
 
 test('Ignore non-enumerable properties when serializing', (t) => {
@@ -35,7 +37,7 @@ test('Ignore non-enumerable properties when serializing', (t) => {
 
 test('Ignore non-enumerable properties when parsing', (t) => {
   // eslint-disable-next-line fp/no-mutating-methods
-  const object = Object.defineProperty({}, 'prop', {
+  const object = Object.defineProperty(SIMPLE_ERROR_OBJECT, 'prop', {
     value: true,
     enumerable: false,
     writable: true,
@@ -69,7 +71,7 @@ test('Ignore symbol properties when serializing', (t) => {
 
 test('Ignore symbol properties when parsing', (t) => {
   const symbol = Symbol('test')
-  t.is(parse({ [symbol]: true })[symbol], undefined)
+  t.is(parse({ ...SIMPLE_ERROR_OBJECT, [symbol]: true })[symbol], undefined)
 })
 
 test('Ignore toJSON() when serializing', (t) => {
@@ -93,12 +95,12 @@ test('Ignore unsafe non-core properties when serializing', (t) => {
 
 test('Ignore unsafe non-core properties when parsing', (t) => {
   // eslint-disable-next-line fp/no-mutating-methods
-  const object = Object.defineProperty({}, 'prop', {
+  const object = Object.defineProperty(SIMPLE_ERROR_OBJECT, 'prop', {
     get() {
       throw new Error('unsafe')
     },
     enumerable: true,
     configurable: true,
   })
-  t.is(serialize(object).prop, undefined)
+  t.is(parse(object).prop, undefined)
 })
