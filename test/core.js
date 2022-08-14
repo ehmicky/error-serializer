@@ -37,3 +37,22 @@ test('Keep symbol properties', (t) => {
   error[symbol] = true
   t.is(serialize(error)[symbol])
 })
+
+test('Ignore toJSON()', (t) => {
+  const error = new Error('test')
+  error.toJSON = () => ({})
+  t.is(serialize(error).message, error.message)
+})
+
+test('Ignore unsafe properties', (t) => {
+  const error = new Error('test')
+  // eslint-disable-next-line fp/no-mutating-methods
+  Object.defineProperty(error, 'prop', {
+    get() {
+      throw new Error('unsafe')
+    },
+    enumerable: true,
+    configurable: true,
+  })
+  t.is(serialize(error).prop)
+})
