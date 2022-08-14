@@ -1,7 +1,5 @@
 import isPlainObj from 'is-plain-obj'
 
-import { safeGetProp } from './safe.js'
-
 // Check if a value is an Error instance
 export const isErrorInstance = function (value) {
   return Object.prototype.toString.call(value) === '[object Error]'
@@ -27,18 +25,30 @@ const hasCoreProps = function (value) {
 }
 
 const isStringProp = function (object, propName) {
-  const value = safeGetProp(object, propName)
-  return typeof value === 'string'
+  const { safe, value } = safeGetProp(object, propName)
+  return safe && typeof value === 'string'
 }
 
 const isOptionalErrorObject = function (object, propName) {
-  const value = safeGetProp(object, propName)
-  return value === undefined || isErrorObject(value)
+  const { safe, value } = safeGetProp(object, propName)
+  return safe && (value === undefined || isErrorObject(value))
 }
 
 const isOptionalErrorsArray = function (object, propName) {
-  const value = safeGetProp(object, propName)
+  const { safe, value } = safeGetProp(object, propName)
   return (
-    value === undefined || (Array.isArray(value) && value.every(isErrorObject))
+    safe &&
+    (value === undefined ||
+      (Array.isArray(value) && value.every(isErrorObject)))
   )
+}
+
+// Ensure retrieving a property does not throw due to a getter or proxy
+export const safeGetProp = function (object, propName) {
+  try {
+    const value = object[propName]
+    return { safe: true, value }
+  } catch {
+    return { safe: false }
+  }
 }

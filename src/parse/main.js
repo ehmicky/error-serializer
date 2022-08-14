@@ -1,5 +1,4 @@
 import { UNSET_CORE_PROPS, getNonCoreProps } from '../core.js'
-import { safeGetProp } from '../safe.js'
 
 import { createError } from './create.js'
 
@@ -24,7 +23,7 @@ const setCoreProps = function (error, object, types) {
 }
 
 const setCoreProp = function ({ error, object, propName, types }) {
-  const value = safeGetProp(object, propName)
+  const value = object[propName]
 
   if (value === undefined) {
     return
