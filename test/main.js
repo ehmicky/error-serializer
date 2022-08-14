@@ -6,7 +6,7 @@ import { each } from 'test-each'
 
 each(
   // eslint-disable-next-line unicorn/no-null, no-magic-numbers
-  [undefined, null, 0n, 'message', { message: 'test' }, [], () => {}],
+  [undefined, null, 0n, 'message', {}, [], () => {}],
   ({ title }, value) => {
     test(`Allow any type to be serialized | ${title}`, (t) => {
       t.is(typeof serialize(value).message, 'string')
@@ -14,6 +14,14 @@ each(
 
     test(`Allow any type to be parsed | ${title}`, (t) => {
       t.true(parse(value) instanceof Error)
+    })
+
+    test(`Non-errors are not serialized with "loose" option | ${title}`, (t) => {
+      t.is(serialize(value, { loose: true }), value)
+    })
+
+    test(`Non-error objects are not parsed with "loose" option | ${title}`, (t) => {
+      t.is(parse(value, { loose: true }), value)
     })
   },
 )
@@ -23,14 +31,21 @@ test('Allow strings to parsed', (t) => {
   t.is(parse(message).message, message)
 })
 
-test('Parsing error is a noop', (t) => {
-  const error = new Error('test')
-  t.is(parse(error), error)
-})
+each([true, false, undefined], ({ title }, loose) => {
+  test(`Parsing error is a noop | ${title}`, (t) => {
+    const error = new Error('test')
+    t.is(parse(error, { loose }), error)
+  })
 
-test('Parsing cross-realm error is a noop', (t) => {
-  const error = runInNewContext('new Error("test")')
-  t.is(parse(error), error)
+  test(`Parsing cross-realm error is a noop | ${title}`, (t) => {
+    const error = runInNewContext('new Error("test")')
+    t.is(parse(error, { loose }), error)
+  })
+
+  test(`Serializing error object is a noop | ${title}`, (t) => {
+    const object = { name: 'Error', message: '' }
+    t.is(serialize(object, { loose }), object)
+  })
 })
 
 test('Normalize invalid stack', (t) => {
