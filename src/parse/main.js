@@ -1,3 +1,4 @@
+import { isErrorInstance } from '../check.js'
 import { UNSET_CORE_PROPS, getNonCoreProps } from '../core.js'
 
 import { createError } from './create.js'
@@ -43,12 +44,17 @@ const setCoreProp = function ({ error, object, propName, types }) {
 // `normalize-exception` will normalize those recursively.
 const recurseCorePropToError = function (value, propName, types) {
   if (propName === 'cause') {
-    return parseError(value, types)
+    return parseDeepError(value, types)
   }
 
   if (propName === 'errors') {
-    return value.map((item) => parseError(item, types))
+    return value.map((item) => parseDeepError(item, types))
   }
 
   return value
+}
+
+// When using deep `JSON.parse()`, the children might be error instances
+const parseDeepError = function (value, types) {
+  return isErrorInstance(value) ? value : parseError(value, types)
 }

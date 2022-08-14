@@ -44,3 +44,9 @@ test('Aggregate errors are set', (t) => {
   t.is(error.errors[0].message, message)
   t.is({ ...error }.errors, undefined)
 })
+
+test('Does not parse deep error instances', (t) => {
+  const cause = new Error('test')
+  const error = { ...SIMPLE_ERROR_OBJECT, cause }
+  t.is(parse(error).cause, cause)
+})
