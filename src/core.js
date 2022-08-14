@@ -1,7 +1,17 @@
 import { safeGetProp } from './safe.js'
 
 // Retrieve properties of an error instance or objects that are not core
-// error properties
+// error properties.
+// When serializing, we exclude non-core error properties that either:
+//  - Are non-enumerable
+//     - Reason: most likely not meant to be serialized
+//  - Are inherited
+//     - They cannot be parsed back as inherited
+//     - If the same Error type is used during parsing, they are kept anyway
+//  - Have symbol keys
+//     - Reason: not supported by JSON
+// When parsing, we do the same since JSON should only have enumerable, own,
+// non-symbol keys.
 export const getNonCoreProps = function (errorOrObject) {
   return Object.keys(errorOrObject)
     .filter(isNonCorePropName)
