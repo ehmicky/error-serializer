@@ -23,7 +23,13 @@ const setCoreProps = function (error, object, types) {
   })
 }
 
+// `error.name|message` are already setup when building the error.
+//  - We ensure that `error.name` matches its constructor
 const setCoreProp = function ({ error, object, propName, types }) {
+  if (propName === 'name' || propName === 'message') {
+    return
+  }
+
   const value = safeGetProp(object, propName)
 
   if (value === undefined) {
