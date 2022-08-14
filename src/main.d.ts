@@ -59,7 +59,7 @@ export interface SerializeOptions {
  * // Error instance: 'TypeError: example ...'
  * ```
  */
-export function serialize<ArgType, Options extends SerializeOptions>(
+export function serialize<ArgType, Options extends SerializeOptions = {}>(
   errorInstance: ArgType,
   options?: Options,
 ): Options['loose'] extends true
