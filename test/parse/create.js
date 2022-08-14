@@ -74,17 +74,3 @@ each([undefined, true], ({ title }, message) => {
     t.is(parse({ ...SIMPLE_ERROR_OBJECT, message }).message, '{}')
   })
 })
-
-test('Handle unsafe message.toString()', (t) => {
-  t.is(
-    parse({
-      ...SIMPLE_ERROR_OBJECT,
-      message: {
-        toString() {
-          throw new Error('unsafe')
-        },
-      },
-    }).message,
-    '{}',
-  )
-})
