@@ -50,20 +50,6 @@ test('Handle unsafe constructors', (t) => {
   t.is(parse({ name: 'CustomError' }, { types: { CustomError } }).name, 'Error')
 })
 
-each(['name', 'message', 'stack', 'cause', 'errors'], ({ title }, propName) => {
-  test(`Handle unsafe properties | ${title}`, (t) => {
-    t.is(
-      parse({
-        // eslint-disable-next-line fp/no-get-set
-        get [propName]() {
-          throw new Error('unsafe')
-        },
-      }).name,
-      'Error',
-    )
-  })
-})
-
 each([undefined, true], ({ title }, message) => {
   test(`Default to empty message | ${title}`, (t) => {
     t.is(parse({ message }).message, '')
