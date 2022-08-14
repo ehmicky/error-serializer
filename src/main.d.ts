@@ -125,7 +125,7 @@ export interface ParseOptions {
  * // Error instance: 'TypeError: example ...'
  * ```
  */
-export function parse<ArgType, Options extends ParseOptions>(
+export function parse<ArgType, Options extends ParseOptions = {}>(
   errorObject: ArgType,
   options?: Options,
 ): ArgType extends MinimalErrorObject

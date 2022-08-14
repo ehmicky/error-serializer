@@ -106,9 +106,9 @@ expectAssignable<ParseOptions>({ types: { Error } })
 expectNotAssignable<ParseOptions>({ types: { Error: true } })
 expectNotAssignable<ParseOptions>({ types: { Error: () => true } })
 
-expectType<TypeError>(
-  parse(
-    { name: 'TypeError' as const, message: '', stack: '' },
-    { types: { TypeError } },
-  ),
-)
+const errorObject = { name: 'TypeError' as const, message: '', stack: '' }
+expectType<Error>(parse(errorObject))
+expectType<Error>(parse(errorObject, {}))
+expectType<Error>(parse(errorObject, { types: {} }))
+expectType<Error>(parse(errorObject, { types: { RangeError } }))
+expectType<TypeError>(parse(errorObject, { types: { TypeError } }))
