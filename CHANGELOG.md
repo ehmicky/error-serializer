@@ -2,7 +2,7 @@
 
 ## Features
 
-- Add [`loose` option](README.md#loose)
+- Add [`loose` option](README.md#loose) to invalid arguments as is
 - Add support for
   [deep serialization/parsing](README.md#deep-serializationparsing)
 
