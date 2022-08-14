@@ -33,3 +33,19 @@ test('Converts errors to plain objects', (t) => {
   t.true(isPlainObj(serializedNormalError.cause))
   t.true(isPlainObj(serializedNormalError.errors[0]))
 })
+
+const recursiveCauseError = new Error('test')
+// eslint-disable-next-line fp/no-mutation
+recursiveCauseError.cause = recursiveCauseError
+
+test('Handle recursion in cause', (t) => {
+  t.is(serialize(recursiveCauseError).cause)
+})
+
+const recursiveAggregateError = new Error('test')
+// eslint-disable-next-line fp/no-mutation
+recursiveAggregateError.errors = [recursiveAggregateError]
+
+test('Handle recursion in aggregate errors', (t) => {
+  t.deepEqual(serialize(recursiveAggregateError).errors, [])
+})
