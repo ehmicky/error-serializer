@@ -22,6 +22,21 @@ export interface ErrorObject {
 }
 
 /**
+ * `error-serializer` `serialize()` options
+ */
+export interface SerializeOptions {
+  /**
+   *
+   * @default false
+   *
+   * @example
+   * ```js
+   * ```
+   */
+  readonly loose?: boolean
+}
+
+/**
  * Convert an `Error` instance into a plain object.
  *
  * @example
@@ -37,12 +52,25 @@ export interface ErrorObject {
  * // Error instance: 'TypeError: example ...'
  * ```
  */
-export function serialize(errorInstance: unknown): ErrorObject
+export function serialize(
+  errorInstance: unknown,
+  options?: SerializeOptions,
+): ErrorObject
 
 /**
  * `error-serializer` `parse()` options
  */
 export interface ParseOptions {
+  /**
+   *
+   * @default false
+   *
+   * @example
+   * ```js
+   * ```
+   */
+  readonly loose?: boolean
+
   /**
    * Custom error types to keep when parsing.
    *

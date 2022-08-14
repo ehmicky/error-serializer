@@ -1,6 +1,17 @@
-import { expectType, expectAssignable, expectNotAssignable } from 'tsd'
+import {
+  expectType,
+  expectAssignable,
+  expectNotAssignable,
+  expectError,
+} from 'tsd'
 
-import { serialize, parse, ParseOptions, ErrorObject } from './main.js'
+import {
+  serialize,
+  parse,
+  ParseOptions,
+  SerializeOptions,
+  ErrorObject,
+} from './main.js'
 
 const error = new Error('test')
 
@@ -63,9 +74,20 @@ expectType<Error>(parse({}))
 parse(null)
 parse(error)
 
+serialize({}, {})
+expectError(serialize({}, true))
+expectAssignable<SerializeOptions>({})
+expectNotAssignable<SerializeOptions>({ unknown: true })
+expectAssignable<SerializeOptions>({ loose: true })
+expectNotAssignable<SerializeOptions>({ loose: 'true' })
+
 parse({}, {})
+expectError(parse({}, true))
 expectAssignable<ParseOptions>({})
 expectNotAssignable<ParseOptions>({ unknown: true })
+expectAssignable<ParseOptions>({ loose: true })
+expectNotAssignable<ParseOptions>({ loose: 'true' })
+
 expectAssignable<ParseOptions>({ types: {} })
 expectNotAssignable<ParseOptions>({ types: true })
 expectNotAssignable<ParseOptions>({ types: { [Symbol()]: true } })
