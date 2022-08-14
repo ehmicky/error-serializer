@@ -53,11 +53,6 @@ each(
   },
 )
 
-test('Allow strings to parsed', (t) => {
-  const message = 'test'
-  t.is(parse(message).message, message)
-})
-
 each([true, false, undefined], ({ title }, loose) => {
   test(`Parsing error is a noop | ${title}`, (t) => {
     const error = new Error('test')
@@ -72,6 +67,11 @@ each([true, false, undefined], ({ title }, loose) => {
   test(`Serializing error object is a noop | ${title}`, (t) => {
     t.is(serialize(SIMPLE_ERROR_OBJECT, { loose }), SIMPLE_ERROR_OBJECT)
   })
+})
+
+test('Allow strings to parsed', (t) => {
+  const message = 'test'
+  t.is(parse(message).message, message)
 })
 
 test('Normalize invalid stack', (t) => {
