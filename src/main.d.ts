@@ -29,11 +29,15 @@ export interface ErrorObject extends MinimalErrorObject {
  */
 export interface SerializeOptions {
   /**
+   * If this option is `true` and `errorInstance` is not an `Error` instance,
+   * it is returned as is, instead of being converted to a plain object.
    *
    * @default false
    *
    * @example
    * ```js
+   * console.log(serialize('example')) // { name: 'Error', message: 'example', ... }
+   * console.log(serialize('example', { loose: true })) // 'example'
    * ```
    */
   readonly loose?: boolean
@@ -69,11 +73,15 @@ export function serialize<ArgType, Options extends SerializeOptions>(
  */
 export interface ParseOptions {
   /**
+   * If this option is `true` and `errorObject` is not an error plain object,
+   * it is returned as is, instead of being converted to an `Error` instance.
    *
    * @default false
    *
    * @example
    * ```js
+   * console.log(parse('example')) // Error: example
+   * console.log(parse('example', { loose: true })) // 'example'
    * ```
    */
   readonly loose?: boolean
