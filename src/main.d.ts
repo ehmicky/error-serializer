@@ -50,7 +50,7 @@ export interface ErrorObject {
  * ```js
  * ```
  */
-export function serialize(error: unknown): ErrorObject
+export function serialize(errorInstance: unknown): ErrorObject
 
 /**
  * `error-serializer` `parse()` options

@@ -6,14 +6,90 @@
 
 Convert errors to/from plain objects.
 
-Work in progress!
-
 # Features
 
-# Example
+- Keeps error types that either native (`TypeError`, `DOMException`, etc.) or
+  custom
+- Works recursively with
+  [`error.cause`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/cause)
+  and
+  [`AggregateError`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AggregateError)
+- Error plain objects are always
+  [JSON-safe](https://github.com/ehmicky/safe-json-value)
+- Tailored for JSON, but allows any JSON-compatible format, including YAML
+- [Normalize invalid errors](https://github.com/ehmicky/normalize-exception)
+- Safe: this never throws
+
+# Examples
 
 ```js
-import errorSerializer from 'error-serializer'
+import { serialize, parse } from 'error-serializer'
+
+const errorObject = serialize(new TypeError('example'))
+// Plain object: { name: 'TypeError', message: 'example', stack: '...' }
+const error = parse(errorObject)
+// Error instance: 'TypeError: example ...'
+// `TypeError` type is kept
+```
+
+```js
+// Keeps custom error types
+const errorObject = serialize(new CustomError('example'))
+// `CustomError` type is kept
+const error = parse(errorObject, { types: { CustomError } })
+// Map `CustomError` to another type
+const otherError = parse(errorObject, { types: { CustomError: TypeError } })
+```
+
+```js
+// Additional error properties are kept
+const error = new TypeError('example')
+error.prop = true
+const errorObject = serialize(error)
+console.log(errorObject.prop) // true
+console.log(parse(errorObject).prop) // true
+```
+
+```js
+// Works with `error.cause` and `AggregateError`
+const error = new AggregateError([new Error('one')], 'two', {
+  cause: new Error('three'),
+})
+const errorObject = serialize(error)
+// {
+//   name: 'AggregateError',
+//   message: 'two',
+//   stack: '...',
+//   cause: { name: 'Error', message: 'three', stack: '...' },
+//   errors: [{ name: 'Error', message: 'two', stack: '...' }],
+// }
+console.log(parse(errorObject))
+// AggregateError: two
+//   [cause]: Error: three
+//   [errors]: [Error: one]
+```
+
+```js
+// Error plain objects are always JSON-safe
+const error = new Error('example')
+error.cycle = error
+console.log(serialize(error).cycle) // {}
+```
+
+```js
+// Does not serialize to strings, allowing any serialization logic to be
+// performed
+import { dump } from 'js-yaml'
+console.log(dump(serialize(new Error('example'))))
+// name: Error
+// message: example
+// stack: Error: example ...
+```
+
+```js
+// Invalid error instances or objects are normalized
+console.log(serialize('example')) // { name: 'Error', message: 'example', ... }
+console.log(parse({ message: false })) // Error: false
 ```
 
 # Install
@@ -28,19 +104,33 @@ not `require()`.
 
 # API
 
-## errorSerializer(value, options?)
+## serialize(errorInstance)
 
-`value` `any`\
+`errorInstance` `any`\
+_Return value_: `object`
+
+Convert an `Error` instance into a plain object.
+
+## parse(errorObject, options?)
+
+`errorObject` `any`\
 `options` [`Options?`](#options)\
-_Return value_: [`object`](#return-value)
+_Return value_: `Error`
+
+Convert an error plain object into an `Error` instance.
 
 ### Options
 
 Object with the following properties.
 
-### Return value
+#### types
 
-Object with the following properties.
+_Type_: `object`
+
+Custom error types to keep when parsing.
+
+Each key is an `errorObject.name`. Each value is the error type/constructor to
+use.
 
 # Related projects
 
