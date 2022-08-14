@@ -1,7 +1,8 @@
 import test from 'ava'
 import { parse } from 'error-serializer'
+import { each } from 'test-each'
 
-test('Default to Error type', (t) => {
+test('Default to Error type if no name', (t) => {
   t.is(parse().name, 'Error')
 })
 
@@ -27,4 +28,44 @@ test('Can re-use aggregate error types', (t) => {
 
 test('Does not re-use other error types by default', (t) => {
   t.is(parse({ name: 'CustomError' }).name, 'Error')
+})
+
+test('Re-uses other error types if specified', (t) => {
+  const types = { CustomError: TypeError }
+  t.is(parse({ name: 'CustomError' }, { types }).name, types.CustomError.name)
+})
+
+test('Can map builtin types', (t) => {
+  const types = { Error: TypeError }
+  t.is(parse({ name: 'Error' }, { types }).name, types.Error.name)
+})
+
+test('Handle unsafe constructors', (t) => {
+  // eslint-disable-next-line fp/no-class
+  class CustomError extends Error {
+    constructor() {
+      throw new Error('unsafe')
+    }
+  }
+  t.is(parse({ name: 'CustomError' }, { types: { CustomError } }).name, 'Error')
+})
+
+each(['name', 'message', 'stack', 'cause', 'errors'], ({ title }, propName) => {
+  test(`Handle unsafe properties | ${title}`, (t) => {
+    t.is(
+      parse({
+        // eslint-disable-next-line fp/no-get-set
+        get [propName]() {
+          throw new Error('unsafe')
+        },
+      }).name,
+      'Error',
+    )
+  })
+})
+
+each([undefined, true], ({ title }, message) => {
+  test(`Default to empty message | ${title}`, (t) => {
+    t.is(parse({ message }).message, '')
+  })
 })
