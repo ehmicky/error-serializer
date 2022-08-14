@@ -9,7 +9,7 @@ import { createError } from './create.js'
 //  - reason: keep projects separate since they have different purposes and
 //    features
 export const parseError = function (object, types) {
-  if (object instanceof Error) {
+  if (Object.prototype.toString.call(object) === '[object Error]') {
     return object
   }
 

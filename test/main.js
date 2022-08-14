@@ -1,3 +1,5 @@
+import { runInNewContext } from 'vm'
+
 import test from 'ava'
 import { serialize, parse } from 'error-serializer'
 import { each } from 'test-each'
@@ -23,6 +25,11 @@ test('Allow strings to parsed', (t) => {
 
 test('Parsing error is a noop', (t) => {
   const error = new Error('test')
+  t.is(parse(error), error)
+})
+
+test('Parsing cross-realm error is a noop', (t) => {
+  const error = runInNewContext('new Error("test")')
   t.is(parse(error), error)
 })
 
