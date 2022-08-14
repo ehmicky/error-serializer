@@ -3,23 +3,13 @@ import { serialize, parse } from 'error-serializer'
 
 import { SIMPLE_ERROR_OBJECT } from './helpers/main.js'
 
-test('Allow strings to parsed', (t) => {
+test('Normalize invalid types when parsing', (t) => {
   const message = 'test'
   t.is(parse(message).message, message)
 })
 
-test('Normalize invalid stack', (t) => {
+test('Normalize core properties when parsing', (t) => {
   t.is(typeof parse({ ...SIMPLE_ERROR_OBJECT, stack: 0 }).stack, 'string')
-})
-
-test('Normalize invalid cause', (t) => {
-  t.true(parse({ ...SIMPLE_ERROR_OBJECT, cause: 0 }).cause instanceof Error)
-})
-
-test('Normalize invalid aggregate errors', (t) => {
-  t.true(
-    parse({ ...SIMPLE_ERROR_OBJECT, errors: [0] }).errors[0] instanceof Error,
-  )
 })
 
 test('Remove unsafe non-core properties when serializing', (t) => {
