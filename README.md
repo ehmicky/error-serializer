@@ -134,14 +134,36 @@ error.cycle = error
 console.log(serialize(error).cycle) // {}
 ```
 
+## `error.toJSON()`
+
+[`serialize()`](#serializeerrorinstance) can be used as
+[`error.toJSON()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#tojson_behavior).
+
+<!-- eslint-disable fp/no-class, fp/no-this -->
+
+```js
+class CustomError extends Error {
+  /* constructor(...) { ... } */
+
+  toJSON() {
+    return serialize(this)
+  }
+}
+const error = new CustomError('example')
+
+console.log(error.toJSON())
+// { name: 'CustomError', message: 'example', stack: '...' }
+console.log(JSON.stringify(error))
+// '{"name":"CustomError","message":"example","stack":"..."}'
+```
+
 ## Deep serialization/parsing
 
 Objects and arrays containing errors can be deeply serialized/parsed using the
 [`loose` option](#loose) combined with
-[`JSON.stringify()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#the_replacer_parameter)
+[`JSON.stringify()`'s replacer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#the_replacer_parameter)
 and
-[`JSON.parse()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse#using_the_reviver_parameter)
-custom callbacks.
+[`JSON.parse()`'s reviver](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse#using_the_reviver_parameter).
 
 ```js
 const deepObject = [{}, { error: new Error('example') }]
@@ -170,29 +192,6 @@ const errorYamlString = dump(errorObject)
 // stack: Error: example ...
 const newErrorObject = load(errorYamlString)
 const newError = parse(newErrorObject) // Error: example
-```
-
-## `error.toJSON()`
-
-[`serialize()`](#serializeerrorinstance) can be used as
-[`error.toJSON()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#tojson_behavior).
-
-<!-- eslint-disable fp/no-class, fp/no-this -->
-
-```js
-class CustomError extends Error {
-  /* constructor(...) { ... } */
-
-  toJSON() {
-    return serialize(this)
-  }
-}
-const error = new CustomError('example')
-
-console.log(error.toJSON())
-// { name: 'CustomError', message: 'example', stack: '...' }
-console.log(JSON.stringify(error))
-// '{"name":"CustomError","message":"example","stack":"..."}'
 ```
 
 ## Additional error properties
