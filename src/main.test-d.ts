@@ -88,6 +88,10 @@ expectNotAssignable<ParseOptions>({ unknown: true })
 expectAssignable<ParseOptions>({ loose: true })
 expectNotAssignable<ParseOptions>({ loose: 'true' })
 
+expectType<ErrorObject>(serialize(true))
+expectType<ErrorObject>(serialize(true, { loose: false }))
+expectType<true>(serialize(true, { loose: true }))
+
 expectAssignable<ParseOptions>({ types: {} })
 expectNotAssignable<ParseOptions>({ types: true })
 expectNotAssignable<ParseOptions>({ types: { [Symbol()]: true } })
