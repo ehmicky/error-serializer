@@ -1,6 +1,6 @@
 import test from 'ava'
-import { parse } from 'error-serializer'
+import { serialize } from 'error-serializer'
 
-test('Dummy test', (t) => {
-  t.is(typeof parse, 'function')
+test('Serializes error name', (t) => {
+  t.is(serialize(new Error('test')).name, 'Error')
 })
