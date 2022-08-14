@@ -95,3 +95,9 @@ test('Does not parse error.cause if it is an Error instance', (t) => {
   const error = { ...SIMPLE_ERROR_OBJECT, cause }
   t.is(parse(error).cause, cause)
 })
+
+test('Does not parse error.errors if they are Error instances', (t) => {
+  const errors = [new Error('test')]
+  const error = { ...SIMPLE_ERROR_OBJECT, errors }
+  t.is(parse(error).errors[0], errors[0])
+})
