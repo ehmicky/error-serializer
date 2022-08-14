@@ -3,27 +3,23 @@ import { serialize, parse } from 'error-serializer'
 import isPlainObj from 'is-plain-obj'
 import { each } from 'test-each'
 
-const normalError = new Error('test')
-// eslint-disable-next-line fp/no-mutation
-normalError.cause = new Error('inner')
-// eslint-disable-next-line fp/no-mutation
-normalError.errors = [new Error('otherInner')]
+import { FULL_ERROR } from './helpers/main.js'
 
-const serializedNormalError = serialize(normalError)
+const serializedNormalError = serialize(FULL_ERROR)
 
 each(['name', 'message', 'stack'], ({ title }, propName) => {
   test(`Serializes error core property | ${title}`, (t) => {
-    t.is(serializedNormalError[propName], normalError[propName])
+    t.is(serializedNormalError[propName], FULL_ERROR[propName])
   })
 
   test(`Serializes error cause | ${title}`, (t) => {
-    t.is(serializedNormalError.cause[propName], normalError.cause[propName])
+    t.is(serializedNormalError.cause[propName], FULL_ERROR.cause[propName])
   })
 
   test(`Serializes aggregate errors | ${title}`, (t) => {
     t.is(
       serializedNormalError.errors[0][propName],
-      normalError.errors[0][propName],
+      FULL_ERROR.errors[0][propName],
     )
   })
 })
@@ -63,12 +59,12 @@ test('Can be used as toJSON()', (t) => {
 })
 
 test('Can serialize and parse deeply', (t) => {
-  const jsonString = JSON.stringify([normalError, true], (key, value) =>
+  const jsonString = JSON.stringify([FULL_ERROR, true], (key, value) =>
     serialize(value, { loose: true }),
   )
   const [object, item] = JSON.parse(jsonString, (key, value) =>
     parse(value, { loose: true }),
   )
-  t.deepEqual(object, normalError)
+  t.deepEqual(object, FULL_ERROR)
   t.true(item)
 })

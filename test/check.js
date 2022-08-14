@@ -4,7 +4,7 @@ import test from 'ava'
 import { serialize, parse } from 'error-serializer'
 import { each } from 'test-each'
 
-import { SIMPLE_ERROR_OBJECT } from './helpers/main.js'
+import { SIMPLE_ERROR_OBJECT, FULL_ERROR } from './helpers/main.js'
 
 each(
   [
@@ -55,6 +55,14 @@ test('Error instances are returned with parse() and "loose" option', (t) => {
 
 test('Error objects are returned with serialize() and "loose" option', (t) => {
   t.is(serialize(SIMPLE_ERROR_OBJECT, { loose: true }), SIMPLE_ERROR_OBJECT)
+})
+
+test('parse() and serialize() undo each other', (t) => {
+  const object = serialize(FULL_ERROR)
+  const error = parse(object)
+  t.deepEqual(error, FULL_ERROR)
+  const objectA = serialize(error)
+  t.deepEqual(objectA, object)
 })
 
 test('Serializing a cross-realm error with "loose" option is not a noop', (t) => {
