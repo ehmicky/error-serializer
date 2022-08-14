@@ -1,5 +1,6 @@
 import test from 'ava'
 import { serialize } from 'error-serializer'
+import isPlainObj from 'is-plain-obj'
 import { each } from 'test-each'
 
 const normalError = new Error('test')
@@ -8,19 +9,27 @@ normalError.cause = new Error('inner')
 // eslint-disable-next-line fp/no-mutation
 normalError.errors = [new Error('otherInner')]
 
+const serializedNormalError = serialize(normalError)
+
 each(['name', 'message', 'stack'], ({ title }, propName) => {
   test(`Serializes error core property | ${title}`, (t) => {
-    t.is(serialize(normalError)[propName], normalError[propName])
+    t.is(serializedNormalError[propName], normalError[propName])
   })
 
   test(`Serializes error cause | ${title}`, (t) => {
-    t.is(serialize(normalError).cause[propName], normalError.cause[propName])
+    t.is(serializedNormalError.cause[propName], normalError.cause[propName])
   })
 
   test(`Serializes aggregate errors | ${title}`, (t) => {
     t.is(
-      serialize(normalError).errors[0][propName],
+      serializedNormalError.errors[0][propName],
       normalError.errors[0][propName],
     )
   })
+})
+
+test('Converts errors to plain objects', (t) => {
+  t.true(isPlainObj(serializedNormalError))
+  t.true(isPlainObj(serializedNormalError.cause))
+  t.true(isPlainObj(serializedNormalError.errors[0]))
 })
