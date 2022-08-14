@@ -9,6 +9,7 @@ Convert errors to/from plain objects.
 # Features
 
 - Ensures errors are [safe to serialize with JSON](#json-safety)
+- Can be used as [`error.toJSON()`](#errortojson)
 - [Custom serialization logic](#custom-serialization) (e.g. YAML or
   `process.send()`)
 - Keeps both native (`TypeError`, etc.) and [custom](#types) error types
@@ -115,6 +116,29 @@ const errorYamlString = dump(errorObject)
 // name: Error
 // message: example
 // stack: Error: example ...
+```
+
+## `error.toJSON()`
+
+[`serialize()`](#serializeerrorinstance) can be used as
+[`error.toJSON()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#tojson_behavior).
+
+<!-- eslint-disable fp/no-class, fp/no-this -->
+
+```js
+class CustomError extends Error {
+  /* constructor(...) { ... } */
+
+  toJSON() {
+    return serialize(this)
+  }
+}
+const error = new CustomError('example')
+
+console.log(error.toJSON())
+// { name: 'CustomError', message: 'example', stack: '...' }
+console.log(JSON.stringify(error))
+// '{"name":"CustomError","message":"example","stack":"..."}'
 ```
 
 ## Additional error properties
