@@ -9,16 +9,19 @@ type JSONValue =
   | JSONValue[]
   | { [key: string]: JSONValue }
 
-/**
- * Error instance converted to a plain object
- */
-export interface ErrorObject {
+interface MinimalErrorObject {
   name: string
   message: string
   stack: string
+  [key: PropertyKey]: JSONValue
+}
+
+/**
+ * Error instance converted to a plain object
+ */
+export interface ErrorObject extends MinimalErrorObject {
   cause?: ErrorObject
   errors?: ErrorObject[]
-  [key: PropertyKey]: JSONValue
 }
 
 /**
@@ -114,4 +117,11 @@ export interface ParseOptions {
  * // Error instance: 'TypeError: example ...'
  * ```
  */
-export function parse(errorObject: unknown, options?: ParseOptions): Error
+export function parse<ArgType, Options extends ParseOptions>(
+  errorObject: ArgType,
+  options?: Options,
+): Options['loose'] extends true
+  ? ArgType extends MinimalErrorObject
+    ? Error
+    : ArgType
+  : Error

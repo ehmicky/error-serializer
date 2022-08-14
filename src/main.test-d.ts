@@ -1,5 +1,6 @@
 import {
   expectType,
+  expectNotType,
   expectAssignable,
   expectNotAssignable,
   expectError,
@@ -91,6 +92,12 @@ expectNotAssignable<ParseOptions>({ loose: 'true' })
 expectType<ErrorObject>(serialize(true))
 expectType<ErrorObject>(serialize(true, { loose: false }))
 expectType<true>(serialize(true, { loose: true }))
+
+expectType<Error>(parse(true))
+expectType<Error>(parse(true, { loose: false }))
+expectType<true>(parse(true, { loose: true }))
+expectNotType<Error>(parse({ name: '', message: '' }, { loose: true }))
+expectType<Error>(parse({ name: '', message: '', stack: '' }, { loose: true }))
 
 expectAssignable<ParseOptions>({ types: {} })
 expectNotAssignable<ParseOptions>({ types: true })
