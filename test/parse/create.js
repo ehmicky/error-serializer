@@ -21,7 +21,7 @@ test('Can re-use aggregate error types', (t) => {
     message,
     errors: [{ message: innerMessage }],
   } = parse(object)
-  t.is(name, object.name)
+  t.is(name, 'AggregateError' in globalThis ? object.name : 'Error')
   t.is(message, object.message)
   t.is(innerMessage, object.errors[0].message)
 })
