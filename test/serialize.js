@@ -39,7 +39,7 @@ const recursiveCauseError = new Error('test')
 recursiveCauseError.cause = recursiveCauseError
 
 test('Handle recursion in cause', (t) => {
-  t.is(serialize(recursiveCauseError).cause)
+  t.is(serialize(recursiveCauseError).cause, undefined)
 })
 
 const recursiveAggregateError = new Error('test')

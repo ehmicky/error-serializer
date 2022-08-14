@@ -11,3 +11,9 @@ each(
     })
   },
 )
+
+test('Remove unsafe non-core properties', (t) => {
+  const error = new Error('test')
+  error.prop = 0n
+  t.is(serialize(error).prop, undefined)
+})

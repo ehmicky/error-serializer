@@ -22,20 +22,22 @@ test('Ignore non-enumerable properties', (t) => {
     writable: true,
     configurable: true,
   })
-  t.is(serialize(error).prop)
+  t.is(serialize(error).prop, undefined)
 })
 
 test('Ignore inherited properties', (t) => {
+  // eslint-disable-next-line fp/no-class
   class CustomError extends Error {}
+  // eslint-disable-next-line fp/no-mutation
   CustomError.prototype.prop = true
-  t.is(serialize(new CustomError('test')).prop)
+  t.is(serialize(new CustomError('test')).prop, undefined)
 })
 
 test('Keep symbol properties', (t) => {
   const error = new Error('test')
-  const symbol = Symbol()
+  const symbol = Symbol('test')
   error[symbol] = true
-  t.is(serialize(error)[symbol])
+  t.is(serialize(error)[symbol], undefined)
 })
 
 test('Ignore toJSON()', (t) => {
@@ -54,5 +56,5 @@ test('Ignore unsafe properties', (t) => {
     enumerable: true,
     configurable: true,
   })
-  t.is(serialize(error).prop)
+  t.is(serialize(error).prop, undefined)
 })
