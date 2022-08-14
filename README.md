@@ -8,19 +8,22 @@ Convert errors to/from plain objects.
 
 # Features
 
-- Keeps error types that either native (`TypeError`, `DOMException`, etc.) or
-  custom
-- Works recursively with
+- Keeps error types that either [native](#simple) (`TypeError`, `DOMException`,
+  etc.) or [custom](#custom-error-types)
+- Keeps [error additional properties](#additional-error-properties)
+- Works [recursively](#errorcause-and-aggregateerror) with
   [`error.cause`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/cause)
   and
   [`AggregateError`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AggregateError)
-- Error plain objects are always
-  [JSON-safe](https://github.com/ehmicky/safe-json-value)
-- Tailored for JSON, but allows any JSON-compatible format, including YAML
-- [Normalize invalid errors](https://github.com/ehmicky/normalize-exception)
+- Error plain objects are always [JSON-safe](#json-safety)
+- Tailored for JSON, but allows any
+  [custom serialization logic](#custom-serialization) (e.g. YAML)
+- [Normalize invalid errors](#error-normalization)
 - Safe: this never throws
 
 # Examples
+
+## Simple
 
 ```js
 import { serialize, parse } from 'error-serializer'
@@ -29,11 +32,11 @@ const errorObject = serialize(new TypeError('example'))
 // Plain object: { name: 'TypeError', message: 'example', stack: '...' }
 const error = parse(errorObject)
 // Error instance: 'TypeError: example ...'
-// `TypeError` type is kept
 ```
 
+## Custom error types
+
 ```js
-// Keeps custom error types
 const errorObject = serialize(new CustomError('example'))
 // `CustomError` type is kept
 const error = parse(errorObject, { types: { CustomError } })
@@ -41,8 +44,9 @@ const error = parse(errorObject, { types: { CustomError } })
 const otherError = parse(errorObject, { types: { CustomError: TypeError } })
 ```
 
+## Additional error properties
+
 ```js
-// Additional error properties are kept
 const error = new TypeError('example')
 error.prop = true
 const errorObject = serialize(error)
@@ -50,8 +54,9 @@ console.log(errorObject.prop) // true
 console.log(parse(errorObject).prop) // true
 ```
 
+## `error.cause` and `AggregateError`
+
 ```js
-// Works with `error.cause` and `AggregateError`
 const error = new AggregateError([new Error('one')], 'two', {
   cause: new Error('three'),
 })
@@ -69,12 +74,18 @@ console.log(parse(errorObject))
 //   [errors]: [Error: one]
 ```
 
+## JSON safety
+
+Error plain objects are always
+[JSON-safe](https://github.com/ehmicky/safe-json-value).
+
 ```js
-// Error plain objects are always JSON-safe
 const error = new Error('example')
 error.cycle = error
 console.log(serialize(error).cycle) // {}
 ```
+
+## Custom serialization
 
 ```js
 // Does not serialize to strings, allowing any serialization logic to be
@@ -86,8 +97,12 @@ console.log(dump(serialize(new Error('example'))))
 // stack: Error: example ...
 ```
 
+## Error normalization
+
+Invalid error instances or objects are
+[normalized](https://github.com/ehmicky/normalize-exception).
+
 ```js
-// Invalid error instances or objects are normalized
 console.log(serialize('example')) // { name: 'Error', message: 'example', ... }
 console.log(parse({ message: false })) // Error: false
 ```
