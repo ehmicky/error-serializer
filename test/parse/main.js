@@ -4,6 +4,10 @@ import { each } from 'test-each'
 
 import { SIMPLE_ERROR_OBJECT } from '../helpers/main.js'
 
+const isErrorInstance = function (error) {
+  return error instanceof Error
+}
+
 each(
   [
     { propName: 'name', value: 'TypeError' },
@@ -29,7 +33,7 @@ test('Cause is set', (t) => {
     ...SIMPLE_ERROR_OBJECT,
     cause: { ...SIMPLE_ERROR_OBJECT, message },
   })
-  t.true(error.cause instanceof Error)
+  t.true(isErrorInstance(error.cause))
   t.is(error.cause.message, message)
   t.is({ ...error }.cause, undefined)
 })
@@ -40,12 +44,53 @@ test('Aggregate errors are set', (t) => {
     ...SIMPLE_ERROR_OBJECT,
     errors: [{ ...SIMPLE_ERROR_OBJECT, message }],
   })
-  t.true(error.errors[0] instanceof Error)
+  t.true(isErrorInstance(error.errors[0]))
   t.is(error.errors[0].message, message)
   t.is({ ...error }.errors, undefined)
 })
 
-test('Does not parse deep error instances', (t) => {
+each(
+  [
+    { ...SIMPLE_ERROR_OBJECT, cause: true },
+    { ...SIMPLE_ERROR_OBJECT, cause: { name: true } },
+  ],
+  ({ title }, object) => {
+    test(`Invalid cause is normalized | ${title}`, (t) => {
+      t.true(isErrorInstance(parse(object).cause))
+    })
+  },
+)
+
+each(
+  [
+    { ...SIMPLE_ERROR_OBJECT, errors: true },
+    { ...SIMPLE_ERROR_OBJECT, errors: [undefined] },
+    { ...SIMPLE_ERROR_OBJECT, errors: [{ name: true }] },
+  ],
+  ({ title }, object) => {
+    test(`Invalid aggregate errors are normalized | ${title}`, (t) => {
+      const { errors } = parse(object)
+      t.true(!Array.isArray(errors) || errors.every(isErrorInstance))
+    })
+  },
+)
+
+each(['cause', 'errors'], ({ title }, propName) => {
+  test(`Unsafe properties are ignored | ${title}`, (t) => {
+    t.is(
+      parse({
+        ...SIMPLE_ERROR_OBJECT,
+        // eslint-disable-next-line fp/no-get-set
+        get [propName]() {
+          throw new Error('unsafe')
+        },
+      }).cause,
+      undefined,
+    )
+  })
+})
+
+test('Does not parse error.cause if it is an Error instance', (t) => {
   const cause = new Error('test')
   const error = { ...SIMPLE_ERROR_OBJECT, cause }
   t.is(parse(error).cause, cause)

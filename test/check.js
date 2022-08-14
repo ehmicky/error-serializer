@@ -18,19 +18,14 @@ each(
     ...['name', 'message', 'stack'].flatMap((propName) => [
       { ...SIMPLE_ERROR_OBJECT, [propName]: undefined },
       { ...SIMPLE_ERROR_OBJECT, [propName]: true },
-    ]),
-    { ...SIMPLE_ERROR_OBJECT, cause: true },
-    { ...SIMPLE_ERROR_OBJECT, cause: { name: true } },
-    { ...SIMPLE_ERROR_OBJECT, errors: true },
-    { ...SIMPLE_ERROR_OBJECT, errors: [undefined] },
-    { ...SIMPLE_ERROR_OBJECT, errors: [SIMPLE_ERROR_OBJECT, { name: true }] },
-    ...['name', 'message', 'stack', 'cause', 'errors'].flatMap((propName) => ({
-      ...SIMPLE_ERROR_OBJECT,
-      // eslint-disable-next-line fp/no-get-set
-      get [propName]() {
-        throw new Error('unsafe')
+      {
+        ...SIMPLE_ERROR_OBJECT,
+        // eslint-disable-next-line fp/no-get-set
+        get [propName]() {
+          throw new Error('unsafe')
+        },
       },
-    })),
+    ]),
     [],
     () => {},
   ],
@@ -53,20 +48,9 @@ each(
   },
 )
 
-each([true, false, undefined], ({ title }, loose) => {
-  test(`Parsing error is a noop | ${title}`, (t) => {
-    const error = new Error('test')
-    t.is(parse(error, { loose }), error)
-  })
-
-  test(`Parsing cross-realm error is a noop | ${title}`, (t) => {
-    const error = runInNewContext('new Error("test")')
-    t.is(parse(error, { loose }), error)
-  })
-
-  test(`Serializing error object is a noop | ${title}`, (t) => {
-    t.is(serialize(SIMPLE_ERROR_OBJECT, { loose }), SIMPLE_ERROR_OBJECT)
-  })
+test('Serializing a cross-realm error with "loose" option is not a noop', (t) => {
+  const error = runInNewContext('new Error("test")')
+  t.not(serialize(error, { loose: true }), error)
 })
 
 test('Serializing error object with deep error instances is not a noop', (t) => {

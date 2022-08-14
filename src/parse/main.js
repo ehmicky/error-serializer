@@ -1,4 +1,4 @@
-import { isErrorInstance } from '../check.js'
+import { isErrorObject, safeGetProp } from '../check.js'
 import { UNSET_CORE_PROPS, getNonCoreProps } from '../core.js'
 
 import { createError } from './create.js'
@@ -8,7 +8,15 @@ import { createError } from './create.js'
 //  - It does not reuse `normalize-exception`'s object parsing logic
 //  - reason: keep projects separate since they have different purposes and
 //    features
+// If the value is not a valid plain object, we let `normalize-exception`
+// handle it.
+//  - We do this recursively, especially since `JSON.parse()`'s reviver parses
+//    children before parents, so they might be error instances
 export const parseError = function (object, types) {
+  if (!isErrorObject(object)) {
+    return object
+  }
+
   const error = createError(object, types)
   setCoreProps(error, object, types)
   const nonCoreProps = Object.fromEntries(getNonCoreProps(object))
@@ -24,9 +32,9 @@ const setCoreProps = function (error, object, types) {
 }
 
 const setCoreProp = function ({ error, object, propName, types }) {
-  const value = object[propName]
+  const { safe, value } = safeGetProp(object, propName)
 
-  if (value === undefined) {
+  if (!safe || value === undefined) {
     return
   }
 
@@ -44,17 +52,12 @@ const setCoreProp = function ({ error, object, propName, types }) {
 // `normalize-exception` will normalize those recursively.
 const recurseCorePropToError = function (value, propName, types) {
   if (propName === 'cause') {
-    return parseDeepError(value, types)
+    return parseError(value, types)
   }
 
-  if (propName === 'errors') {
-    return value.map((item) => parseDeepError(item, types))
+  if (propName === 'errors' && Array.isArray(value)) {
+    return value.map((item) => parseError(item, types))
   }
 
   return value
-}
-
-// When using deep `JSON.parse()`, the children might be error instances
-const parseDeepError = function (value, types) {
-  return isErrorInstance(value) ? value : parseError(value, types)
 }

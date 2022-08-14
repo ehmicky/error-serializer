@@ -12,19 +12,15 @@ import { serializeError } from './serialize.js'
 //    enough to provide features like ensuring the types are correct
 // We apply `normalize-exception` to ensure a strict input.
 //  - We allow arguments that are not `error` instances
-export const serialize = function (error, { loose = false } = {}) {
-  if (shouldSkipSerialize(error, loose)) {
-    return error
+export const serialize = function (value, { loose = false } = {}) {
+  if (loose && !isErrorInstance(value)) {
+    return value
   }
 
-  const errorA = normalizeException(error)
-  const object = serializeError(errorA)
-  const { value } = safeJsonValue(object)
-  return value
-}
-
-const shouldSkipSerialize = function (error, loose) {
-  return (loose && !isErrorInstance(error)) || isErrorObject(error, true)
+  const error = normalizeException(value)
+  const object = serializeError(error)
+  const { value: objectA } = safeJsonValue(object)
+  return objectA
 }
 
 // Normalize and convert an already parsed plain object representing an error
@@ -34,17 +30,11 @@ const shouldSkipSerialize = function (error, loose) {
 //    some error handling logic
 // We apply `normalize-exception` to ensure a strict output.
 export const parse = function (value, { loose = false, types = {} } = {}) {
-  const isObject = isErrorObject(value, false)
-
-  if (shouldSkipParse(value, loose, isObject)) {
+  if (loose && !isErrorObject(value)) {
     return value
   }
 
-  const error = isObject ? parseError(value, types) : value
+  const error = parseError(value, types)
   const errorA = normalizeException(error)
   return errorA
-}
-
-const shouldSkipParse = function (value, loose, isObject) {
-  return (loose && !isObject) || isErrorInstance(value)
 }
