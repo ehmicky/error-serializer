@@ -9,13 +9,7 @@ each(
     test(`Allow any type to be serialized | ${title}`, (t) => {
       t.is(typeof serialize(value).message, 'string')
     })
-  },
-)
 
-each(
-  // eslint-disable-next-line unicorn/no-null, no-magic-numbers
-  [undefined, null, 0n, 'message', { message: 'test' }, [], () => {}],
-  ({ title }, value) => {
     test(`Allow any type to be parsed | ${title}`, (t) => {
       t.true(parse(value) instanceof Error)
     })
