@@ -63,7 +63,7 @@ export function serialize<ArgType, Options extends SerializeOptions = {}>(
   errorInstance: ArgType,
   options?: Options,
 ): ArgType extends Error
-  ? ErrorObject
+  ? ErrorObject & { name: ArgType['name'] }
   : Options['loose'] extends true
   ? ArgType
   : ErrorObject

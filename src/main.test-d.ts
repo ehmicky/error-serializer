@@ -16,7 +16,7 @@ import {
 
 const error = new Error('test')
 
-expectType<ErrorObject>(serialize(error))
+expectAssignable<ErrorObject>(serialize(error))
 serialize(null)
 serialize({})
 
@@ -105,6 +105,9 @@ expectNotAssignable<ParseOptions>({ types: { [Symbol()]: true } })
 expectAssignable<ParseOptions>({ types: { Error } })
 expectNotAssignable<ParseOptions>({ types: { Error: true } })
 expectNotAssignable<ParseOptions>({ types: { Error: () => true } })
+
+const typeError = new TypeError('test') as TypeError & { name: 'TypeError' }
+expectType<'TypeError'>(serialize(typeError).name)
 
 const errorObject = { name: 'TypeError' as const, message: '', stack: '' }
 expectType<Error>(parse(errorObject))
