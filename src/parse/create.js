@@ -1,10 +1,7 @@
-import { safeGetProp } from '../safe.js'
-
 // Custom error types might throw due to missing parameters in the constructor.
 // When this happens, we silently revert to `Error`.
-export const createError = function (object, types) {
-  const ErrorType = getErrorType(object, types)
-  const message = getMessage(object)
+export const createError = function ({ name, message }, types) {
+  const ErrorType = getErrorType(name, types)
 
   try {
     return ErrorType === globalThis.AggregateError
@@ -22,13 +19,7 @@ export const createError = function (object, types) {
 //    serializing logic
 //  - This is more consistent with `modern-errors` which discourages
 //    exporting types
-const getErrorType = function (object, types) {
-  const name = safeGetProp(object, 'name')
-
-  if (typeof name !== 'string') {
-    return Error
-  }
-
+const getErrorType = function (name, types) {
   if (typeof types[name] === 'function') {
     return types[name]
   }
@@ -52,17 +43,3 @@ const BUILTIN_TYPES = new Set([
   // Browser-only
   'DOMException',
 ])
-
-const getMessage = function (object) {
-  const message = safeGetProp(object, 'message')
-
-  if (typeof message === 'string') {
-    return message
-  }
-
-  try {
-    return String(message)
-  } catch {
-    return ''
-  }
-}
