@@ -1,6 +1,5 @@
 import test from 'ava'
 import { parse } from 'error-serializer'
-import { each } from 'test-each'
 
 import { SIMPLE_ERROR_OBJECT } from '../helpers/main.js'
 
@@ -30,11 +29,6 @@ test('Can re-use aggregate error types', (t) => {
 
 test('Does not re-use other error types by default', (t) => {
   t.is(parse({ ...SIMPLE_ERROR_OBJECT, name: 'CustomError' }).name, 'Error')
-})
-
-test('Handle non-string error.name', (t) => {
-  // eslint-disable-next-line unicorn/no-null
-  t.is(parse({ ...SIMPLE_ERROR_OBJECT, name: null }).name, 'Error')
 })
 
 test('Re-uses other error types if specified', (t) => {
@@ -67,10 +61,4 @@ test('Handle unsafe constructors', (t) => {
     ).name,
     'Error',
   )
-})
-
-each([undefined, true], ({ title }, message) => {
-  test(`Handle non-string messages | ${title}`, (t) => {
-    t.is(parse({ ...SIMPLE_ERROR_OBJECT, message }).message, '{}')
-  })
 })
