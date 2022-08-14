@@ -10,7 +10,8 @@ Convert errors to/from plain objects.
 
 - Ensures errors are [safe to serialize with JSON](#json-safety)
 - Can be used as [`error.toJSON()`](#errortojson)
-- [Custom serialization logic](#custom-serialization) (e.g. YAML or
+- [Deep serialization/parsing](#deep-serializationparsing)
+- [Custom serialization/parsing](#custom-serializationparsing) (e.g. YAML or
   `process.send()`)
 - Keeps both native (`TypeError`, etc.) and [custom](#types) error types
 - Preserves errors' [additional properties](#additional-error-properties)
@@ -69,6 +70,11 @@ _Default_: `false`
 If this option is `true` and `errorInstance` is not an `Error` instance, it is
 returned as is, instead of being converted to a plain object.
 
+```js
+console.log(serialize('example')) // { name: 'Error', message: 'example', ... }
+console.log(serialize('example', { loose: true })) // 'example'
+```
+
 ## parse(errorObject, options?)
 
 `errorObject` `any`\
@@ -108,6 +114,11 @@ _Default_: `false`
 If this option is `true` and `errorObject` is not an error plain object, it is
 returned as is, instead of being converted to an `Error` instance.
 
+```js
+console.log(parse('example')) // Error: example
+console.log(parse('example', { loose: true })) // 'example'
+```
+
 # Usage
 
 ## JSON safety
@@ -123,13 +134,33 @@ error.cycle = error
 console.log(serialize(error).cycle) // {}
 ```
 
-## Custom serialization
+## Deep serialization/parsing
 
-[`serialize()`](#serializeerrorinstance) returns a plain object, not a string.
-This allows any serialization logic to be performed.
+Objects and arrays containing errors can be deeply serialized/parsed using the
+[`loose` option](#loose) combined with
+[`JSON.stringify()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#the_replacer_parameter)
+and
+[`JSON.parse()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse#using_the_reviver_parameter)
+custom callbacks.
 
 ```js
-import { dump } from 'js-yaml'
+const deepObject = [{}, { error: new Error('example') }]
+const jsonString = JSON.stringify(deepObject, (key, value) =>
+  serialize(value, { loose: true }),
+)
+const newDeepObject = JSON.parse(jsonString, (key, value) =>
+  parse(value, { loose: true }),
+)
+console.log(newDeepObject[1].error) // Error: example
+```
+
+## Custom serialization/parsing
+
+Errors are converted to/from plain objects, not strings. This allows any
+serialization/parsing logic to be performed.
+
+```js
+import { dump, load } from 'js-yaml'
 
 const error = new Error('example')
 const errorObject = serialize(error)
@@ -137,6 +168,8 @@ const errorYamlString = dump(errorObject)
 // name: Error
 // message: example
 // stack: Error: example ...
+const newErrorObject = load(errorYamlString)
+const newError = parse(newErrorObject) // Error: example
 ```
 
 ## `error.toJSON()`
