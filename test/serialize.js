@@ -49,3 +49,15 @@ recursiveAggregateError.errors = [recursiveAggregateError]
 test('Handle recursion in aggregate errors', (t) => {
   t.deepEqual(serialize(recursiveAggregateError).errors, [])
 })
+
+test('Can be used as toJSON()', (t) => {
+  // eslint-disable-next-line fp/no-class
+  class CustomError extends Error {
+    toJSON() {
+      // eslint-disable-next-line fp/no-this
+      return serialize(this)
+    }
+  }
+  const message = 'test'
+  t.is(new CustomError(message).toJSON().message, message)
+})
