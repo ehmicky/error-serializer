@@ -24,7 +24,7 @@ export const serialize = function (error, { loose = false } = {}) {
 }
 
 const shouldSkipSerialize = function (error, loose) {
-  return (loose && !isErrorInstance(error)) || isErrorObject(error)
+  return (loose && !isErrorInstance(error)) || isErrorObject(error, true)
 }
 
 // Normalize and convert an already parsed plain object representing an error
@@ -34,7 +34,7 @@ const shouldSkipSerialize = function (error, loose) {
 //    some error handling logic
 // We apply `normalize-exception` to ensure a strict output.
 export const parse = function (value, { loose = false, types = {} } = {}) {
-  const isObject = isErrorObject(value)
+  const isObject = isErrorObject(value, false)
 
   if (shouldSkipParse(value, loose, isObject)) {
     return value

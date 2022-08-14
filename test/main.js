@@ -69,6 +69,16 @@ each([true, false, undefined], ({ title }, loose) => {
   })
 })
 
+test('Serializing error object with deep error instances is not a noop', (t) => {
+  const cause = new Error('causeMessage')
+  const errors = [new Error('errorsMessage')]
+  const object = { ...SIMPLE_ERROR_OBJECT, cause, errors }
+  const error = serialize(object)
+  t.not(error, object)
+  t.deepEqual(error.cause, serialize(cause))
+  t.deepEqual(error.errors[0], serialize(errors[0]))
+})
+
 test('Allow strings to parsed', (t) => {
   const message = 'test'
   t.is(parse(message).message, message)

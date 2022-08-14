@@ -7,12 +7,12 @@ export const isErrorInstance = function (value) {
 
 // Check if a value conforms to the error plain object shape.
 // This enforces strict outputs.
-export const isErrorObject = function (value) {
+export const isErrorObject = function (value, deep) {
   return (
     isPlainObj(value) &&
     hasCoreProps(value) &&
-    isOptionalErrorObject(value, 'cause') &&
-    isOptionalErrorsArray(value, 'errors')
+    isOptionalErrorObject(value, 'cause', deep) &&
+    isOptionalErrorsArray(value, 'errors', deep)
   )
 }
 
@@ -29,24 +29,25 @@ const isStringProp = function (object, propName) {
   return safe && typeof value === 'string'
 }
 
-const isOptionalErrorObject = function (object, propName) {
+const isOptionalErrorObject = function (object, propName, deep) {
   const { safe, value } = safeGetProp(object, propName)
-  return safe && (value === undefined || isErrorObjectOrInstance(value))
+  return safe && (value === undefined || isErrorObjectOrInstance(value, deep))
 }
 
-const isOptionalErrorsArray = function (object, propName) {
+const isOptionalErrorsArray = function (object, propName, deep) {
   const { safe, value } = safeGetProp(object, propName)
   return (
     safe &&
     (value === undefined ||
-      (Array.isArray(value) && value.every(isErrorObjectOrInstance)))
+      (Array.isArray(value) &&
+        value.every((item) => isErrorObjectOrInstance(item, deep))))
   )
 }
 
 // `JSON.parse()`'s reviver parses children before parents, so they might
 // be error instances
-const isErrorObjectOrInstance = function (value) {
-  return isErrorInstance(value) || isErrorObject(value)
+const isErrorObjectOrInstance = function (value, deep) {
+  return (!deep && isErrorInstance(value)) || isErrorObject(value, deep)
 }
 
 // Ensure retrieving a property does not throw due to a getter or proxy
