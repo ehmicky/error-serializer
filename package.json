@@ -46,12 +46,12 @@
     "test": "test"
   },
   "dependencies": {
+    "is-plain-obj": "^4.1.0",
     "normalize-exception": "^1.6.0",
     "safe-json-value": "^1.6.0"
   },
   "devDependencies": {
     "@ehmicky/dev-tasks": "^1.0.84",
-    "is-plain-obj": "^4.1.0",
     "test-each": "^5.2.0"
   },
   "engines": {

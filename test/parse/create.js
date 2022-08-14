@@ -27,22 +27,25 @@ test('Can re-use aggregate error types', (t) => {
 })
 
 test('Does not re-use other error types by default', (t) => {
-  t.is(parse({ name: 'CustomError' }).name, 'Error')
+  t.is(parse({ name: 'CustomError', message: '' }).name, 'Error')
 })
 
 test('Handle non-string error.name', (t) => {
   // eslint-disable-next-line unicorn/no-null
-  t.is(parse({ name: null }).name, 'Error')
+  t.is(parse({ name: null, message: '' }).name, 'Error')
 })
 
 test('Re-uses other error types if specified', (t) => {
   const types = { CustomError: TypeError }
-  t.is(parse({ name: 'CustomError' }, { types }).name, types.CustomError.name)
+  t.is(
+    parse({ name: 'CustomError', message: '' }, { types }).name,
+    types.CustomError.name,
+  )
 })
 
 test('Can map builtin types', (t) => {
   const types = { Error: TypeError }
-  t.is(parse({ name: 'Error' }, { types }).name, types.Error.name)
+  t.is(parse({ name: 'Error', message: '' }, { types }).name, types.Error.name)
 })
 
 test('Handle unsafe constructors', (t) => {
@@ -52,24 +55,29 @@ test('Handle unsafe constructors', (t) => {
       throw new Error('unsafe')
     }
   }
-  t.is(parse({ name: 'CustomError' }, { types: { CustomError } }).name, 'Error')
+  t.is(
+    parse({ name: 'CustomError', message: '' }, { types: { CustomError } })
+      .name,
+    'Error',
+  )
 })
 
 each([undefined, true], ({ title }, message) => {
   test(`Handle non-string messages | ${title}`, (t) => {
-    t.is(parse({ message }).message, String(message))
+    t.is(parse({ name: 'Error', message }).message, '{}')
   })
 })
 
 test('Handle unsafe message.toString()', (t) => {
   t.is(
     parse({
+      name: 'Error',
       message: {
         toString() {
           throw new Error('unsafe')
         },
       },
     }).message,
-    '',
+    '{}',
   )
 })

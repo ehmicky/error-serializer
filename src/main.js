@@ -1,7 +1,9 @@
+import isPlainObj from 'is-plain-obj'
 import normalizeException from 'normalize-exception'
 import safeJsonValue from 'safe-json-value'
 
 import { parseError } from './parse/main.js'
+import { safeGetProp } from './safe.js'
 import { serializeError } from './serialize.js'
 
 // Normalize and convert an error instance into a plain object, ready to be
@@ -11,33 +13,55 @@ import { serializeError } from './serialize.js'
 //    enough to provide features like ensuring the types are correct
 // We apply `normalize-exception` to ensure a strict input.
 //  - We allow arguments that are not `error` instances
-export const serialize = function (error) {
+export const serialize = function (error, { loose = false } = {}) {
+  if (shouldSkipSerialize(error, loose)) {
+    return error
+  }
+
   const errorA = normalizeException(error)
   const object = serializeError(errorA)
   const { value } = safeJsonValue(object)
   return value
 }
 
+const shouldSkipSerialize = function (error, loose) {
+  return (loose && !isErrorInstance(error)) || isErrorObject(error)
+}
+
 // Normalize and convert an already parsed plain object representing an error
 // into an error instance.
+// We allow invalid `object`, silently normalizing it
+//  - This prevents throwing exceptions which would be a problem if used inside
+//    some error handling logic
 // We apply `normalize-exception` to ensure a strict output.
-export const parse = function (value, { types = {} } = {}) {
-  const object = normalizeObject(value)
-  const error = parseError(object, types)
+export const parse = function (value, { loose = false, types = {} } = {}) {
+  const isObject = isErrorObject(value)
+
+  if (shouldSkipParse(value, loose, isObject)) {
+    return value
+  }
+
+  const error = isObject ? parseError(value, types) : value
   const errorA = normalizeException(error)
   return errorA
 }
 
-// We allow invalid `object`, silently normalizing it
-//  - This prevents throwing exceptions which would be a problem if used inside
-//    some error handling logic
-// `normalize-exception` also normalizes those afterwards.
-const normalizeObject = function (value) {
-  return isObject(value) ? value : { message: String(value) }
+const shouldSkipParse = function (value, loose, isObject) {
+  return (loose && !isObject) || isErrorInstance(value)
 }
 
-const isObject = function (value) {
+const isErrorInstance = function (value) {
+  return Object.prototype.toString.call(value) === '[object Error]'
+}
+
+const isErrorObject = function (value) {
   return (
-    (typeof value === 'object' || typeof value === 'function') && value !== null
+    isPlainObj(value) &&
+    isStringProp(value, 'name') &&
+    isStringProp(value, 'message')
   )
+}
+
+const isStringProp = function (object, propName) {
+  return typeof safeGetProp(object, propName) === 'string'
 }

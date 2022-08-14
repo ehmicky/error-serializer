@@ -8,7 +8,7 @@ test('Keep non-core properties when serializing', (t) => {
 })
 
 test('Keep non-core properties when parsing', (t) => {
-  t.true(parse({ prop: true }).prop)
+  t.true(parse({ name: 'Error', message: '', prop: true }).prop)
 })
 
 test('Does not serialize non-core properties recursively', (t) => {
