@@ -8,17 +8,16 @@ Convert errors to/from plain objects.
 
 # Features
 
-- Keeps error types that either native (`TypeError`, `DOMException`, etc.) or
+- Keeps error types both native (`TypeError`, `DOMException`, etc.) and
   [custom](#types)
-- Preserves [error additional properties](#additional-error-properties)
+- Preserves errors' [additional properties](#additional-error-properties)
 - Works [recursively](#errorcause-and-aggregateerror) with
   [`error.cause`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/cause)
   and
   [`AggregateError`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AggregateError)
-- Error plain objects are always [JSON-safe](#json-safety)
-- Tailored for JSON, but allows any
-  [custom serialization logic](#custom-serialization) (e.g. YAML)
-- [Normalize invalid errors](#error-normalization)
+- Ensure errors are [safe to serialize with JSON](#json-safety)
+- [Custom serialization logic](#custom-serialization) (e.g. YAML)
+- [Normalize](#error-normalization) invalid errors
 - Safe: this never throws
 
 # Example
@@ -69,8 +68,10 @@ _Type_: `object`
 
 Custom error types to keep when parsing.
 
-Each key is an `errorObject.name`. Each value is the error type/constructor to
-use.
+- Each key is an `errorObject.name`.
+- Each value is the error type to use. The constructor will be called with a
+  single `message` argument. It it throws, `Error` will be used as the error
+  type instead.
 
 ```js
 const errorObject = serialize(new CustomError('example'))
@@ -149,7 +150,10 @@ Invalid error instances or objects are
 [normalized](https://github.com/ehmicky/normalize-exception).
 
 ```js
+// Normalizes invalid error: not an `Error` instance
 console.log(serialize('example')) // { name: 'Error', message: 'example', ... }
+
+// Normalizes `error.message`: not a string
 console.log(parse({ message: false })) // Error: false
 ```
 
