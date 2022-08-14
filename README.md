@@ -183,8 +183,8 @@ Invalid error instances or objects are
 // Normalizes invalid error: not an `Error` instance
 console.log(serialize('example')) // { name: 'Error', message: 'example', ... }
 
-// Normalizes `error.message`: not a string
-console.log(parse({ message: false })) // Error: false
+// Normalizes `error.name`: not a string
+console.log(parse({ name: false, message: 'example' })) // Error: example
 ```
 
 # Related projects
