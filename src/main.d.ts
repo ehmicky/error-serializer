@@ -68,6 +68,10 @@ export function serialize<ArgType, Options extends SerializeOptions = {}>(
   ? ArgType
   : ErrorObject
 
+// `Error` is both a `CallableFunction` and a `NewableFunction`, which makes
+// `typeof Error` not work as expected.
+type ErrorType = new (message: string) => Error
+
 /**
  * `error-serializer` `parse()` options
  */
@@ -103,9 +107,7 @@ export interface ParseOptions {
    * const otherError = parse(errorObject, { types: { CustomError: TypeError } })
    * ```
    */
-  readonly types?: {
-    [ErrorType: string]: typeof Error
-  }
+  readonly types?: { [ErrorType: string]: ErrorType }
 }
 
 /**
@@ -128,7 +130,7 @@ export function parse<ArgType, Options extends ParseOptions = {}>(
   errorObject: ArgType,
   options?: Options,
 ): ArgType extends MinimalErrorObject
-  ? NonNullable<Options['types']>[ArgType['name']] extends typeof Error
+  ? NonNullable<Options['types']>[ArgType['name']] extends ErrorType
     ? InstanceType<NonNullable<Options['types']>[ArgType['name']]>
     : Error
   : Options['loose'] extends true

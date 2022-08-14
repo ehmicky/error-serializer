@@ -99,21 +99,26 @@ expectType<true>(parse(true, { loose: true }))
 expectNotType<Error>(parse({ name: '', message: '' }, { loose: true }))
 expectType<Error>(parse({ name: '', message: '', stack: '' }, { loose: true }))
 
+class TestError extends Error {
+  name: 'TestError' = 'TestError'
+}
+
 expectAssignable<ParseOptions>({ types: {} })
 expectNotAssignable<ParseOptions>({ types: true })
 expectAssignable<ParseOptions>({ types: { Error } })
+expectAssignable<ParseOptions>({ types: { TestError } })
 expectNotAssignable<ParseOptions>({ types: { Error: true } })
 expectNotAssignable<ParseOptions>({ types: { Error: () => true } })
 
-const typeError = new TypeError('test') as TypeError & { name: 'TypeError' }
-expectType<'TypeError'>(serialize(typeError).name)
+const testError = new TestError('test')
+expectType<'TestError'>(serialize(testError).name)
 
-const errorObject = { name: 'TypeError' as const, message: '', stack: '' }
+const errorObject = { name: 'TestError' as const, message: '', stack: '' }
 expectType<Error>(parse(errorObject))
 expectType<Error>(parse(errorObject, {}))
 expectType<Error>(parse(errorObject, { types: {} }))
-expectType<Error>(parse(errorObject, { types: { RangeError } }))
-expectType<TypeError>(parse(errorObject, { types: { TypeError } }))
+expectNotType<TestError>(parse(errorObject, { types: {} }))
+expectType<TestError>(parse(errorObject, { types: { TestError } }))
 
-const newError = serialize(errorObject)
-expectType<'TypeError'>(newError.name)
+const newTestError = serialize(errorObject)
+expectType<'TestError'>(newTestError.name)
