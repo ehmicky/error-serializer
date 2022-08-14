@@ -5,8 +5,19 @@ import { serialize, parse } from 'error-serializer'
 import { each } from 'test-each'
 
 each(
-  // eslint-disable-next-line unicorn/no-null, no-magic-numbers
-  [undefined, null, 0n, 'message', {}, [], () => {}],
+  [
+    undefined,
+    // eslint-disable-next-line unicorn/no-null
+    null,
+    // eslint-disable-next-line no-magic-numbers
+    0n,
+    'message',
+    {},
+    { name: 'Error' },
+    { message: '' },
+    [],
+    () => {},
+  ],
   ({ title }, value) => {
     test(`Allow any type to be serialized | ${title}`, (t) => {
       t.is(typeof serialize(value).message, 'string')
