@@ -31,6 +31,11 @@ const getNonCoreProp = function (errorOrObject, propName) {
   return value === undefined ? undefined : [propName, value]
 }
 
-// Error core properties
-export const CORE_PROPS = ['name', 'message', 'stack', 'cause', 'errors']
+// Error core properties.
+// Split between the ones set by error constructors and the ones that need to
+// be rest.
+//  - This ensure we don't redefine `error.name` so it matches its constructor
+const SET_CORE_PROPS = ['name', 'message']
+export const UNSET_CORE_PROPS = ['stack', 'cause', 'errors']
+export const CORE_PROPS = [...SET_CORE_PROPS, ...UNSET_CORE_PROPS]
 export const CORE_PROPS_SET = new Set(CORE_PROPS)

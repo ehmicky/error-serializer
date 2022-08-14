@@ -1,4 +1,4 @@
-import { CORE_PROPS, getNonCoreProps } from '../core.js'
+import { UNSET_CORE_PROPS, getNonCoreProps } from '../core.js'
 import { safeGetProp } from '../safe.js'
 
 import { createError } from './create.js'
@@ -18,18 +18,12 @@ export const parseError = function (object, types) {
 }
 
 const setCoreProps = function (error, object, types) {
-  CORE_PROPS.forEach((propName) => {
+  UNSET_CORE_PROPS.forEach((propName) => {
     setCoreProp({ error, object, propName, types })
   })
 }
 
-// `error.name|message` are already setup when building the error.
-//  - We ensure that `error.name` matches its constructor
 const setCoreProp = function ({ error, object, propName, types }) {
-  if (propName === 'name' || propName === 'message') {
-    return
-  }
-
   const value = safeGetProp(object, propName)
 
   if (value === undefined) {
