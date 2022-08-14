@@ -25,9 +25,14 @@ Convert errors to/from plain objects.
 ```js
 import { serialize, parse } from 'error-serializer'
 
-const errorObject = serialize(new TypeError('example'))
+const error = new TypeError('example')
+const errorObject = serialize(error)
 // Plain object: { name: 'TypeError', message: 'example', stack: '...' }
-const error = parse(errorObject)
+
+const errorString = JSON.serialize(errorObject)
+const newErrorObject = JSON.parse(errorString)
+
+const newError = parse(newErrorObject)
 // Error instance: 'TypeError: example ...'
 ```
 
