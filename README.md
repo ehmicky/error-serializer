@@ -167,8 +167,9 @@ console.log(parse({ message: false })) // Error: false
 
 - [`modern-errors`](https://github.com/ehmicky/modern-errors): Handle errors
   like it's 2022 🔮
-- [`error-type`](https://github.com/ehmicky/error-type): Create custom error
-  types
+- [`create-error-types`](https://github.com/ehmicky/create-error-types): Create
+  multiple error types
+- [`error-type`](https://github.com/ehmicky/error-type): Create one error type
 - [`normalize-exception`](https://github.com/ehmicky/normalize-exception):
   Normalize exceptions/errors
 - [`merge-error-cause`](https://github.com/ehmicky/merge-error-cause): Merge an
