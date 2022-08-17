@@ -180,6 +180,8 @@ console.log(parse({ message: false })) // Error: false
   handler for CLI applications 💥
 - [`safe-json-value`](https://github.com/ehmicky/safe-json-value): ⛑️ JSON
   serialization should never fail
+- [`log-process-errors`](https://github.com/ehmicky/log-process-errors): Show
+  some ❤ to Node.js process errors
 
 # Support
 
