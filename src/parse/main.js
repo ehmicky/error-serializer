@@ -12,33 +12,33 @@ import { createError } from './create.js'
 // handle it.
 //  - We do this recursively, especially since `JSON.parse()`'s reviver parses
 //    children before parents, so they might be error instances
-export const parseError = function (object, types) {
+export const parseError = function (object, classes) {
   if (!isErrorObject(object)) {
     return object
   }
 
-  const error = createError(object, types)
-  setCoreProps(error, object, types)
+  const error = createError(object, classes)
+  setCoreProps(error, object, classes)
   const nonCoreProps = Object.fromEntries(getNonCoreProps(object))
   // eslint-disable-next-line fp/no-mutating-assign
   Object.assign(error, nonCoreProps)
   return error
 }
 
-const setCoreProps = function (error, object, types) {
+const setCoreProps = function (error, object, classes) {
   UNSET_CORE_PROPS.forEach((propName) => {
-    setCoreProp({ error, object, propName, types })
+    setCoreProp({ error, object, propName, classes })
   })
 }
 
-const setCoreProp = function ({ error, object, propName, types }) {
+const setCoreProp = function ({ error, object, propName, classes }) {
   const { safe, value } = safeGetProp(object, propName)
 
   if (!safe || value === undefined) {
     return
   }
 
-  const valueA = recurseCorePropToError(value, propName, types)
+  const valueA = recurseCorePropToError(value, propName, classes)
   // eslint-disable-next-line fp/no-mutating-methods
   Object.defineProperty(error, propName, {
     value: valueA,
@@ -50,13 +50,13 @@ const setCoreProp = function ({ error, object, propName, types }) {
 
 // Convert `object.cause|errors` to errors recursively.
 // `normalize-exception` will normalize those recursively.
-const recurseCorePropToError = function (value, propName, types) {
+const recurseCorePropToError = function (value, propName, classes) {
   if (propName === 'cause') {
-    return parseError(value, types)
+    return parseError(value, classes)
   }
 
   if (propName === 'errors' && Array.isArray(value)) {
-    return value.map((item) => parseError(item, types))
+    return value.map((item) => parseError(item, classes))
   }
 
   return value

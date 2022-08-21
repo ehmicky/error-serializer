@@ -102,12 +102,12 @@ export interface ParseOptions {
    * ```js
    * const errorObject = serialize(new CustomError('example'))
    * // `CustomError` class is kept
-   * const error = parse(errorObject, { types: { CustomError } })
+   * const error = parse(errorObject, { classes: { CustomError } })
    * // Map `CustomError` to another class
-   * const otherError = parse(errorObject, { types: { CustomError: TypeError } })
+   * const otherError = parse(errorObject, { classes: { CustomError: TypeError } })
    * ```
    */
-  readonly types?: { [ErrorClassName: string]: ErrorClass }
+  readonly classes?: { [ErrorClassName: string]: ErrorClass }
 }
 
 /**
@@ -130,8 +130,8 @@ export function parse<Argument, Options extends ParseOptions = {}>(
   errorObject: Argument,
   options?: Options,
 ): Argument extends MinimalErrorObject
-  ? NonNullable<Options['types']>[Argument['name']] extends ErrorClass
-    ? InstanceType<NonNullable<Options['types']>[Argument['name']]>
+  ? NonNullable<Options['classes']>[Argument['name']] extends ErrorClass
+    ? InstanceType<NonNullable<Options['classes']>[Argument['name']]>
     : Error
   : Options['loose'] extends true
   ? Argument

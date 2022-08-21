@@ -29,12 +29,12 @@ export const serialize = function (value, { loose = false } = {}) {
 //  - This prevents throwing exceptions which would be a problem if used inside
 //    some error handling logic
 // We apply `normalize-exception` to ensure a strict output.
-export const parse = function (value, { loose = false, types = {} } = {}) {
+export const parse = function (value, { loose = false, classes = {} } = {}) {
   if (loose && !isErrorObject(value)) {
     return value
   }
 
-  const error = parseError(value, types)
+  const error = parseError(value, classes)
   const errorA = normalizeException(error)
   return errorA
 }

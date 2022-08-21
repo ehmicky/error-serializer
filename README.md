@@ -13,7 +13,7 @@ Convert errors to/from plain objects.
 - [Deep serialization/parsing](#deep-serializationparsing)
 - [Custom serialization/parsing](#custom-serializationparsing) (e.g. YAML or
   `process.send()`)
-- Keeps both native (`TypeError`, etc.) and [custom](#types) error classes
+- Keeps both native (`TypeError`, etc.) and [custom](#classes) error classes
 - Preserves errors' [additional properties](#additional-error-properties)
 - Works [recursively](#errorcause-and-aggregateerror) with
   [`error.cause`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/cause)
@@ -87,7 +87,7 @@ Convert an error plain object into an `Error` instance.
 
 Object with the following optional properties.
 
-#### types
+#### classes
 
 _Type_: `object`
 
@@ -101,9 +101,9 @@ Custom error classes to keep when parsing.
 ```js
 const errorObject = serialize(new CustomError('example'))
 // `CustomError` class is kept
-const error = parse(errorObject, { types: { CustomError } })
+const error = parse(errorObject, { classes: { CustomError } })
 // Map `CustomError` to another class
-const otherError = parse(errorObject, { types: { CustomError: TypeError } })
+const otherError = parse(errorObject, { classes: { CustomError: TypeError } })
 ```
 
 #### loose
