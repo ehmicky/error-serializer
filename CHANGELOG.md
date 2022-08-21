@@ -1,3 +1,9 @@
+# 1.4.0
+
+## Features
+
+- Improve error handling
+
 # 1.3.4
 
 ## Bug fixes
