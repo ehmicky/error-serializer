@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "is-plain-obj": "^4.1.0",
-    "normalize-exception": "^2.3.0",
+    "normalize-exception": "^2.3.1",
     "safe-json-value": "^1.7.0"
   },
   "devDependencies": {
