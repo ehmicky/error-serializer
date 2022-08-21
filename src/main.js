@@ -9,7 +9,7 @@ import { serializeError } from './serialize.js'
 // serialized.
 // The logic is JSON-focused.
 //  - This fits most serialization formats, while still being opinionated
-//    enough to provide features like ensuring the types are correct
+//    enough to provide features like ensuring the classes are correct
 // We apply `normalize-exception` to ensure a strict input.
 //  - We allow arguments that are not `error` instances
 export const serialize = function (value, { loose = false } = {}) {

@@ -1,34 +1,34 @@
-// Custom error types might throw due to missing parameters in the constructor.
-// When this happens, we silently revert to `Error`.
+// Custom error classes might throw due to missing parameters in the
+// constructor. When this happens, we silently revert to `Error`.
 export const createError = function ({ name, message }, types) {
-  const ErrorType = getErrorType(name, types)
+  const ErrorClass = getErrorClass(name, types)
 
   try {
-    return ErrorType === globalThis.AggregateError
-      ? new ErrorType([], message)
-      : new ErrorType(message)
+    return ErrorClass === globalThis.AggregateError
+      ? new ErrorClass([], message)
+      : new ErrorClass(message)
   } catch {
     return new Error(message)
   }
 }
 
-// Custom error types can be passed to the `types` option.
+// Custom error classes can be passed to the `types` option.
 // The option is an object instead of an array, as this allows dissociating
-// error names from their types, since:
+// error names from their classes, since:
 //  - The parsing logic might have different sets of error instances than the
 //    serializing logic
 //  - This is more consistent with `modern-errors` which discourages
-//    exporting types
-const getErrorType = function (name, types) {
+//    exporting classes
+const getErrorClass = function (name, types) {
   if (typeof types[name] === 'function') {
     return types[name]
   }
 
-  return BUILTIN_TYPES.has(name) ? globalThis[name] : Error
+  return BUILTIN_CLASSES.has(name) ? globalThis[name] : Error
 }
 
-// Common global error types
-const BUILTIN_TYPES = new Set([
+// Common global error classes
+const BUILTIN_CLASSES = new Set([
   'Error',
   'ReferenceError',
   'TypeError',

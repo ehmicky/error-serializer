@@ -3,15 +3,15 @@ import { parse } from 'error-serializer'
 
 import { SIMPLE_ERROR_OBJECT } from '../helpers/main.js'
 
-test('Default to Error type if no name', (t) => {
+test('Default to Error class if no name', (t) => {
   t.is(parse({ ...SIMPLE_ERROR_OBJECT, name: undefined }).name, 'Error')
 })
 
-test('Re-use builtin error types', (t) => {
+test('Re-use builtin error classes', (t) => {
   t.is(parse({ ...SIMPLE_ERROR_OBJECT, name: 'TypeError' }).name, 'TypeError')
 })
 
-test('Can re-use aggregate error types', (t) => {
+test('Can re-use aggregate error classes', (t) => {
   const object = {
     ...SIMPLE_ERROR_OBJECT,
     name: 'AggregateError',
@@ -27,11 +27,11 @@ test('Can re-use aggregate error types', (t) => {
   t.is(innerMessage, object.errors[0].message)
 })
 
-test('Does not re-use other error types by default', (t) => {
+test('Does not re-use other error classes by default', (t) => {
   t.is(parse({ ...SIMPLE_ERROR_OBJECT, name: 'CustomError' }).name, 'Error')
 })
 
-test('Re-uses other error types if specified', (t) => {
+test('Re-uses other error classes if specified', (t) => {
   const types = { CustomError: TypeError }
   t.is(
     parse({ ...SIMPLE_ERROR_OBJECT, name: 'CustomError' }, { types }).name,
@@ -39,7 +39,7 @@ test('Re-uses other error types if specified', (t) => {
   )
 })
 
-test('Can map builtin types', (t) => {
+test('Can map builtin classes', (t) => {
   const types = { Error: TypeError }
   t.is(
     parse({ ...SIMPLE_ERROR_OBJECT, name: 'Error' }, { types }).name,

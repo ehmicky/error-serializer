@@ -7,7 +7,7 @@ import { safeGetProp } from './check.js'
 //     - Reason: most likely not meant to be serialized
 //  - Are inherited
 //     - They cannot be parsed back as inherited
-//     - If the same Error type is used during parsing, they are kept anyway
+//     - If the same Error class is used during parsing, they are kept anyway
 //  - Have symbol keys
 //     - Reason: not supported by JSON
 // When parsing, we do the same since JSON should only have enumerable, own,

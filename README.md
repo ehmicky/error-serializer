@@ -13,7 +13,7 @@ Convert errors to/from plain objects.
 - [Deep serialization/parsing](#deep-serializationparsing)
 - [Custom serialization/parsing](#custom-serializationparsing) (e.g. YAML or
   `process.send()`)
-- Keeps both native (`TypeError`, etc.) and [custom](#types) error types
+- Keeps both native (`TypeError`, etc.) and [custom](#types) error classes
 - Preserves errors' [additional properties](#additional-error-properties)
 - Works [recursively](#errorcause-and-aggregateerror) with
   [`error.cause`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/cause)
@@ -91,18 +91,18 @@ Object with the following optional properties.
 
 _Type_: `object`
 
-Custom error types to keep when parsing.
+Custom error classes to keep when parsing.
 
 - Each key is an `errorObject.name`.
-- Each value is the error type to use. The constructor will be called with a
+- Each value is the error class to use. The constructor will be called with a
   single `message` argument. It it throws, `Error` will be used as the error
-  type instead.
+  class instead.
 
 ```js
 const errorObject = serialize(new CustomError('example'))
-// `CustomError` type is kept
+// `CustomError` class is kept
 const error = parse(errorObject, { types: { CustomError } })
-// Map `CustomError` to another type
+// Map `CustomError` to another class
 const otherError = parse(errorObject, { types: { CustomError: TypeError } })
 ```
 
@@ -245,8 +245,8 @@ console.log(parse({ name: false, message: 'example' })) // Error: example
 - [`modern-errors`](https://github.com/ehmicky/modern-errors): Handle errors
   like it's 2022 🔮
 - [`create-error-types`](https://github.com/ehmicky/create-error-types): Create
-  multiple error types
-- [`error-type`](https://github.com/ehmicky/error-type): Create one error type
+  multiple error classes
+- [`error-type`](https://github.com/ehmicky/error-type): Create one error class
 - [`normalize-exception`](https://github.com/ehmicky/normalize-exception):
   Normalize exceptions/errors
 - [`merge-error-cause`](https://github.com/ehmicky/merge-error-cause): Merge an

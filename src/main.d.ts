@@ -59,18 +59,18 @@ export interface SerializeOptions {
  * // Error instance: 'TypeError: example ...'
  * ```
  */
-export function serialize<ArgType, Options extends SerializeOptions = {}>(
-  errorInstance: ArgType,
+export function serialize<Argument, Options extends SerializeOptions = {}>(
+  errorInstance: Argument,
   options?: Options,
-): ArgType extends Error
-  ? ErrorObject & { name: ArgType['name'] }
+): Argument extends Error
+  ? ErrorObject & { name: Argument['name'] }
   : Options['loose'] extends true
-  ? ArgType
+  ? Argument
   : ErrorObject
 
 // `Error` is both a `CallableFunction` and a `NewableFunction`, which makes
 // `typeof Error` not work as expected.
-type ErrorType = new (message: string) => Error
+type ErrorClass = new (message: string) => Error
 
 /**
  * `error-serializer` `parse()` options
@@ -91,23 +91,23 @@ export interface ParseOptions {
   readonly loose?: boolean
 
   /**
-   * Custom error types to keep when parsing.
+   * Custom error classes to keep when parsing.
    *
    *  - Each key is an `errorObject.name`.
-   *  - Each value is the error type to use.
+   *  - Each value is the error class to use.
    *    The constructor will be called with a single `message` argument.
-   *    It it throws, `Error` will be used as the error type instead.
+   *    It it throws, `Error` will be used as the error class instead.
    *
    * @example
    * ```js
    * const errorObject = serialize(new CustomError('example'))
-   * // `CustomError` type is kept
+   * // `CustomError` class is kept
    * const error = parse(errorObject, { types: { CustomError } })
-   * // Map `CustomError` to another type
+   * // Map `CustomError` to another class
    * const otherError = parse(errorObject, { types: { CustomError: TypeError } })
    * ```
    */
-  readonly types?: { [ErrorType: string]: ErrorType }
+  readonly types?: { [ErrorClassName: string]: ErrorClass }
 }
 
 /**
@@ -126,13 +126,13 @@ export interface ParseOptions {
  * // Error instance: 'TypeError: example ...'
  * ```
  */
-export function parse<ArgType, Options extends ParseOptions = {}>(
-  errorObject: ArgType,
+export function parse<Argument, Options extends ParseOptions = {}>(
+  errorObject: Argument,
   options?: Options,
-): ArgType extends MinimalErrorObject
-  ? NonNullable<Options['types']>[ArgType['name']] extends ErrorType
-    ? InstanceType<NonNullable<Options['types']>[ArgType['name']]>
+): Argument extends MinimalErrorObject
+  ? NonNullable<Options['types']>[Argument['name']] extends ErrorClass
+    ? InstanceType<NonNullable<Options['types']>[Argument['name']]>
     : Error
   : Options['loose'] extends true
-  ? ArgType
+  ? Argument
   : Error
