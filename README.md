@@ -248,6 +248,8 @@ console.log(parse({ name: false, message: 'example' })) // Error: example
   Create multiple error classes
 - [`error-custom-class`](https://github.com/ehmicky/error-custom-class): Create
   one error class
+- [`error-class-utils`](https://github.com/ehmicky/error-class-utils): Utilities
+  to properly create error classes
 - [`normalize-exception`](https://github.com/ehmicky/normalize-exception):
   Normalize exceptions/errors
 - [`merge-error-cause`](https://github.com/ehmicky/merge-error-cause): Merge an
