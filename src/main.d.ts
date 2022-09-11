@@ -52,7 +52,7 @@ export interface SerializeOptions {
  * const errorObject = serialize(error)
  * // Plain object: { name: 'TypeError', message: 'example', stack: '...' }
  *
- * const errorString = JSON.serialize(errorObject)
+ * const errorString = JSON.stringify(errorObject)
  * const newErrorObject = JSON.parse(errorString)
  *
  * const newError = parse(newErrorObject)
@@ -119,7 +119,7 @@ export interface ParseOptions {
  * const errorObject = serialize(error)
  * // Plain object: { name: 'TypeError', message: 'example', stack: '...' }
  *
- * const errorString = JSON.serialize(errorObject)
+ * const errorString = JSON.stringify(errorObject)
  * const newErrorObject = JSON.parse(errorString)
  *
  * const newError = parse(newErrorObject)

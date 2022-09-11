@@ -31,7 +31,7 @@ const error = new TypeError('example')
 const errorObject = serialize(error)
 // Plain object: { name: 'TypeError', message: 'example', stack: '...' }
 
-const errorString = JSON.serialize(errorObject)
+const errorString = JSON.stringify(errorObject)
 const newErrorObject = JSON.parse(errorString)
 
 const newError = parse(newErrorObject)
@@ -130,7 +130,7 @@ Error plain objects are always
 const error = new Error('example')
 error.cycle = error
 
-// Cycles make `JSON.serialize()` throw, so they are removed
+// Cycles make `JSON.stringify()` throw, so they are removed
 console.log(serialize(error).cycle) // {}
 ```
 
