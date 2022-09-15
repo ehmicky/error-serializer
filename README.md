@@ -244,8 +244,6 @@ console.log(parse({ name: false, message: 'example' })) // Error: example
 
 - [`modern-errors`](https://github.com/ehmicky/modern-errors): Handle errors
   like it's 2022 🔮
-- [`modern-errors-plugins`](https://github.com/ehmicky/modern-errors-plugins):
-  Plugins for `modern-errors`
 - [`error-custom-class`](https://github.com/ehmicky/error-custom-class): Create
   one error class
 - [`error-class-utils`](https://github.com/ehmicky/error-class-utils): Utilities
