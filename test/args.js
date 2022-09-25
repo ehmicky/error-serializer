@@ -42,6 +42,11 @@ class CustomError extends Error {
     super(...args)
     // eslint-disable-next-line fp/no-mutation, fp/no-this
     this.args = args
+
+    if (args[0] === 'setConstructorArgs') {
+      // eslint-disable-next-line fp/no-mutation, fp/no-this
+      this.constructorArgs = args
+    }
   }
 }
 
@@ -74,6 +79,16 @@ test('constructorArgs are removed during parsing', (t) => {
         { ...CUSTOM_ERROR_OBJECT, constructorArgs: [true] },
         { classes: { CustomError } },
       ),
+  )
+})
+
+test('constructorArgs are not removed during parsing if set by the constructor', (t) => {
+  t.deepEqual(
+    parse(
+      { ...CUSTOM_ERROR_OBJECT, constructorArgs: ['setConstructorArgs'] },
+      { classes: { CustomError } },
+    ).constructorArgs,
+    ['setConstructorArgs'],
   )
 })
 
