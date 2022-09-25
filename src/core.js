@@ -33,7 +33,7 @@ const getNonCoreProp = function (errorOrObject, propName) {
 
 // Error core properties.
 // Split between the ones set by error constructors and the ones that need to
-// be rest.
+// be set.
 //  - This ensure we don't redefine `error.name` so it matches its constructor
 const SET_CORE_PROPS = ['name', 'message']
 export const UNSET_CORE_PROPS = ['stack', 'cause', 'errors']
