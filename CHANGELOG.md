@@ -1,3 +1,15 @@
+# 3.0.0
+
+## Breaking changes
+
+- The `loose` option was renamed to [`normalize`](README.md#normalize). Its
+  value has been inverted: `loose: true` is now `normalize: false`.
+- The default value of the `normalize` option is now `false`.
+  - If the argument to `serialize()` is not an error instance, it is not
+    normalized to one anymore, unless `normalize: true` is used
+  - If the argument to `parse()` is not an error plain object, it is not
+    normalized to one anymore, unless `normalize: true` is used
+
 # 2.0.0
 
 ## Breaking changes

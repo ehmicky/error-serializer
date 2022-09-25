@@ -12,8 +12,8 @@ import { serializeError } from './serialize.js'
 //    enough to provide features like ensuring the classes are correct
 // We apply `normalize-exception` to ensure a strict input.
 //  - We allow arguments that are not `error` instances
-export const serialize = function (value, { loose = false } = {}) {
-  if (loose && !isErrorInstance(value)) {
+export const serialize = function (value, { normalize = false } = {}) {
+  if (!normalize && !isErrorInstance(value)) {
     return value
   }
 
@@ -29,8 +29,11 @@ export const serialize = function (value, { loose = false } = {}) {
 //  - This prevents throwing exceptions which would be a problem if used inside
 //    some error handling logic
 // We apply `normalize-exception` to ensure a strict output.
-export const parse = function (value, { loose = false, classes = {} } = {}) {
-  if (loose && !isErrorObject(value)) {
+export const parse = function (
+  value,
+  { normalize = false, classes = {} } = {},
+) {
+  if (!normalize && !isErrorObject(value)) {
     return value
   }
 

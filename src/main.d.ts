@@ -29,18 +29,17 @@ export interface ErrorObject extends MinimalErrorObject {
  */
 export interface SerializeOptions {
   /**
-   * If this option is `true` and `errorInstance` is not an `Error` instance,
-   * it is returned as is, instead of being converted to a plain object.
+   * Convert `errorInstance` to an `Error` instance if it is not one.
    *
    * @default false
    *
    * @example
    * ```js
-   * console.log(serialize('example')) // { name: 'Error', message: 'example', ... }
-   * console.log(serialize('example', { loose: true })) // 'example'
+   * console.log(serialize('example')) // 'example'
+   * console.log(serialize('example', { normalize: true })) // { name: 'Error', message: 'example', ... }
    * ```
    */
-  readonly loose?: boolean
+  readonly normalize?: boolean
 }
 
 /**
@@ -64,9 +63,9 @@ export function serialize<Argument, Options extends SerializeOptions = {}>(
   options?: Options,
 ): Argument extends Error
   ? ErrorObject & { name: Argument['name'] }
-  : Options['loose'] extends true
-  ? Argument
-  : ErrorObject
+  : Options['normalize'] extends true
+  ? ErrorObject
+  : Argument
 
 // `Error` is both a `CallableFunction` and a `NewableFunction`, which makes
 // `typeof Error` not work as expected.
@@ -77,18 +76,17 @@ type ErrorClass = new (message: string) => Error
  */
 export interface ParseOptions {
   /**
-   * If this option is `true` and `errorObject` is not an error plain object,
-   * it is returned as is, instead of being converted to an `Error` instance.
+   * Convert `errorObject` to an error plain object if it is not one.
    *
    * @default false
    *
    * @example
    * ```js
-   * console.log(parse('example')) // Error: example
-   * console.log(parse('example', { loose: true })) // 'example'
+   * console.log(parse('example')) // 'example'
+   * console.log(parse('example', { normalize: true })) // Error: example
    * ```
    */
-  readonly loose?: boolean
+  readonly normalize?: boolean
 
   /**
    * Custom error classes to keep when parsing.
@@ -133,6 +131,6 @@ export function parse<Argument, Options extends ParseOptions = {}>(
   ? NonNullable<Options['classes']>[Argument['name']] extends ErrorClass
     ? InstanceType<NonNullable<Options['classes']>[Argument['name']]>
     : Error
-  : Options['loose'] extends true
-  ? Argument
-  : Error
+  : Options['normalize'] extends true
+  ? Error
+  : Argument

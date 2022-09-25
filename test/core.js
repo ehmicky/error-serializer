@@ -56,7 +56,7 @@ test('Ignore inherited properties when parsing', (t) => {
   class Example {}
   // eslint-disable-next-line fp/no-mutation
   Example.prototype.prop = true
-  t.is(parse(new Example()).prop, undefined)
+  t.is(parse(new Example(), { normalize: true }).prop, undefined)
 })
 
 test('Ignore symbol properties when serializing', (t) => {

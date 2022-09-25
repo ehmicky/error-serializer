@@ -62,17 +62,16 @@ Convert an `Error` instance into a plain object.
 
 Object with the following optional properties.
 
-#### loose
+#### normalize
 
 _Type_: `boolean`\
 _Default_: `false`
 
-If this option is `true` and `errorInstance` is not an `Error` instance, it is
-returned as is, instead of being converted to a plain object.
+Convert `errorInstance` to an `Error` instance if it is not one.
 
 ```js
-console.log(serialize('example')) // { name: 'Error', message: 'example', ... }
-console.log(serialize('example', { loose: true })) // 'example'
+console.log(serialize('example')) // 'example'
+console.log(serialize('example', { normalize: true })) // { name: 'Error', message: 'example', ... }
 ```
 
 ## parse(errorObject, options?)
@@ -106,17 +105,16 @@ const error = parse(errorObject, { classes: { CustomError } })
 const otherError = parse(errorObject, { classes: { CustomError: TypeError } })
 ```
 
-#### loose
+#### normalize
 
 _Type_: `boolean`\
 _Default_: `false`
 
-If this option is `true` and `errorObject` is not an error plain object, it is
-returned as is, instead of being converted to an `Error` instance.
+Convert `errorObject` to an error plain object if it is not one.
 
 ```js
-console.log(parse('example')) // Error: example
-console.log(parse('example', { loose: true })) // 'example'
+console.log(parse('example')) // 'example'
+console.log(parse('example', { normalize: true })) // Error: example
 ```
 
 # Usage
@@ -160,19 +158,14 @@ console.log(JSON.stringify(error))
 ## Deep serialization/parsing
 
 Objects and arrays containing errors can be deeply serialized/parsed using the
-[`loose` option](#loose) combined with
 [`JSON.stringify()`'s replacer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#the_replacer_parameter)
 and
 [`JSON.parse()`'s reviver](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse#using_the_reviver_parameter).
 
 ```js
 const deepObject = [{}, { error: new Error('example') }]
-const jsonString = JSON.stringify(deepObject, (key, value) =>
-  serialize(value, { loose: true }),
-)
-const newDeepObject = JSON.parse(jsonString, (key, value) =>
-  parse(value, { loose: true }),
-)
+const jsonString = JSON.stringify(deepObject, (key, value) => serialize(value))
+const newDeepObject = JSON.parse(jsonString, (key, value) => parse(value))
 console.log(newDeepObject[1].error) // Error: example
 ```
 

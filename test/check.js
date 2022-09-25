@@ -30,36 +30,36 @@ each(
     () => {},
   ],
   ({ title }, value) => {
-    test(`Allow any type to be serialized | ${title}`, (t) => {
-      t.is(typeof serialize(value).message, 'string')
+    test(`Non-errors are not serialized without "normalize: true" | ${title}`, (t) => {
+      t.is(serialize(value), value)
     })
 
-    test(`Allow any type to be parsed | ${title}`, (t) => {
-      t.true(parse(value) instanceof Error)
+    test(`Non-error objects are not parsed without "normalize: true" | ${title}`, (t) => {
+      t.is(parse(value), value)
     })
 
-    test(`Non-errors are not serialized with "loose" option | ${title}`, (t) => {
-      t.is(serialize(value, { loose: true }), value)
+    test(`Non-errors are serialized with "normalize: true" | ${title}`, (t) => {
+      t.is(typeof serialize(value, { normalize: true }).message, 'string')
     })
 
-    test(`Non-error objects are not parsed with "loose" option | ${title}`, (t) => {
-      t.is(parse(value, { loose: true }), value)
+    test(`Non-error objects are parsed with "normalize: true" | ${title}`, (t) => {
+      t.true(parse(value, { normalize: true }) instanceof Error)
     })
   },
 )
 
-test('Parsing an error instances with "loose" option is a noop', (t) => {
+test('Parsing an error instance without "normalize: true" is a noop', (t) => {
   const error = new Error('test')
-  t.is(parse(error, { loose: true }), error)
+  t.is(parse(error), error)
 })
 
-test('Serializing an error object with "loose" option is a noop', (t) => {
-  t.is(serialize(SIMPLE_ERROR_OBJECT, { loose: true }), SIMPLE_ERROR_OBJECT)
+test('Serializing an error object without "normalize: true" is a noop', (t) => {
+  t.is(serialize(SIMPLE_ERROR_OBJECT), SIMPLE_ERROR_OBJECT)
 })
 
-test('Serializing a cross-realm error with "loose" option is not a noop', (t) => {
+test('Serializing a cross-realm error without "normalize: true" is not a noop', (t) => {
   const error = runInNewContext('new Error("test")')
-  t.not(serialize(error, { loose: true }), error)
+  t.not(serialize(error), error)
 })
 
 test('parse() and serialize() undo each other', (t) => {

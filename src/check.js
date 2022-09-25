@@ -2,7 +2,8 @@ import isPlainObj from 'is-plain-obj'
 
 // Check if a value is an Error instance.
 // Only checks the top-level value, not `error.cause|errors`
-//  - If those are invalid, they should be normalized, even in `loose` mode
+//  - If those are invalid, they should be normalized, even if `normalize` is
+//    `false`
 export const isErrorInstance = function (value) {
   return Object.prototype.toString.call(value) === '[object Error]'
 }
