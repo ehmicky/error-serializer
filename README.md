@@ -67,8 +67,8 @@ Object with the following optional properties.
 _Type_: `boolean`\
 _Default_: `false`
 
-Unless `true`, nested errors are also serialized. Deep serialization recurses
-over errors, plain objects and arrays.
+Unless `true`, nested errors are also serialized. They can be inside other
+errors, plain objects or arrays.
 
 ```js
 console.log(serialize([{ error: new Error('test') }]))
