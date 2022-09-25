@@ -1,4 +1,4 @@
-import { isSafeProp } from './check.js'
+import { safeListKeys } from './check.js'
 
 // Retrieve properties of an error instance or objects that are not core
 // error properties.
@@ -13,9 +13,8 @@ import { isSafeProp } from './check.js'
 // When parsing, we do the same since JSON should only have enumerable, own,
 // non-symbol keys.
 export const getNonCoreProps = function (errorOrObject) {
-  return Object.keys(errorOrObject)
+  return safeListKeys(errorOrObject)
     .filter(isNonCorePropName)
-    .filter((propName) => isSafeProp(errorOrObject, propName))
     .map((propName) => [propName, errorOrObject[propName]])
     .filter(hasValue)
 }
