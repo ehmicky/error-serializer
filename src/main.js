@@ -1,5 +1,4 @@
 import normalizeException from 'normalize-exception'
-import safeJsonValue from 'safe-json-value'
 
 import { isErrorInstance } from './check.js'
 import { parseDeep, parseShallow } from './parse/main.js'
@@ -17,8 +16,7 @@ export const serialize = function (
   { normalize = false, shallow = false } = {},
 ) {
   const valueA = applyNormalize(value, normalize)
-  const valueB = shallow ? serializeShallow(valueA) : serializeDeep(valueA, [])
-  return safeJsonValue(valueB).value
+  return shallow ? serializeShallow(valueA) : serializeDeep(valueA, [])
 }
 
 // Normalize and convert an already parsed plain object representing an error

@@ -1,5 +1,6 @@
 import isPlainObj from 'is-plain-obj'
 import normalizeException from 'normalize-exception'
+import safeJsonValue from 'safe-json-value'
 
 import { isErrorInstance } from './check.js'
 import { CORE_PROPS, getNonCoreProps } from './core.js'
@@ -7,16 +8,23 @@ import { CORE_PROPS, getNonCoreProps } from './core.js'
 // Serialize error instances into plain objects deeply
 export const serializeDeep = function (value, parents) {
   const parentsA = [...parents, value]
-  const valueA = serializeShallow(value)
-  return serializeRecurse(valueA, parentsA)
+
+  if (!isErrorInstance(value)) {
+    return serializeRecurse(value, parentsA)
+  }
+
+  const valueA = serializeValue(value)
+  const valueB = serializeRecurse(valueA, parentsA)
+  return safeJsonValue(valueB).value
 }
 
 // Serialize a possible error instance into a plain object
 export const serializeShallow = function (value) {
-  if (!isErrorInstance(value)) {
-    return value
-  }
+  const valueA = serializeValue(value)
+  return safeJsonValue(valueA).value
+}
 
+const serializeValue = function (value) {
   const valueA = normalizeException(value)
   return Object.fromEntries([
     ...getCoreProps(valueA),

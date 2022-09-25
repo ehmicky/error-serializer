@@ -18,24 +18,17 @@ each(
     ...['name', 'message', 'stack'].flatMap((propName) => [
       { ...SIMPLE_ERROR_OBJECT, [propName]: undefined },
       { ...SIMPLE_ERROR_OBJECT, [propName]: true },
-      {
-        ...SIMPLE_ERROR_OBJECT,
-        // eslint-disable-next-line fp/no-get-set
-        get [propName]() {
-          throw new Error('unsafe')
-        },
-      },
     ]),
     [],
     () => {},
   ],
   ({ title }, value) => {
     test(`Non-errors are not serialized without "normalize: true" | ${title}`, (t) => {
-      t.is(serialize(value), value)
+      t.deepEqual(serialize(value), value)
     })
 
     test(`Non-error objects are not parsed without "normalize: true" | ${title}`, (t) => {
-      t.is(parse(value), value)
+      t.deepEqual(parse(value), value)
     })
 
     test(`Non-errors are serialized with "normalize: true" | ${title}`, (t) => {
@@ -54,7 +47,7 @@ test('Parsing an error instance without "normalize: true" is a noop', (t) => {
 })
 
 test('Serializing an error object without "normalize: true" is a noop', (t) => {
-  t.is(serialize(SIMPLE_ERROR_OBJECT), SIMPLE_ERROR_OBJECT)
+  t.deepEqual(serialize(SIMPLE_ERROR_OBJECT), SIMPLE_ERROR_OBJECT)
 })
 
 test('Serializing a cross-realm error without "normalize: true" is not a noop', (t) => {

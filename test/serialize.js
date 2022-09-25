@@ -59,10 +59,8 @@ test('Can be used as toJSON()', (t) => {
 })
 
 test('Can serialize and parse deeply', (t) => {
-  const jsonString = JSON.stringify([FULL_ERROR, true], (key, value) =>
-    serialize(value),
-  )
-  const [object, item] = JSON.parse(jsonString, (key, value) => parse(value))
-  t.deepEqual(object, FULL_ERROR)
+  const object = serialize([FULL_ERROR, true])
+  const [error, item] = parse(object)
+  t.deepEqual(error, FULL_ERROR)
   t.true(item)
 })

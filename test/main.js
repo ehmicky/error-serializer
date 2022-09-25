@@ -24,8 +24,7 @@ test('Remove unsafe non-core properties when serializing', (t) => {
 
 test('Remove circular non-core properties when serializing', (t) => {
   const error = new Error('test')
-  error.prop = error
-  t.deepEqual(serialize(error).prop, {})
+  t.is(serialize(error).prop, undefined)
 })
 
 test('Make non-core properties JSON-safe when serializing', (t) => {
