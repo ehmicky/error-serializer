@@ -13,18 +13,22 @@ export const serializeDeep = function (value, parents) {
     return serializeRecurse(value, parentsA)
   }
 
-  const valueA = serializeValue(value)
+  const valueA = serializeError(value)
   const valueB = serializeRecurse(valueA, parentsA)
   return safeJsonValue(valueB).value
 }
 
 // Serialize a possible error instance into a plain object
 export const serializeShallow = function (value) {
-  const valueA = serializeValue(value)
+  if (!isErrorInstance(value)) {
+    return value
+  }
+
+  const valueA = serializeError(value)
   return safeJsonValue(valueA).value
 }
 
-const serializeValue = function (value) {
+const serializeError = function (value) {
   const valueA = normalizeException(value)
   return Object.fromEntries([
     ...getCoreProps(valueA),

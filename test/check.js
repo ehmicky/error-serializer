@@ -23,13 +23,13 @@ const nonErrors = [
   () => {},
 ]
 
-each(nonErrors, ({ title }, value) => {
+each(nonErrors, [true, false], ({ title }, value, shallow) => {
   test(`Non-errors are not serialized without "normalize: true" | ${title}`, (t) => {
-    t.deepEqual(serialize(value), value)
+    t.deepEqual(serialize(value, { shallow }), value)
   })
 
   test(`Non-error objects are not parsed without "normalize: true" | ${title}`, (t) => {
-    t.deepEqual(parse(value), value)
+    t.deepEqual(parse(value, { shallow }), value)
   })
 })
 
@@ -45,13 +45,17 @@ each(
       }),
     ),
   ],
-  ({ title }, value) => {
+  [true, false],
+  ({ title }, value, shallow) => {
     test(`Non-errors are serialized with "normalize: true" | ${title}`, (t) => {
-      t.is(typeof serialize(value, { normalize: true }).message, 'string')
+      t.is(
+        typeof serialize(value, { normalize: true, shallow }).message,
+        'string',
+      )
     })
 
     test(`Non-error objects are parsed with "normalize: true" | ${title}`, (t) => {
-      t.true(parse(value, { normalize: true }) instanceof Error)
+      t.true(parse(value, { normalize: true, shallow }) instanceof Error)
     })
   },
 )
