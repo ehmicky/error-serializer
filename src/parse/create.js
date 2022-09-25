@@ -14,11 +14,8 @@ export const createError = function ({ name, message }, classes) {
 
 // Custom error classes can be passed to the `classes` option.
 // The option is an object instead of an array, as this allows dissociating
-// error names from their classes, since:
-//  - The parsing logic might have different sets of error instances than the
-//    serializing logic
-//  - This is more consistent with `modern-errors` which discourages
-//    exporting classes
+// error names from their classes, since the parsing logic might have different
+// sets of error instances than the serializing logic.
 const getErrorClass = function (name, classes) {
   if (typeof classes[name] === 'function') {
     return classes[name]
