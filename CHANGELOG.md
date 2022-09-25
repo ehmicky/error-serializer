@@ -1,3 +1,9 @@
+# 3.2.0
+
+## Features
+
+- Improve support for SpiderMonkey and JavaScriptCore
+
 # 3.1.0
 
 ## Features
