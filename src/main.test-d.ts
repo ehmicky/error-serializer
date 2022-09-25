@@ -88,8 +88,8 @@ expectNotAssignable<ErrorObject>(
   serialize([error] as const, { shallow: true })[0],
 )
 expectType<'TestError'>(serialize(error).name)
-expectType<'TestError'>(serialize(errorObject).name)
 expectType<'TestError'>(serialize(error, { shallow: true }).name)
+expectType<'TestError'>(serialize(errorObject).name)
 expectAssignable<true>(serialize({} as Error & { prop: true }).prop)
 expectAssignable<true>(
   serialize({} as Error & { prop: true }, { shallow: true }).prop,
