@@ -55,6 +55,19 @@ test('Serializing a cross-realm error without "normalize: true" is not a noop', 
   t.not(serialize(error), error)
 })
 
+test('Normalize invalid types when parsing with "normalize: true"', (t) => {
+  const message = 'test'
+  t.is(parse(message, { normalize: true }).message, message)
+})
+
+test('Normalize core properties when parsing', (t) => {
+  t.is(
+    typeof parse({ ...SIMPLE_ERROR_OBJECT, stack: 0 }, { normalize: true })
+      .stack,
+    'string',
+  )
+})
+
 test('parse() and serialize() undo each other', (t) => {
   const object = serialize(FULL_ERROR)
   const error = parse(object)
