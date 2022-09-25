@@ -2,9 +2,11 @@
 // when instantiating the error during parsing.
 // We do not allow the `arguments` keyword since it is deprecated.
 export const setConstructorArgs = function ({ constructorArgs }) {
-  return Array.isArray(constructorArgs)
-    ? [['constructorArgs', constructorArgs]]
-    : []
+  if (!Array.isArray(constructorArgs)) {
+    return []
+  }
+
+  return [['constructorArgs', constructorArgs]]
 }
 
 // Constructor arguments default to the error message and an empty object
@@ -28,10 +30,14 @@ export const getConstructorArgs = function (
   message,
   ErrorClass,
 ) {
-  if (Array.isArray(constructorArgs)) {
-    return constructorArgs
+  if (!Array.isArray(constructorArgs)) {
+    return getDefaultArgs(message, ErrorClass)
   }
 
+  return constructorArgs
+}
+
+const getDefaultArgs = function (message, ErrorClass) {
   return ErrorClass === globalThis.AggregateError
     ? [[], message, {}]
     : [message, {}]
