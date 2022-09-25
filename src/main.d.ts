@@ -74,14 +74,25 @@ export interface SerializeOptions {
  * // Error instance: 'TypeError: example ...'
  * ```
  */
-export function serialize<Argument, Options extends SerializeOptions = {}>(
-  errorInstance: Argument,
+export function serialize<Value, Options extends SerializeOptions = {}>(
+  errorInstance: Value,
   options?: Options,
-): Argument extends Error
-  ? ErrorObject & { name: Argument['name'] }
-  : Options['normalize'] extends true
-  ? ErrorObject
+): SerializeDeep<SerializeNormalize<Value, Options>>
+
+type SerializeNormalize<
+  Argument,
+  Options extends SerializeOptions,
+> = Options['normalize'] extends true
+  ? Argument extends Error
+    ? Argument
+    : Error
   : Argument
+
+type SerializeDeep<Value> = Value extends object
+  ? { [Key in keyof Value]: SerializeDeep<Value[Key]> }
+  : Value extends Error
+  ? ErrorObject & { name: Value['name'] }
+  : Value
 
 // `Error` is both a `CallableFunction` and a `NewableFunction`, which makes
 // `typeof Error` not work as expected.
