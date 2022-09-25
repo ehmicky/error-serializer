@@ -49,17 +49,11 @@ test('Aggregate errors are set', (t) => {
   t.is({ ...error }.errors, undefined)
 })
 
-each(
-  [
-    { ...SIMPLE_ERROR_OBJECT, cause: true },
-    { ...SIMPLE_ERROR_OBJECT, cause: { name: true } },
-  ],
-  ({ title }, object) => {
-    test(`Invalid cause is normalized | ${title}`, (t) => {
-      t.true(isErrorInstance(parse(object).cause))
-    })
-  },
-)
+each([true, { name: true }], ({ title }, cause) => {
+  test(`Invalid cause is normalized | ${title}`, (t) => {
+    t.true(isErrorInstance(parse({ ...SIMPLE_ERROR_OBJECT, cause }).cause))
+  })
+})
 
 each([true, [undefined], [{ name: true }]], ({ title }, errors) => {
   test(`Invalid aggregate errors are normalized | ${title}`, (t) => {
