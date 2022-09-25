@@ -25,7 +25,7 @@ const isNonCorePropName = function (propName) {
 }
 
 // We ignore `error.toJSON()` to ensure the plain object can be parsed back
-const IGNORED_PROPS = new Set(['toJSON'])
+const IGNORED_PROPS = new Set(['toJSON', 'constructorArgs'])
 
 const hasValue = function ([, value]) {
   return value !== undefined

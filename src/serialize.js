@@ -2,6 +2,7 @@ import isPlainObj from 'is-plain-obj'
 import normalizeException from 'normalize-exception'
 import safeJsonValue from 'safe-json-value'
 
+import { setConstructorArgs } from './args.js'
 import { isErrorInstance, safeListKeys } from './check.js'
 import { CORE_PROPS, getNonCoreProps } from './core.js'
 
@@ -33,6 +34,7 @@ const serializeError = function (value) {
   return Object.fromEntries([
     ...getCoreProps(valueA),
     ...getNonCoreProps(valueA),
+    ...setConstructorArgs(valueA),
   ])
 }
 

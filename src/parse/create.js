@@ -1,12 +1,16 @@
+import { getConstructorArgs } from '../args.js'
+
 // Custom error classes might throw due to missing parameters in the
 // constructor. When this happens, we silently revert to `Error`.
-export const createError = function ({ name, message }, classes) {
+export const createError = function (
+  { name, message, constructorArgs },
+  classes,
+) {
   const ErrorClass = getErrorClass(name, classes)
+  const args = getConstructorArgs(constructorArgs, message, ErrorClass)
 
   try {
-    return ErrorClass === globalThis.AggregateError
-      ? new ErrorClass([], message)
-      : new ErrorClass(message)
+    return new ErrorClass(...args)
   } catch {
     return new Error(message)
   }
