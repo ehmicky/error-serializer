@@ -128,11 +128,14 @@ expectNotAssignable<ParseOptions>({ shallow: 'true' })
 expectAssignable<Error>(parse({ name, message, stack }))
 expectAssignable<Error>(parse({ name, message, stack }, { shallow: true }))
 expectAssignable<TestError>(
-  parse({ name: 'TestError', message, stack }, { classes: { TestError } }),
-)
-expectNotAssignable<TestError>(
   parse(
-    { name: 'TestError', message, stack },
+    { name: 'TestError' as const, message, stack },
+    { classes: { TestError } },
+  ),
+)
+expectAssignable<TestError>(
+  parse(
+    { name: 'TestError' as const, message, stack },
     { shallow: true, classes: { TestError } },
   ),
 )
