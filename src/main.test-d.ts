@@ -81,19 +81,47 @@ serialize({}, {})
 expectError(serialize({}, true))
 expectAssignable<SerializeOptions>({})
 expectNotAssignable<SerializeOptions>({ unknown: true })
-expectAssignable<SerializeOptions>({ normalize: false })
-expectNotAssignable<SerializeOptions>({ normalize: 'true' })
-expectAssignable<SerializeOptions>({ shallow: false })
-expectNotAssignable<SerializeOptions>({ shallow: 'true' })
 
 parse({}, {})
 expectError(parse({}, true))
 expectAssignable<ParseOptions>({})
 expectNotAssignable<ParseOptions>({ unknown: true })
 
+expectAssignable<SerializeOptions>({ shallow: false })
+expectNotAssignable<SerializeOptions>({ shallow: 'true' })
 expectAssignable<ParseOptions>({ shallow: false })
 expectNotAssignable<ParseOptions>({ shallow: 'true' })
+expectAssignable<ErrorObject>(serialize({} as Error))
+expectAssignable<ErrorObject>(serialize({} as Error, { shallow: true }))
+expectAssignable<ErrorObject>(serialize({ error: {} as Error }).error)
+expectNotAssignable<ErrorObject>(
+  serialize({ error: {} as Error }, { shallow: true }).error,
+)
+expectAssignable<ErrorObject>(serialize([{}] as [Error])[0])
+expectNotAssignable<ErrorObject>(
+  serialize([{}] as [Error], { shallow: true })[0],
+)
+expectAssignable<'TestError'>(
+  serialize({} as Error & { name: 'TestError' }).name,
+)
+expectAssignable<'TestError'>(
+  serialize({} as Error & { name: 'TestError' }, { shallow: true }).name,
+)
+expectAssignable<true>(serialize({} as Error & { prop: true }).prop)
+expectAssignable<true>(
+  serialize({} as Error & { prop: true }, { shallow: true }).prop,
+)
+expectAssignable<ErrorObject>(serialize({} as Error & { prop: Error }).prop)
+expectNotAssignable<ErrorObject>(
+  serialize({} as Error & { prop: Error }, { shallow: true }).prop,
+)
+expectAssignable<ErrorObject>(serialize({} as Error & { cause: Error }).cause)
+expectNotAssignable<ErrorObject>(
+  serialize({} as Error & { cause: Error }, { shallow: true }).cause,
+)
 
+expectAssignable<SerializeOptions>({ normalize: false })
+expectNotAssignable<SerializeOptions>({ normalize: 'true' })
 expectAssignable<ParseOptions>({ normalize: false })
 expectNotAssignable<ParseOptions>({ normalize: 'true' })
 expectType<true>(serialize(true))

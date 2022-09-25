@@ -77,7 +77,9 @@ export interface SerializeOptions {
 export function serialize<Value, Options extends SerializeOptions = {}>(
   errorInstance: Value,
   options?: Options,
-): SerializeDeep<SerializeNormalize<Value, Options>>
+): Options['shallow'] extends true
+  ? SerializeShallow<SerializeNormalize<Value, Options>>
+  : SerializeDeep<SerializeNormalize<Value, Options>>
 
 type SerializeNormalize<
   Argument,
@@ -87,6 +89,14 @@ type SerializeNormalize<
     ? Argument
     : Error
   : Argument
+
+type SerializeShallow<Value> = Value extends Error
+  ? ErrorObject & {
+      [Key in keyof Value as Value[Key] extends ErrorObject[Key]
+        ? Key
+        : never]: Value[Key]
+    }
+  : Value
 
 type SerializeDeep<Value> = Value extends Error
   ? ErrorObject & {
