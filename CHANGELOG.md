@@ -1,3 +1,10 @@
+# 3.1.0
+
+## Features
+
+- Constructors parameters can now be kept
+  [by setting `error.constructorArgs`](README.md#constructors-arguments).
+
 # 3.0.0
 
 ## Breaking changes
