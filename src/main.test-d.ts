@@ -89,8 +89,6 @@ expectNotAssignable<ParseOptions>({ unknown: true })
 
 expectAssignable<SerializeOptions>({ shallow: false })
 expectNotAssignable<SerializeOptions>({ shallow: 'true' })
-expectAssignable<ParseOptions>({ shallow: false })
-expectNotAssignable<ParseOptions>({ shallow: 'true' })
 expectAssignable<ErrorObject>(serialize({} as Error))
 expectAssignable<ErrorObject>(serialize({} as Error, { shallow: true }))
 expectAssignable<ErrorObject>(serialize({ error: {} as Error }).error)
@@ -120,6 +118,16 @@ expectNotAssignable<ErrorObject>(
   serialize({} as Error & { cause: Error }, { shallow: true }).cause,
 )
 
+class TestError extends Error {
+  name: 'TestError' = 'TestError'
+  other: true = true
+}
+
+expectAssignable<ParseOptions>({ shallow: false })
+expectNotAssignable<ParseOptions>({ shallow: 'true' })
+expectAssignable<Error>(parse({ name, message, stack }))
+expectAssignable<Error>(parse({ name, message, stack }, { shallow: true }))
+
 expectAssignable<SerializeOptions>({ normalize: false })
 expectNotAssignable<SerializeOptions>({ normalize: 'true' })
 expectAssignable<ParseOptions>({ normalize: false })
@@ -140,11 +148,6 @@ expectType<'TestError'>(
 
 expectNotAssignable<Error>(parse({ name: '' }))
 expectAssignable<Error>(parse({ name: '', message: '', stack: '' }))
-
-class TestError extends Error {
-  name: 'TestError' = 'TestError'
-  other: true = true
-}
 
 expectAssignable<ParseOptions>({ classes: {} })
 expectNotAssignable<ParseOptions>({ classes: true })
