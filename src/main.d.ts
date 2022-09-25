@@ -82,13 +82,13 @@ export function serialize<Value, Options extends SerializeOptions = {}>(
   : SerializeDeep<SerializeNormalize<Value, Options>>
 
 type SerializeNormalize<
-  Argument,
+  Value,
   Options extends SerializeOptions,
 > = Options['normalize'] extends true
-  ? Argument extends Error
-    ? Argument
+  ? Value extends Error
+    ? Value
     : Error
-  : Argument
+  : Value
 
 type SerializeShallow<Value> = Value extends Error
   ? ErrorObject & {
@@ -182,13 +182,57 @@ export interface ParseOptions {
  * // Error instance: 'TypeError: example ...'
  * ```
  */
-export function parse<Argument, Options extends ParseOptions = {}>(
-  errorObject: Argument,
+export function parse<Value, Options extends ParseOptions = {}>(
+  errorObject: Value,
   options?: Options,
-): Argument extends MinimalErrorObject
-  ? NonNullable<Options['classes']>[Argument['name']] extends ErrorClass
-    ? InstanceType<NonNullable<Options['classes']>[Argument['name']]>
+): Options['shallow'] extends true
+  ? ParseNormalize<ParseShallow<Value, Options>, Options>
+  : ParseNormalize<ParseDeep<Value, Options>, Options>
+
+type ParseNormalize<
+  Value,
+  Options extends ParseOptions,
+> = Options['normalize'] extends true
+  ? Value extends Error
+    ? Value
     : Error
-  : Options['normalize'] extends true
-  ? Error
-  : Argument
+  : Value
+
+type ParseShallow<
+  Value,
+  Options extends ParseOptions,
+> = Value extends MinimalErrorObject
+  ? ParsedError<Value, Options> & {
+      [Key in keyof Value as Value[Key] extends (
+        Key extends keyof ParsedError<Value, Options>
+          ? ParsedError<Value, Options>[Key]
+          : never
+      )
+        ? Key
+        : never]: Value[Key]
+    }
+  : Value
+
+type ParseDeep<
+  Value,
+  Options extends ParseOptions,
+> = Value extends MinimalErrorObject
+  ? ParsedError<Value, Options> & {
+      [Key in keyof Value as ParseDeep<Value[Key], Options> extends (
+        Key extends keyof ParsedError<Value, Options>
+          ? ParsedError<Value, Options>[Key]
+          : never
+      )
+        ? Key
+        : never]: ParseDeep<Value[Key], Options>
+    }
+  : Value extends object
+  ? { [Key in keyof Value]: ParseDeep<Value[Key], Options> }
+  : Value
+
+type ParsedError<
+  ErrorObjectArg extends MinimalErrorObject,
+  Options extends ParseOptions,
+> = NonNullable<Options['classes']>[ErrorObjectArg['name']] extends ErrorClass
+  ? InstanceType<NonNullable<Options['classes']>[ErrorObjectArg['name']]>
+  : Error
