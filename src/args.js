@@ -5,11 +5,11 @@ export const setConstructorArgs = function ({ constructorArgs }) {
     return ['constructorArgs', [...constructorArgs]]
   }
 
-  if (!Array.isArray(constructorArgs)) {
-    return []
+  if (Array.isArray(constructorArgs)) {
+    return ['constructorArgs', constructorArgs]
   }
 
-  return ['constructorArgs', constructorArgs]
+  return []
 }
 
 // Constructor arguments default to the error message and an empty object
