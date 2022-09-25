@@ -10,7 +10,7 @@ Convert errors to/from plain objects.
 
 - Ensures errors are [safe to serialize with JSON](#json-safety)
 - Can be used as [`error.toJSON()`](#errortojson)
-- [Deep serialization/parsing](#deep-serializationparsing)
+- [Deep serialization/parsing](#shallow)
 - [Custom serialization/parsing](#custom-serializationparsing) (e.g. YAML or
   `process.send()`)
 - Keeps both native (`TypeError`, etc.) and [custom](#classes) error classes
@@ -19,7 +19,7 @@ Convert errors to/from plain objects.
   [`error.cause`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/cause)
   and
   [`AggregateError`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AggregateError)
-- [Normalizes](#error-normalization) invalid errors
+- [Normalizes](#normalize) invalid errors
 - Safe: this never throws
 
 # Example
@@ -62,6 +62,21 @@ Convert an `Error` instance into a plain object.
 
 Object with the following optional properties.
 
+#### shallow
+
+_Type_: `boolean`\
+_Default_: `false`
+
+When `true`, nested errors are not serialized. When `false`, deep serialization
+recurses over errors, plain objects and arrays.
+
+```js
+console.log(serialize([{ error: new Error('test') }]))
+// [{ error: { name: 'Error', ... } }]
+console.log(serialize([{ error: new Error('test') }], { shallow: true }))
+// [{ error: Error }]
+```
+
 #### normalize
 
 _Type_: `boolean`\
@@ -103,6 +118,21 @@ const errorObject = serialize(new CustomError('example'))
 const error = parse(errorObject, { classes: { CustomError } })
 // Map `CustomError` to another class
 const otherError = parse(errorObject, { classes: { CustomError: TypeError } })
+```
+
+#### shallow
+
+_Type_: `boolean`\
+_Default_: `false`
+
+When `true`, nested error plain objects are not parsed.
+
+```js
+const errorObject = serialize(new Error('test'))
+console.log(parse([{ error: errorObject }]))
+// [{ error: Error }]
+console.log(parse([{ error: errorObject }], { shallow: true }))
+// [{ error: { name: 'Error', ... } }]
 ```
 
 #### normalize
@@ -155,20 +185,6 @@ console.log(JSON.stringify(error))
 // '{"name":"CustomError","message":"example","stack":"..."}'
 ```
 
-## Deep serialization/parsing
-
-Objects and arrays containing errors can be deeply serialized/parsed using the
-[`JSON.stringify()`'s replacer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#the_replacer_parameter)
-and
-[`JSON.parse()`'s reviver](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse#using_the_reviver_parameter).
-
-```js
-const deepObject = [{}, { error: new Error('example') }]
-const jsonString = JSON.stringify(deepObject, (key, value) => serialize(value))
-const newDeepObject = JSON.parse(jsonString, (key, value) => parse(value))
-console.log(newDeepObject[1].error) // Error: example
-```
-
 ## Custom serialization/parsing
 
 Errors are converted to/from plain objects, not strings. This allows any
@@ -218,19 +234,6 @@ const newError = parse(errorObject)
 // AggregateError: four
 //   [cause]: Error: three
 //   [errors]: [Error: one, Error: two]
-```
-
-## Error normalization
-
-Invalid error instances or objects are
-[normalized](https://github.com/ehmicky/normalize-exception).
-
-```js
-// Normalizes invalid error: not an `Error` instance
-console.log(serialize('example')) // { name: 'Error', message: 'example', ... }
-
-// Normalizes `error.name`: not a string
-console.log(parse({ name: false, message: 'example' })) // Error: example
 ```
 
 # Related projects
