@@ -58,10 +58,12 @@ test('Can be used as toJSON()', (t) => {
   t.is(new CustomError(message).toJSON().message, message)
 })
 
-test('Serialize deeply', (t) => {
-  const [{ error }] = serialize([{ error: FULL_ERROR }])
-  t.true(isPlainObj(error))
-  t.is(error.message, FULL_ERROR.message)
+each([true, false], ({ title }, shallow) => {
+  test(`Serialize deeply or not with "shallow" | ${title}`, (t) => {
+    const [{ error }] = serialize([{ error: FULL_ERROR }], { shallow })
+    t.not(isPlainObj(error), shallow)
+    t.is(error.message, FULL_ERROR.message)
+  })
 })
 
 test('Remove unsafe non-core properties when serializing', (t) => {
