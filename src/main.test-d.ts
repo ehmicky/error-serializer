@@ -99,9 +99,15 @@ expectNotAssignable<ParseOptions>({ normalize: 'true' })
 expectType<true>(serialize(true))
 expectType<true>(serialize(true, { normalize: false }))
 expectAssignable<ErrorObject>(serialize(true, { normalize: true }))
+expectType<'TestError'>(
+  serialize(error as Error & { name: 'TestError' }, { normalize: true }).name,
+)
 expectType<true>(parse(true))
 expectType<true>(parse(true, { normalize: false }))
 expectType<Error>(parse(true, { normalize: true }))
+expectType<typeof name>(
+  parse({ name, message, stack }, { normalize: true }).name,
+)
 
 expectNotType<Error>(parse({ name: '', message: '' }))
 expectType<Error>(parse({ name: '', message: '', stack: '' }))
