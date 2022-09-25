@@ -6,31 +6,46 @@ import { each } from 'test-each'
 
 import { SIMPLE_ERROR_OBJECT, FULL_ERROR } from './helpers/main.js'
 
+const CORE_PROPS = ['name', 'message', 'stack']
+const nonErrors = [
+  undefined,
+  // eslint-disable-next-line unicorn/no-null
+  null,
+  // eslint-disable-next-line no-magic-numbers
+  0n,
+  'message',
+  {},
+  ...CORE_PROPS.flatMap((propName) => [
+    { ...SIMPLE_ERROR_OBJECT, [propName]: undefined },
+    { ...SIMPLE_ERROR_OBJECT, [propName]: true },
+  ]),
+  [],
+  () => {},
+]
+
+each(nonErrors, ({ title }, value) => {
+  test(`Non-errors are not serialized without "normalize: true" | ${title}`, (t) => {
+    t.deepEqual(serialize(value), value)
+  })
+
+  test(`Non-error objects are not parsed without "normalize: true" | ${title}`, (t) => {
+    t.deepEqual(parse(value), value)
+  })
+})
+
 each(
   [
-    undefined,
-    // eslint-disable-next-line unicorn/no-null
-    null,
-    // eslint-disable-next-line no-magic-numbers
-    0n,
-    'message',
-    {},
-    ...['name', 'message', 'stack'].flatMap((propName) => [
-      { ...SIMPLE_ERROR_OBJECT, [propName]: undefined },
-      { ...SIMPLE_ERROR_OBJECT, [propName]: true },
-    ]),
-    [],
-    () => {},
+    ...nonErrors,
+    ...CORE_PROPS.map((propName) =>
+      // eslint-disable-next-line fp/no-mutating-methods
+      Object.defineProperty({ ...SIMPLE_ERROR_OBJECT }, propName, {
+        get() {
+          throw new Error('unsafe')
+        },
+      }),
+    ),
   ],
   ({ title }, value) => {
-    test(`Non-errors are not serialized without "normalize: true" | ${title}`, (t) => {
-      t.deepEqual(serialize(value), value)
-    })
-
-    test(`Non-error objects are not parsed without "normalize: true" | ${title}`, (t) => {
-      t.deepEqual(parse(value), value)
-    })
-
     test(`Non-errors are serialized with "normalize: true" | ${title}`, (t) => {
       t.is(typeof serialize(value, { normalize: true }).message, 'string')
     })
