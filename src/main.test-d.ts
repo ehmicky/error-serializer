@@ -127,6 +127,15 @@ expectAssignable<ParseOptions>({ shallow: false })
 expectNotAssignable<ParseOptions>({ shallow: 'true' })
 expectAssignable<Error>(parse({ name, message, stack }))
 expectAssignable<Error>(parse({ name, message, stack }, { shallow: true }))
+expectAssignable<TestError>(
+  parse({ name: 'TestError', message, stack }, { classes: { TestError } }),
+)
+expectNotAssignable<TestError>(
+  parse(
+    { name: 'TestError', message, stack },
+    { shallow: true, classes: { TestError } },
+  ),
+)
 
 expectAssignable<SerializeOptions>({ normalize: false })
 expectNotAssignable<SerializeOptions>({ normalize: 'true' })
