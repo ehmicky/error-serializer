@@ -1,5 +1,6 @@
 import test from 'ava'
 import { serialize, parse } from 'error-serializer'
+import { each } from 'test-each'
 
 import { SIMPLE_ERROR_OBJECT } from './helpers/main.js'
 
@@ -36,6 +37,28 @@ test('constructorArgs cannot be "arguments"', (t) => {
   t.false('constructorArgs' in serialize(error))
 })
 
+each(
+  [
+    { beforePack: ['test'], afterPack: undefined },
+    { beforePack: ['test', {}], afterPack: undefined },
+    { beforePack: ['other'], afterPack: ['other'] },
+    { beforePack: ['other', {}], afterPack: ['other', {}] },
+    // eslint-disable-next-line unicorn/no-null
+    ...[true, null, { test: true }].map((secondArg) => ({
+      beforePack: ['test', secondArg],
+      // eslint-disable-next-line unicorn/no-null
+      afterPack: [null, secondArg],
+    })),
+  ],
+  ({ title }, { beforePack, afterPack }) => {
+    test(`constructorArgs packs messages | ${title}`, (t) => {
+      const error = new Error('test')
+      error.constructorArgs = beforePack
+      t.deepEqual(serialize(error).constructorArgs, afterPack)
+    })
+  },
+)
+
 // eslint-disable-next-line fp/no-class
 class CustomError extends Error {
   constructor(...args) {
@@ -59,6 +82,17 @@ test('constructorArgs can be parsed', (t) => {
       { classes: { CustomError } },
     ).args,
     [true],
+  )
+})
+
+test('constructorArgs can be unpacked', (t) => {
+  t.deepEqual(
+    parse(
+      // eslint-disable-next-line unicorn/no-null
+      { ...CUSTOM_ERROR_OBJECT, constructorArgs: [null, true, false] },
+      { classes: { CustomError } },
+    ).args,
+    [CUSTOM_ERROR_OBJECT.message, true, false],
   )
 })
 
