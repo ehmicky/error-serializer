@@ -67,8 +67,8 @@ Object with the following optional properties.
 _Type_: `boolean`\
 _Default_: `false`
 
-Unless `true`, nested errors are also serialized. They can be inside other
-errors, plain objects or arrays.
+Unless this option is `true`, nested errors are also serialized. They can be
+inside other errors, plain objects or arrays.
 
 ```js
 console.log(serialize([{ error: new Error('test') }]))
@@ -125,10 +125,11 @@ const otherError = parse(errorObject, { classes: { CustomError: TypeError } })
 _Type_: `boolean`\
 _Default_: `false`
 
-Unless `true`, nested error plain objects are also parsed.
+Unless this option is `true`, nested error plain objects are also parsed.
 
 ```js
 const errorObject = serialize(new Error('test'))
+
 console.log(parse([{ error: errorObject }]))
 // [{ error: Error }]
 console.log(parse([{ error: errorObject }], { shallow: true }))
