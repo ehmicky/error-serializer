@@ -21,11 +21,15 @@ const isStringProp = function (object, propName) {
 }
 
 export const safeListKeys = function (value) {
-  return Object.keys(value).filter((propName) => isSafeProp(value, propName))
+  return listSafeKeys(value, Object.keys(value))
+}
+
+export const listSafeKeys = function (value, keys) {
+  return keys.filter((propName) => isSafeProp(value, propName))
 }
 
 // Ensure retrieving a property does not throw due to a getter or proxy
-export const isSafeProp = function (object, propName) {
+const isSafeProp = function (object, propName) {
   try {
     // eslint-disable-next-line no-unused-expressions
     object[propName]

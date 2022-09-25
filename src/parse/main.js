@@ -1,8 +1,8 @@
 import isPlainObj from 'is-plain-obj'
 import normalizeException from 'normalize-exception'
 
-import { isErrorObject, isSafeProp, safeListKeys } from '../check.js'
-import { UNSET_CORE_PROPS, getNonCoreProps } from '../core.js'
+import { isErrorObject, safeListKeys } from '../check.js'
+import { listProps, SET_CORE_PROPS, NON_ENUMERABLE_PROPS } from '../core.js'
 
 import { createError } from './create.js'
 
@@ -28,20 +28,18 @@ export const parseShallow = function (value, classes) {
 //    features
 const parseErrorObject = function (object, classes) {
   const error = createError(object, classes)
-  setCoreProps(error, object)
-  // eslint-disable-next-line fp/no-mutating-assign
-  Object.assign(error, Object.fromEntries(getNonCoreProps(object)))
+  setProps(error, object)
   return error
 }
 
-const setCoreProps = function (error, object) {
-  UNSET_CORE_PROPS.forEach((propName) => {
-    setCoreProp(error, object, propName)
+const setProps = function (error, object) {
+  listProps(object).forEach((propName) => {
+    setProp(error, object, propName)
   })
 }
 
-const setCoreProp = function (error, object, propName) {
-  if (!isSafeProp(object, propName)) {
+const setProp = function (error, object, propName) {
+  if (SET_CORE_PROPS.has(propName)) {
     return
   }
 
@@ -51,10 +49,11 @@ const setCoreProp = function (error, object, propName) {
     return
   }
 
+  const enumerable = !NON_ENUMERABLE_PROPS.has(propName)
   // eslint-disable-next-line fp/no-mutating-methods
   Object.defineProperty(error, propName, {
     value,
-    enumerable: false,
+    enumerable,
     writable: true,
     configurable: true,
   })

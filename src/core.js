@@ -1,7 +1,21 @@
-import { safeListKeys } from './check.js'
+import { listSafeKeys } from './check.js'
 
-// Retrieve properties of an error instance or objects that are not core
-// error properties.
+// `new Error()` already defines some properties, that we don't need to
+// redefine.
+// This ensure we don't redefine `error.name` so it matches its constructor
+export const SET_CORE_PROPS = new Set(['name', 'message'])
+
+export const NON_ENUMERABLE_PROPS = new Set([
+  'name',
+  'message',
+  'stack',
+  'cause',
+  'errors',
+  'lineNumber',
+  'columnNumber',
+  'fileName',
+])
+
 // When serializing, we exclude non-core error properties that either:
 //  - Are non-enumerable
 //     - Reason: most likely not meant to be serialized
@@ -12,29 +26,17 @@ import { safeListKeys } from './check.js'
 //     - Reason: not supported by JSON
 // When parsing, we do the same since JSON should only have enumerable, own,
 // non-symbol keys.
-export const getNonCoreProps = function (errorOrObject) {
-  return safeListKeys(errorOrObject)
-    .filter(isNonCorePropName)
-    .map((propName) => [propName, errorOrObject[propName]])
-    .filter(hasValue)
+export const listProps = function (objectOrError) {
+  const propNames = Object.keys(objectOrError).filter(isNotIgnoredProp)
+  const propNamesA = [...new Set([...propNames, ...CORE_PROPS])]
+  return listSafeKeys(objectOrError, propNamesA)
 }
 
-const isNonCorePropName = function (propName) {
-  return !CORE_PROPS_SET.has(propName) && !IGNORED_PROPS.has(propName)
+const isNotIgnoredProp = function (propName) {
+  return !IGNORED_PROPS.has(propName)
 }
 
 // We ignore `error.toJSON()` to ensure the plain object can be parsed back
 const IGNORED_PROPS = new Set(['toJSON', 'constructorArgs'])
 
-const hasValue = function ([, value]) {
-  return value !== undefined
-}
-
-// Error core properties.
-// Split between the ones set by error constructors and the ones that need to
-// be set.
-//  - This ensure we don't redefine `error.name` so it matches its constructor
-const SET_CORE_PROPS = ['name', 'message']
-export const UNSET_CORE_PROPS = ['stack', 'cause', 'errors']
-export const CORE_PROPS = [...SET_CORE_PROPS, ...UNSET_CORE_PROPS]
-export const CORE_PROPS_SET = new Set(CORE_PROPS)
+const CORE_PROPS = [...NON_ENUMERABLE_PROPS, 'line', 'column']

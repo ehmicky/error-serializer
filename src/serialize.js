@@ -4,7 +4,7 @@ import safeJsonValue from 'safe-json-value'
 
 import { setConstructorArgs } from './args.js'
 import { isErrorInstance, safeListKeys } from './check.js'
-import { CORE_PROPS, getNonCoreProps } from './core.js'
+import { listProps } from './core.js'
 
 // Serialize error instances into plain objects deeply
 export const serializeDeep = function (value, parents) {
@@ -30,18 +30,14 @@ export const serializeShallow = function (value) {
 }
 
 const serializeError = function (value) {
-  const valueA = normalizeException(value)
-  return Object.fromEntries([
-    ...getCoreProps(valueA),
-    ...getNonCoreProps(valueA),
-    ...setConstructorArgs(valueA),
-  ])
+  const error = normalizeException(value)
+  return Object.fromEntries([...getProps(error), ...setConstructorArgs(error)])
 }
 
-const getCoreProps = function (error) {
-  return CORE_PROPS.map((propName) => [propName, error[propName]]).filter(
-    hasValue,
-  )
+const getProps = function (error) {
+  return listProps(error)
+    .map((propName) => [propName, error[propName]])
+    .filter(hasValue)
 }
 
 const hasValue = function ([, value]) {
