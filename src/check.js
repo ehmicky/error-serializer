@@ -28,6 +28,10 @@ const isStringProp = function (object, propName) {
   return isSafeProp(object, propName) && typeof object[propName] === 'string'
 }
 
+export const safeListKeys = function (value) {
+  return Object.keys(value).filter((propName) => isSafeProp(value, propName))
+}
+
 // Ensure retrieving a property does not throw due to a getter or proxy
 export const isSafeProp = function (object, propName) {
   try {

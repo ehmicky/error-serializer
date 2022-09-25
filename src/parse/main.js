@@ -1,7 +1,7 @@
 import isPlainObj from 'is-plain-obj'
 import normalizeException from 'normalize-exception'
 
-import { isErrorObject, isSafeProp } from '../check.js'
+import { isErrorObject, isSafeProp, safeListKeys } from '../check.js'
 import { UNSET_CORE_PROPS, getNonCoreProps } from '../core.js'
 
 import { createError } from './create.js'
@@ -67,9 +67,10 @@ const parseRecurse = function (value, classes) {
 
   if (isPlainObj(value)) {
     return Object.fromEntries(
-      Object.keys(value)
-        .filter((propName) => isSafeProp(value, propName))
-        .map((propName) => [propName, parseDeep(value[propName], classes)]),
+      safeListKeys(value).map((propName) => [
+        propName,
+        parseDeep(value[propName], classes),
+      ]),
     )
   }
 
