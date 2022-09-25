@@ -76,6 +76,10 @@ each([true, false], ({ title }, shallow) => {
     t.not(isPlainObj(error), shallow)
     t.is(error.message, FULL_ERROR.message)
   })
+
+  test(`Keep non-error properties JSON-unsafe when serializing | ${title}`, (t) => {
+    t.is(serialize(Number.NaN, { shallow }), Number.NaN)
+  })
 })
 
 test('Remove unsafe non-core properties when serializing', (t) => {
