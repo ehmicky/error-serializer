@@ -161,7 +161,7 @@ const error = new Error('example')
 error.cycle = error
 
 // Cycles make `JSON.stringify()` throw, so they are removed
-console.log(serialize(error).cycle) // {}
+console.log(serialize(error).cycle) // undefined
 ```
 
 ## `error.toJSON()`
