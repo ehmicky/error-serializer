@@ -21,7 +21,7 @@ test('Serializes non-core properties recursively', (t) => {
   t.deepEqual(serialize(error).one.two, serialize(error.one.two))
 })
 
-test('Does not parse non-core properties recursively', (t) => {
+test('Parses non-core properties recursively', (t) => {
   const object = { ...SIMPLE_ERROR_OBJECT, one: { two: SIMPLE_ERROR_OBJECT } }
   t.deepEqual(parse(object).one.two, parse(object.one.two))
 })
