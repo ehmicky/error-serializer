@@ -8,28 +8,6 @@ const isErrorInstance = function (error) {
   return error instanceof Error
 }
 
-each(
-  [
-    { propName: 'name', value: 'TypeError' },
-    { propName: 'message', value: 'test' },
-    { propName: 'stack', value: new Error('undefined').stack },
-    { propName: 'lineNumber', value: 0 },
-    { propName: 'columnNumber', value: 0 },
-    { propName: 'fileName', value: 'file.js' },
-  ],
-  ({ title }, { propName, value }) => {
-    test(`Core error properties are set | ${title}`, (t) => {
-      const error = parse({ ...SIMPLE_ERROR_OBJECT, [propName]: value })
-      t.is(error[propName], value)
-    })
-
-    test(`Core error properties are not enumerable | ${title}`, (t) => {
-      const error = parse({ ...SIMPLE_ERROR_OBJECT, [propName]: value })
-      t.is({ ...error }[propName], undefined)
-    })
-  },
-)
-
 test('Cause is set', (t) => {
   const message = 'test'
   const error = parse({
