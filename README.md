@@ -15,6 +15,7 @@ Convert errors to/from plain objects.
   `process.send()`)
 - Keeps both native (`TypeError`, etc.) and [custom](#classes) error classes
 - Preserves errors' [additional properties](#additional-error-properties)
+- Can keep [constructor's arguments](#constructors-arguments)
 - Works [recursively](#errorcause-and-aggregateerror) with
   [`error.cause`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/cause)
   and
@@ -235,6 +236,32 @@ const newError = parse(errorObject)
 // AggregateError: four
 //   [cause]: Error: three
 //   [errors]: [Error: one, Error: two]
+```
+
+## Constructor's arguments
+
+[`parse()`](#parseerrorobject-options) calls `new ErrorClass(message, {})` by
+default. This works well with regular error classes.
+
+When more advanced error [`classes`](#classes) are used, the constructor's
+arguments can be explicitly set as an `error.constructorArgs` property.
+
+<!-- eslint-disable fp/no-class, fp/no-this, fp/no-mutation -->
+
+```js
+class CustomError extends Error {
+  constructor(prefix, message) {
+    super(`${prefix} - ${message}`)
+    this.constructorArgs = [prefix, message]
+  }
+}
+
+const error = new CustomError('Prefix', 'example')
+// CustomError: Prefix - example
+
+const errorObject = serialize(error)
+const newError = parse(errorObject, { classes: { CustomError } })
+// CustomError: Prefix - example
 ```
 
 # Related projects
