@@ -133,8 +133,9 @@ expectType<'TestError'>(
 expectType<true>(parse(true))
 expectType<true>(parse(true, { normalize: false }))
 expectType<Error>(parse(true, { normalize: true }))
-expectType<typeof name>(
-  parse({ name, message, stack }, { normalize: true }).name,
+expectType<'TestError'>(
+  parse({ name: 'TestError' as const, message, stack }, { normalize: true })
+    .name,
 )
 
 expectNotType<Error>(parse({ name: '', message: '' }))
