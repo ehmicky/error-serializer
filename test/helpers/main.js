@@ -10,12 +10,10 @@ export const FULL_ERROR = Object.defineProperties(new Error('test'), {
     writable: true,
     configurable: true,
   },
-  errors: [
-    {
-      value: new Error('otherInner'),
-      enumerable: false,
-      writable: true,
-      configurable: true,
-    },
-  ],
+  errors: {
+    value: [new Error('otherInner')],
+    enumerable: false,
+    writable: true,
+    configurable: true,
+  },
 })

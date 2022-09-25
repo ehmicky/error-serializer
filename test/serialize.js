@@ -30,6 +30,18 @@ test('Converts errors to plain objects', (t) => {
   t.true(isPlainObj(serializedNormalError.errors[0]))
 })
 
+test('Normalizes invalid error core properties shallowly', (t) => {
+  const error = new Error('test')
+  error.message = true
+  t.is(serialize(error, { shallow: true }).message, '')
+})
+
+test('Normalizes invalid error core properties deeply', (t) => {
+  const error = new Error('test')
+  error.message = true
+  t.is(serialize({ error }).error.message, '')
+})
+
 const recursiveCauseError = new Error('test')
 // eslint-disable-next-line fp/no-mutation
 recursiveCauseError.cause = recursiveCauseError
