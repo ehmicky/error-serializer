@@ -63,10 +63,9 @@ const parseRecurse = function (value, classes) {
 
   if (isPlainObj(value)) {
     return Object.fromEntries(
-      Object.entries(value).map(([propName, child]) => [
-        propName,
-        parseDeep(child, classes),
-      ]),
+      Object.keys(value)
+        .filter((propName) => safeGetProp(value, propName).safe)
+        .map((propName) => [propName, parseDeep(value[propName], classes)]),
     )
   }
 

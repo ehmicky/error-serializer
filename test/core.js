@@ -1,5 +1,6 @@
 import test from 'ava'
 import { serialize, parse } from 'error-serializer'
+import { each } from 'test-each'
 
 import { SIMPLE_ERROR_OBJECT } from './helpers/main.js'
 
@@ -13,14 +14,16 @@ test('Keep non-core properties when parsing', (t) => {
   t.true(parse({ ...SIMPLE_ERROR_OBJECT, prop: true }).prop)
 })
 
-test('Does not serialize non-core properties recursively', (t) => {
+test('Serializes non-core properties recursively', (t) => {
   const error = new Error('test')
-  error.one = { two: true, three: new Error('inner') }
-  t.deepEqual(serialize(error).one, { two: error.one.two, three: {} })
+  error.one = {}
+  error.one.two = new Error('inner')
+  t.deepEqual(serialize(error).one.two, serialize(error.one.two))
 })
 
 test('Does not parse non-core properties recursively', (t) => {
-  t.false(parse({ ...SIMPLE_ERROR_OBJECT, prop: {} }).prop instanceof Error)
+  const object = { ...SIMPLE_ERROR_OBJECT, one: { two: SIMPLE_ERROR_OBJECT } }
+  t.deepEqual(parse(object).one.two, parse(object.one.two))
 })
 
 const DESCRIPTOR = {
@@ -95,19 +98,18 @@ const UNSAFE_DESCRIPTOR = {
   configurable: true,
 }
 
-test('Ignore unsafe non-core properties when serializing', (t) => {
-  const error = new Error('test')
-  // eslint-disable-next-line fp/no-mutating-methods
-  Object.defineProperty(error, 'prop', UNSAFE_DESCRIPTOR)
-  t.is(serialize(error).prop, undefined)
+each([{}, new Error('test')], ({ title }, value) => {
+  test(`Ignore unsafe non-core properties when serializing | ${title}`, (t) => {
+    // eslint-disable-next-line fp/no-mutating-methods
+    Object.defineProperty(value, 'prop', UNSAFE_DESCRIPTOR)
+    t.is(serialize(value).prop, undefined)
+  })
 })
 
-test('Ignore unsafe non-core properties when parsing', (t) => {
-  // eslint-disable-next-line fp/no-mutating-methods
-  const object = Object.defineProperty(
-    SIMPLE_ERROR_OBJECT,
-    'prop',
-    UNSAFE_DESCRIPTOR,
-  )
-  t.is(parse(object).prop, undefined)
+each([{}, { ...SIMPLE_ERROR_OBJECT }], ({ title }, object) => {
+  test(`Ignore unsafe non-core properties when parsing | ${title}`, (t) => {
+    // eslint-disable-next-line fp/no-mutating-methods
+    Object.defineProperty(object, 'prop', UNSAFE_DESCRIPTOR)
+    t.is(parse(object).prop, undefined)
+  })
 })
