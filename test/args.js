@@ -76,3 +76,13 @@ test('constructorArgs are removed during parsing', (t) => {
       ),
   )
 })
+
+test('Properties set by constructor are overridden by serialized ones', (t) => {
+  t.deepEqual(
+    parse(
+      { ...CUSTOM_ERROR_OBJECT, constructorArgs: [true], args: [false] },
+      { classes: { CustomError } },
+    ).args,
+    [false],
+  )
+})
