@@ -10,6 +10,12 @@
   - If the argument to `parse()` is not an error plain object, it is not
     normalized to one anymore, unless `normalize: true` is used
 
+## Features
+
+- [Serialization](README.md#shallow) and [parsing](README.md#shallow-1) are now
+  performed deeply. The [`shallow: true`](README.md#shallow) option can be used
+  to keep them shallow.
+
 # 2.0.0
 
 ## Breaking changes
