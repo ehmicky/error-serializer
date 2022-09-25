@@ -36,14 +36,13 @@ each(nonErrors, [true, false], ({ title }, value, shallow) => {
 each(
   [
     ...nonErrors,
-    ...CORE_PROPS.map((propName) =>
-      // eslint-disable-next-line fp/no-mutating-methods
-      Object.defineProperty({ ...SIMPLE_ERROR_OBJECT }, propName, {
-        get() {
-          throw new Error('unsafe')
-        },
-      }),
-    ),
+    ...CORE_PROPS.map((propName) => ({
+      ...SIMPLE_ERROR_OBJECT,
+      // eslint-disable-next-line fp/no-get-set
+      get [propName]() {
+        throw new Error('unsafe')
+      },
+    })),
   ],
   [true, false],
   ({ title }, value, shallow) => {
