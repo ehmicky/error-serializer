@@ -67,8 +67,8 @@ Object with the following optional properties.
 _Type_: `boolean`\
 _Default_: `false`
 
-When `true`, nested errors are not serialized. When `false`, deep serialization
-recurses over errors, plain objects and arrays.
+Unless `true`, nested errors are also serialized. Deep serialization recurses
+over errors, plain objects and arrays.
 
 ```js
 console.log(serialize([{ error: new Error('test') }]))
@@ -125,7 +125,7 @@ const otherError = parse(errorObject, { classes: { CustomError: TypeError } })
 _Type_: `boolean`\
 _Default_: `false`
 
-When `true`, nested error plain objects are not parsed.
+Unless `true`, nested error plain objects are also parsed.
 
 ```js
 const errorObject = serialize(new Error('test'))
