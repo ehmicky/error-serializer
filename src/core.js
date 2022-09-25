@@ -1,4 +1,4 @@
-import { safeGetProp } from './check.js'
+import { isSafeProp } from './check.js'
 
 // Retrieve properties of an error instance or objects that are not core
 // error properties.
@@ -15,8 +15,9 @@ import { safeGetProp } from './check.js'
 export const getNonCoreProps = function (errorOrObject) {
   return Object.keys(errorOrObject)
     .filter(isNonCorePropName)
-    .map((propName) => getNonCoreProp(errorOrObject, propName))
-    .filter(Boolean)
+    .filter((propName) => isSafeProp(errorOrObject, propName))
+    .map((propName) => [propName, errorOrObject[propName]])
+    .filter(hasValue)
 }
 
 const isNonCorePropName = function (propName) {
@@ -26,9 +27,8 @@ const isNonCorePropName = function (propName) {
 // We ignore `error.toJSON()` to ensure the plain object can be parsed back
 const IGNORED_PROPS = new Set(['toJSON'])
 
-const getNonCoreProp = function (errorOrObject, propName) {
-  const { safe, value } = safeGetProp(errorOrObject, propName)
-  return safe && value !== undefined ? [propName, value] : undefined
+const hasValue = function ([, value]) {
+  return value !== undefined
 }
 
 // Error core properties.

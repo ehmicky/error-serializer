@@ -25,16 +25,16 @@ const hasCoreProps = function (value) {
 }
 
 const isStringProp = function (object, propName) {
-  const { safe, value } = safeGetProp(object, propName)
-  return safe && typeof value === 'string'
+  return isSafeProp(object, propName) && typeof object[propName] === 'string'
 }
 
 // Ensure retrieving a property does not throw due to a getter or proxy
-export const safeGetProp = function (object, propName) {
+export const isSafeProp = function (object, propName) {
   try {
-    const value = object[propName]
-    return { safe: true, value }
+    // eslint-disable-next-line no-unused-expressions
+    object[propName]
+    return true
   } catch {
-    return { safe: false }
+    return false
   }
 }
