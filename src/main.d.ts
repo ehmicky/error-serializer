@@ -29,6 +29,22 @@ export interface ErrorObject extends MinimalErrorObject {
  */
 export interface SerializeOptions {
   /**
+   * Unless this option is `true`, nested errors are also serialized.
+   * They can be inside other errors, plain objects or arrays.
+   *
+   * @default false
+   *
+   * @example
+   * ```js
+   * console.log(serialize([{ error: new Error('test') }]))
+   * // [{ error: { name: 'Error', ... } }]
+   * console.log(serialize([{ error: new Error('test') }], { shallow: true }))
+   * // [{ error: Error }]
+   * ```
+   */
+  readonly shallow?: boolean
+
+  /**
    * Convert `errorInstance` to an `Error` instance if it is not one.
    *
    * @default false
@@ -75,6 +91,23 @@ type ErrorClass = new (message: string) => Error
  * `error-serializer` `parse()` options
  */
 export interface ParseOptions {
+  /**
+   * Unless this option is `true`, nested error plain objects are also parsed.
+   *
+   * @default false
+   *
+   * @example
+   * ```js
+   * const errorObject = serialize(new Error('test'))
+   *
+   * console.log(parse([{ error: errorObject }]))
+   * // [{ error: Error }]
+   * console.log(parse([{ error: errorObject }], { shallow: true }))
+   * // [{ error: { name: 'Error', ... } }]
+   * ```
+   */
+  readonly shallow?: boolean
+
   /**
    * Convert `errorObject` to an error plain object if it is not one.
    *
