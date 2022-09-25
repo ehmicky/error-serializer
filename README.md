@@ -257,11 +257,10 @@ class CustomError extends Error {
 }
 
 const error = new CustomError('Prefix', 'example')
-// CustomError: Prefix - example
 
 const errorObject = serialize(error)
+// This calls `new CustomError('Prefix', 'example')`
 const newError = parse(errorObject, { classes: { CustomError } })
-// CustomError: Prefix - example
 ```
 
 # Related projects
