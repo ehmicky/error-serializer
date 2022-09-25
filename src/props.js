@@ -39,4 +39,5 @@ const isNotIgnoredProp = function (propName) {
 // We ignore `error.toJSON()` to ensure the plain object can be parsed back
 const IGNORED_PROPS = new Set(['toJSON', 'constructorArgs'])
 
+// Core properties are serialized/pared even if inherited or enumerable
 const CORE_PROPS = [...NON_ENUMERABLE_PROPS, 'line', 'column']
