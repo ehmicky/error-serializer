@@ -1,5 +1,5 @@
 import test from 'ava'
-import { serialize, parse } from 'error-serializer'
+import { serialize } from 'error-serializer'
 import isPlainObj from 'is-plain-obj'
 import { each } from 'test-each'
 
@@ -58,11 +58,10 @@ test('Can be used as toJSON()', (t) => {
   t.is(new CustomError(message).toJSON().message, message)
 })
 
-test('Can serialize and parse deeply', (t) => {
-  const object = serialize([FULL_ERROR, true])
-  const [error, item] = parse(object)
-  t.deepEqual(error, FULL_ERROR)
-  t.true(item)
+test('Serialize deeply', (t) => {
+  const [{ error }] = serialize([{ error: FULL_ERROR }])
+  t.true(isPlainObj(error))
+  t.is(error.message, FULL_ERROR.message)
 })
 
 test('Remove unsafe non-core properties when serializing', (t) => {

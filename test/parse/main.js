@@ -94,3 +94,7 @@ test('Does not parse error.errors if they are Error instances', (t) => {
   const error = { ...SIMPLE_ERROR_OBJECT, errors }
   t.is(parse(error).errors[0], errors[0])
 })
+
+test('Parse deeply', (t) => {
+  t.true(parse([{ prop: SIMPLE_ERROR_OBJECT }])[0].prop instanceof Error)
+})
