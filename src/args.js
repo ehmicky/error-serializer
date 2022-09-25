@@ -1,17 +1,10 @@
 // `error.constructorArgs` can be set to define specific arguments to call
 // when instantiating the error during parsing.
+// We do not allow the `arguments` keyword since it is deprecated.
 export const setConstructorArgs = function ({ constructorArgs }) {
-  if (
-    Object.prototype.toString.call(constructorArgs) === '[object Arguments]'
-  ) {
-    return [['constructorArgs', [...constructorArgs]]]
-  }
-
-  if (Array.isArray(constructorArgs)) {
-    return [['constructorArgs', constructorArgs]]
-  }
-
-  return []
+  return Array.isArray(constructorArgs)
+    ? [['constructorArgs', constructorArgs]]
+    : []
 }
 
 // Constructor arguments default to the error message and an empty object

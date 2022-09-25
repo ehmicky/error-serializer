@@ -30,10 +30,10 @@ const getArguments = function () {
   return arguments
 }
 
-test('constructorArgs can be "arguments"', (t) => {
+test('constructorArgs cannot be "arguments"', (t) => {
   const error = new Error('test')
   error.constructorArgs = getArguments(true)
-  t.deepEqual(serialize(error).constructorArgs, [true])
+  t.false('constructorArgs' in serialize(error))
 })
 
 // eslint-disable-next-line fp/no-class
