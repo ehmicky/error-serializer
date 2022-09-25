@@ -218,13 +218,14 @@ type ParseDeep<
   Options extends ParseOptions,
 > = Value extends MinimalErrorObject
   ? ParsedError<Value, Options> & {
-      [Key in keyof Value as ParseDeep<Value[Key], Options> extends (
-        Key extends keyof ParsedError<Value, Options>
-          ? ParsedError<Value, Options>[Key]
+      [Key in keyof Value as Key extends keyof ParsedError<Value, Options>
+        ? ParseDeep<Value[Key], Options> extends ParsedError<
+            Value,
+            Options
+          >[Key]
+          ? Key
           : never
-      )
-        ? Key
-        : never]: ParseDeep<Value[Key], Options>
+        : Key]: ParseDeep<Value[Key], Options>
     }
   : Value extends object
   ? { [Key in keyof Value]: ParseDeep<Value[Key], Options> }
