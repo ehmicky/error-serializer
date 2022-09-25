@@ -1,9 +1,9 @@
 import normalizeException from 'normalize-exception'
 import safeJsonValue from 'safe-json-value'
 
-import { isErrorInstance, isErrorObject } from './check.js'
-import { parseError } from './parse/main.js'
-import { serializeError } from './serialize.js'
+import { isErrorInstance } from './check.js'
+import { parseDeep, parseShallow } from './parse/main.js'
+import { serializeDeep, serializeShallow } from './serialize.js'
 
 // Normalize and convert an error instance into a plain object, ready to be
 // serialized.
@@ -12,15 +12,13 @@ import { serializeError } from './serialize.js'
 //    enough to provide features like ensuring the classes are correct
 // We apply `normalize-exception` to ensure a strict input.
 //  - We allow arguments that are not `error` instances
-export const serialize = function (value, { normalize = false } = {}) {
-  if (!normalize && !isErrorInstance(value)) {
-    return value
-  }
-
-  const error = normalizeException(value)
-  const object = serializeError(error)
-  const { value: objectA } = safeJsonValue(object)
-  return objectA
+export const serialize = function (
+  value,
+  { normalize = false, shallow = false } = {},
+) {
+  const valueA = applyNormalize(value, normalize)
+  const valueB = shallow ? serializeShallow(valueA) : serializeDeep(valueA, [])
+  return safeJsonValue(valueB).value
 }
 
 // Normalize and convert an already parsed plain object representing an error
@@ -31,13 +29,16 @@ export const serialize = function (value, { normalize = false } = {}) {
 // We apply `normalize-exception` to ensure a strict output.
 export const parse = function (
   value,
-  { normalize = false, classes = {} } = {},
+  { normalize = false, shallow = false, classes = {} } = {},
 ) {
-  if (!normalize && !isErrorObject(value)) {
-    return value
-  }
+  const valueA = shallow
+    ? parseShallow(value, classes)
+    : parseDeep(value, classes)
+  return applyNormalize(valueA, normalize)
+}
 
-  const error = parseError(value, classes)
-  const errorA = normalizeException(error)
-  return errorA
+const applyNormalize = function (value, normalize) {
+  return normalize && !isErrorInstance(value)
+    ? normalizeException(value)
+    : value
 }
