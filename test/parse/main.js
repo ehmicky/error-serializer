@@ -62,16 +62,19 @@ each([true, [undefined], [{ name: true }]], ({ title }, errors) => {
   })
 })
 
-each(['cause', 'errors'], ({ title }, propName) => {
+each(['cause', 'errors'], [true, false], ({ title }, propName, shallow) => {
   test(`Unsafe properties are ignored | ${title}`, (t) => {
     t.is(
-      parse({
-        ...SIMPLE_ERROR_OBJECT,
-        // eslint-disable-next-line fp/no-get-set
-        get [propName]() {
-          throw new Error('unsafe')
+      parse(
+        {
+          ...SIMPLE_ERROR_OBJECT,
+          // eslint-disable-next-line fp/no-get-set
+          get [propName]() {
+            throw new Error('unsafe')
+          },
         },
-      }).cause,
+        { shallow },
+      ).cause,
       undefined,
     )
   })
