@@ -168,6 +168,12 @@ expectAssignable<'TestError'>(
 expectAssignable<'TestError'>(
   parse({ name: 'TestError' as const, message, stack }, { shallow: true }).name,
 )
+expectAssignable<true>(
+  parse({ name, message, stack, prop: true as const }).prop,
+)
+expectAssignable<true>(
+  parse({ name, message, stack, prop: true as const }, { shallow: true }).prop,
+)
 
 expectAssignable<SerializeOptions>({ normalize: false })
 expectNotAssignable<SerializeOptions>({ normalize: 'true' })

@@ -206,7 +206,7 @@ type ParseShallow<
       [Key in keyof Value as Value[Key] extends (
         Key extends keyof ParsedError<Value, Options>
           ? ParsedError<Value, Options>[Key]
-          : never
+          : unknown
       )
         ? Key
         : never]: Value[Key]
