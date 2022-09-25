@@ -151,6 +151,17 @@ expectNotAssignable<TestError>(
     { shallow: true, classes: { TestError } },
   ).error,
 )
+expectAssignable<TestError>(
+  parse([{ name: 'TestError' as const, message, stack }] as const, {
+    classes: { TestError },
+  })[0],
+)
+expectNotAssignable<TestError>(
+  parse([{ name: 'TestError' as const, message, stack }] as const, {
+    shallow: true,
+    classes: { TestError },
+  })[0],
+)
 
 expectAssignable<SerializeOptions>({ normalize: false })
 expectNotAssignable<SerializeOptions>({ normalize: 'true' })
