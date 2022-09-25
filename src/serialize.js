@@ -4,7 +4,7 @@ import safeJsonValue from 'safe-json-value'
 
 import { setConstructorArgs } from './args.js'
 import { isErrorInstance, safeListKeys } from './check.js'
-import { listProps } from './core.js'
+import { listProps } from './props.js'
 
 // Serialize error instances into plain objects deeply
 export const serializeDeep = function (value, parents) {
