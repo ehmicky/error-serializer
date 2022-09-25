@@ -8,11 +8,8 @@ export const isErrorInstance = function (value) {
 // Check if a value conforms to the error plain object shape.
 // This enforces strict outputs.
 export const isErrorObject = function (value) {
-  return isPlainObj(value) && hasCoreProps(value)
-}
-
-const hasCoreProps = function (value) {
   return (
+    isPlainObj(value) &&
     isStringProp(value, 'name') &&
     isStringProp(value, 'message') &&
     isStringProp(value, 'stack')
