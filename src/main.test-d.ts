@@ -174,6 +174,50 @@ expectAssignable<true>(
 expectAssignable<true>(
   parse({ name, message, stack, prop: true as const }, { shallow: true }).prop,
 )
+expectAssignable<TestError>(
+  parse(
+    {
+      name,
+      message,
+      stack,
+      prop: { name: 'TestError' as const, message, stack } as const,
+    },
+    { classes: { TestError } },
+  ).prop,
+)
+expectNotAssignable<TestError>(
+  parse(
+    {
+      name,
+      message,
+      stack,
+      prop: { name: 'TestError' as const, message, stack } as const,
+    },
+    { shallow: true, classes: { TestError } },
+  ).prop,
+)
+expectAssignable<TestError>(
+  parse(
+    {
+      name,
+      message,
+      stack,
+      cause: { name: 'TestError' as const, message, stack } as const,
+    },
+    { classes: { TestError } },
+  ).cause,
+)
+expectNotAssignable<TestError>(
+  parse(
+    {
+      name,
+      message,
+      stack,
+      cause: { name: 'TestError' as const, message, stack } as const,
+    },
+    { shallow: true, classes: { TestError } },
+  ).cause,
+)
 
 expectAssignable<SerializeOptions>({ normalize: false })
 expectNotAssignable<SerializeOptions>({ normalize: 'true' })
