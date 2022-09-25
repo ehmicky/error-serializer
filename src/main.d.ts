@@ -88,10 +88,14 @@ type SerializeNormalize<
     : Error
   : Argument
 
-type SerializeDeep<Value> = Value extends object
+type SerializeDeep<Value> = Value extends Error
+  ? ErrorObject & {
+      [Key in keyof Value as SerializeDeep<Value[Key]> extends ErrorObject[Key]
+        ? Key
+        : never]: SerializeDeep<Value[Key]>
+    }
+  : Value extends object
   ? { [Key in keyof Value]: SerializeDeep<Value[Key]> }
-  : Value extends Error
-  ? ErrorObject & { name: Value['name'] }
   : Value
 
 // `Error` is both a `CallableFunction` and a `NewableFunction`, which makes
