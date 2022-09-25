@@ -138,11 +138,12 @@ expectType<'TestError'>(
     .name,
 )
 
-expectNotType<Error>(parse({ name: '', message: '' }))
-expectType<Error>(parse({ name: '', message: '', stack: '' }))
+expectNotAssignable<Error>(parse({ name: '' }))
+expectAssignable<Error>(parse({ name: '', message: '', stack: '' }))
 
 class TestError extends Error {
   name: 'TestError' = 'TestError'
+  other: true = true
 }
 
 expectAssignable<ParseOptions>({ classes: {} })
@@ -156,11 +157,11 @@ const testError = new TestError('test')
 expectType<'TestError'>(serialize(testError).name)
 
 const errorObject = { name: 'TestError' as const, message: '', stack: '' }
-expectType<Error>(parse(errorObject))
-expectType<Error>(parse(errorObject, {}))
-expectType<Error>(parse(errorObject, { classes: {} }))
-expectNotType<TestError>(parse(errorObject, { classes: {} }))
-expectType<TestError>(parse(errorObject, { classes: { TestError } }))
+expectAssignable<Error>(parse(errorObject))
+expectAssignable<Error>(parse(errorObject, {}))
+expectAssignable<Error>(parse(errorObject, { classes: {} }))
+expectNotAssignable<TestError>(parse(errorObject, { classes: {} }))
+expectAssignable<TestError>(parse(errorObject, { classes: { TestError } }))
 
 const newTestError = serialize(errorObject)
 expectType<'TestError'>(newTestError.name)
