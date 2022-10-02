@@ -80,6 +80,12 @@ each([true, false], ({ title }, shallow) => {
   test(`Keep non-error properties JSON-unsafe when serializing | ${title}`, (t) => {
     t.is(serialize(Number.NaN, { shallow }), Number.NaN)
   })
+
+  test(`Keep deep non-error properties JSON-unsafe when serializing | ${title}`, (t) => {
+    const error = new Error('test')
+    error.prop = [Number.NaN]
+    t.is(Object.is(serialize(error, { shallow }).prop[0], Number.NaN), shallow)
+  })
 })
 
 test('Remove unsafe non-core properties when serializing', (t) => {

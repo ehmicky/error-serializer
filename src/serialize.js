@@ -16,7 +16,7 @@ export const serializeDeep = function (value, parents) {
 
   const valueA = serializeError(value)
   const valueB = serializeRecurse(valueA, parentsA)
-  return safeJsonValue(valueB).value
+  return safeJsonValue(valueB, { shallow: false }).value
 }
 
 // Serialize a possible error instance into a plain object
@@ -26,7 +26,7 @@ export const serializeShallow = function (value) {
   }
 
   const valueA = serializeError(value)
-  return safeJsonValue(valueA).value
+  return safeJsonValue(valueA, { shallow: true }).value
 }
 
 const serializeError = function (value) {
