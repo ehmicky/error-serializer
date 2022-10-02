@@ -90,7 +90,7 @@ each([true, false], ({ title }, shallow) => {
   test(`Remove cycles when serializing | ${title}`, (t) => {
     const error = new Error('test')
     error.self = error
-    t.false('self' in serialize(error, { shallow }))
+    t.is('self' in serialize(error, { shallow }), shallow)
   })
 })
 
