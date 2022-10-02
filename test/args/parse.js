@@ -32,7 +32,6 @@ test('constructorArgs can be parsed', (t) => {
 test('constructorArgs can be unpacked', (t) => {
   t.deepEqual(
     parse(
-      // eslint-disable-next-line unicorn/no-null
       { ...CUSTOM_ERROR_OBJECT, constructorArgs: [null, true, false] },
       { classes: { CustomError } },
     ).args,

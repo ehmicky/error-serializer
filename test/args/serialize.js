@@ -41,10 +41,8 @@ each(
     { beforePack: ['test', {}], afterPack: undefined },
     { beforePack: ['other'], afterPack: ['other'] },
     { beforePack: ['other', {}], afterPack: ['other', {}] },
-    // eslint-disable-next-line unicorn/no-null
     ...[true, null, { test: true }].map((secondArg) => ({
       beforePack: ['test', secondArg],
-      // eslint-disable-next-line unicorn/no-null
       afterPack: [null, secondArg],
     })),
   ],

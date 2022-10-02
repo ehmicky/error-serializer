@@ -9,7 +9,6 @@ import { SIMPLE_ERROR_OBJECT, FULL_ERROR } from './helpers/main.js'
 const CORE_PROPS = ['name', 'message', 'stack']
 const nonErrors = [
   undefined,
-  // eslint-disable-next-line unicorn/no-null
   null,
   // eslint-disable-next-line no-magic-numbers
   0n,
