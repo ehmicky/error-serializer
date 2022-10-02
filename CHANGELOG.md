@@ -1,3 +1,9 @@
+# 3.3.0
+
+## Features
+
+- Improve [`shallow` option](README.md#shallow) with `serialize()`
+
 # 3.2.0
 
 ## Features
