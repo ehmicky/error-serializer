@@ -86,6 +86,12 @@ each([true, false], ({ title }, shallow) => {
     error.prop = [Number.NaN]
     t.is(Object.is(serialize(error, { shallow }).prop[0], Number.NaN), shallow)
   })
+
+  test(`Remove cycles when serializing | ${title}`, (t) => {
+    const error = new Error('test')
+    error.self = error
+    t.false('self' in serialize(error, { shallow }))
+  })
 })
 
 test('Remove unsafe non-core properties when serializing', (t) => {
