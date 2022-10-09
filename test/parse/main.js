@@ -1,12 +1,9 @@
 import test from 'ava'
 import { parse } from 'error-serializer'
+import isErrorInstance from 'is-error-instance'
 import { each } from 'test-each'
 
 import { SIMPLE_ERROR_OBJECT } from '../helpers/main.js'
-
-const isErrorInstance = function (error) {
-  return error instanceof Error
-}
 
 test('Cause is set', (t) => {
   const message = 'test'

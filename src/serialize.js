@@ -1,9 +1,10 @@
+import isErrorInstance from 'is-error-instance'
 import isPlainObj from 'is-plain-obj'
 import normalizeException from 'normalize-exception'
 import safeJsonValue from 'safe-json-value'
 
 import { setConstructorArgs } from './args.js'
-import { isErrorInstance, safeListKeys } from './check.js'
+import { safeListKeys } from './check.js'
 import { listProps } from './props.js'
 
 // Serialize error instances into plain objects deeply

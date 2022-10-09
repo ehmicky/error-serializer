@@ -1,10 +1,5 @@
 import isPlainObj from 'is-plain-obj'
 
-// Check if a value is an Error instance.
-export const isErrorInstance = function (value) {
-  return Object.prototype.toString.call(value) === '[object Error]'
-}
-
 // Check if a value conforms to the error plain object shape.
 // This enforces strict outputs.
 export const isErrorObject = function (value) {

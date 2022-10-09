@@ -1,3 +1,10 @@
+# 3.4.0
+
+## Features
+
+- Improve error detection using
+  [`is-error-instance`](https://github.com/ehmicky/is-error-instance)
+
 # 3.3.0
 
 ## Features

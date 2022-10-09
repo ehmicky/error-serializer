@@ -1,6 +1,6 @@
+import isErrorInstance from 'is-error-instance'
 import normalizeException from 'normalize-exception'
 
-import { isErrorInstance } from './check.js'
 import { parseDeep, parseShallow } from './parse/main.js'
 import { serializeDeep, serializeShallow } from './serialize.js'
 
