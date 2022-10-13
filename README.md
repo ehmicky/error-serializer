@@ -273,6 +273,8 @@ const newError = parse(errorObject, { classes: { CustomError } })
   to properly create error classes
 - [`normalize-exception`](https://github.com/ehmicky/normalize-exception):
   Normalize exceptions/errors
+- [`is-error-instance`](https://github.com/ehmicky/is-error-instance): Check if
+  a value is an `Error` instance
 - [`merge-error-cause`](https://github.com/ehmicky/merge-error-cause): Merge an
   error with its `cause`
 - [`set-error-class`](https://github.com/ehmicky/set-error-class): Properly
@@ -322,7 +324,7 @@ If you would like to help us fix a bug or add a new feature, please check our
     </tr>
   </tbody>
   <tfoot>
-    
+
   </tfoot>
 </table>
 
