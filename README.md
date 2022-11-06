@@ -74,10 +74,8 @@ Unless this option is `true`, nested errors are also serialized. They can be
 inside other errors, plain objects or arrays.
 
 ```js
-console.log(serialize([{ error: new Error('test') }]))
-// [{ error: { name: 'Error', ... } }]
-console.log(serialize([{ error: new Error('test') }], { shallow: true }))
-// [{ error: Error }]
+serialize([{ error: new Error('test') }]) // [{ error: { name: 'Error', ... } }]
+serialize([{ error: new Error('test') }], { shallow: true }) // [{ error: Error }]
 ```
 
 #### normalize
@@ -88,8 +86,8 @@ _Default_: `false`
 Convert `errorInstance` to an `Error` instance if it is not one.
 
 ```js
-console.log(serialize('example')) // 'example'
-console.log(serialize('example', { normalize: true })) // { name: 'Error', message: 'example', ... }
+serialize('example') // 'example'
+serialize('example', { normalize: true }) // { name: 'Error', message: 'example', ... }
 ```
 
 ## parse(errorObject, options?)
@@ -133,9 +131,9 @@ Unless this option is `true`, nested error plain objects are also parsed.
 ```js
 const errorObject = serialize(new Error('test'))
 
-console.log(parse([{ error: errorObject }]))
+parse([{ error: errorObject }])
 // [{ error: Error }]
-console.log(parse([{ error: errorObject }], { shallow: true }))
+parse([{ error: errorObject }], { shallow: true })
 // [{ error: { name: 'Error', ... } }]
 ```
 
@@ -147,8 +145,8 @@ _Default_: `false`
 Convert `errorObject` to an error plain object if it is not one.
 
 ```js
-console.log(parse('example')) // 'example'
-console.log(parse('example', { normalize: true })) // Error: example
+parse('example') // 'example'
+parse('example', { normalize: true }) // Error: example
 ```
 
 # Usage
@@ -158,12 +156,14 @@ console.log(parse('example', { normalize: true })) // Error: example
 Error plain objects are always
 [safe to serialize with JSON](https://github.com/ehmicky/safe-json-value).
 
+<!-- eslint-disable no-unused-expressions -->
+
 ```js
 const error = new Error('example')
 error.cycle = error
 
 // Cycles make `JSON.stringify()` throw, so they are removed
-console.log(serialize(error).cycle) // undefined
+serialize(error).cycle // undefined
 ```
 
 ## `error.toJSON()`
@@ -183,9 +183,9 @@ class CustomError extends Error {
 }
 const error = new CustomError('example')
 
-console.log(error.toJSON())
+error.toJSON()
 // { name: 'CustomError', message: 'example', stack: '...' }
-console.log(JSON.stringify(error))
+JSON.stringify(error)
 // '{"name":"CustomError","message":"example","stack":"..."}'
 ```
 
