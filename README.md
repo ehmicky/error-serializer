@@ -257,6 +257,7 @@ class CustomError extends Error {
     this.constructorArgs = [prefix, message]
   }
 }
+CustomError.prototype.name = 'CustomError'
 
 const error = new CustomError('Prefix', 'example')
 
