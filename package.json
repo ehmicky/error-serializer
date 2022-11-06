@@ -50,7 +50,7 @@
     "test": "test"
   },
   "dependencies": {
-    "is-error-instance": "^1.1.0",
+    "is-error-instance": "^1.2.0",
     "is-plain-obj": "^4.1.0",
     "normalize-exception": "^2.9.0",
     "safe-json-value": "^1.8.0"
