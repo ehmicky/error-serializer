@@ -1,4 +1,4 @@
-import { runInNewContext } from 'vm'
+import { runInNewContext } from 'node:vm'
 
 import test from 'ava'
 import { serialize, parse } from 'error-serializer'
