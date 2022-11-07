@@ -1,3 +1,9 @@
+# 3.6.0
+
+## Features
+
+- Add browser support
+
 # 3.5.1
 
 ## Bug fixes
