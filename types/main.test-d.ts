@@ -11,7 +11,7 @@ import {
   ParseOptions,
   SerializeOptions,
   ErrorObject,
-} from './main.js'
+} from 'error-serializer'
 
 class TestError extends Error {
   name: 'TestError' = 'TestError'
