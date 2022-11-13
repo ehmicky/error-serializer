@@ -16,14 +16,10 @@ export const serialize = function (
   { normalize = false, shallow = false, beforeSerialize, afterSerialize } = {},
 ) {
   const valueA = applyNormalize(value, normalize)
+  const events = { beforeSerialize, afterSerialize }
   return shallow
-    ? serializeShallow({ value: valueA, beforeSerialize, afterSerialize })
-    : serializeDeep({
-        value: valueA,
-        beforeSerialize,
-        afterSerialize,
-        parents: [],
-      })
+    ? serializeShallow(valueA, events)
+    : serializeDeep(valueA, events, [])
 }
 
 // Normalize and convert an already parsed plain object representing an error
@@ -42,9 +38,10 @@ export const parse = function (
     classes = {},
   } = {},
 ) {
+  const events = { beforeParse, afterParse }
   const valueA = shallow
-    ? parseShallow({ value, beforeParse, afterParse, classes })
-    : parseDeep({ value, beforeParse, afterParse, classes })
+    ? parseShallow(value, events, classes)
+    : parseDeep(value, events, classes)
   return applyNormalize(valueA, normalize)
 }
 

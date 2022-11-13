@@ -9,48 +9,29 @@ import { callEvent } from './event.js'
 import { listProps } from './props.js'
 
 // Serialize error instances into plain objects deeply
-export const serializeDeep = function ({
-  value,
-  beforeSerialize,
-  afterSerialize,
-  parents,
-}) {
+export const serializeDeep = function (value, events, parents) {
   const parentsA = [...parents, value]
 
   if (!isErrorInstance(value)) {
-    return serializeRecurse({
-      value,
-      beforeSerialize,
-      afterSerialize,
-      parents: parentsA,
-    })
+    return serializeRecurse(value, events, parentsA)
   }
 
-  const errorObject = serializeError(value, beforeSerialize, afterSerialize)
-  const valueA = serializeRecurse({
-    value: errorObject,
-    beforeSerialize,
-    afterSerialize,
-    parents: parentsA,
-  })
+  const errorObject = serializeError(value, events)
+  const valueA = serializeRecurse(errorObject, events, parentsA)
   return safeJsonValue(valueA, { shallow: false }).value
 }
 
 // Serialize a possible error instance into a plain object
-export const serializeShallow = function ({
-  value,
-  beforeSerialize,
-  afterSerialize,
-}) {
+export const serializeShallow = function (value, events) {
   if (!isErrorInstance(value)) {
     return value
   }
 
-  const errorObject = serializeError(value, beforeSerialize, afterSerialize)
+  const errorObject = serializeError(value, events)
   return safeJsonValue(errorObject, { shallow: true }).value
 }
 
-const serializeError = function (error, beforeSerialize, afterSerialize) {
+const serializeError = function (error, { beforeSerialize, afterSerialize }) {
   const errorA = normalizeException(error)
   callEvent(errorA, beforeSerialize)
   const errorObject = Object.fromEntries([
@@ -71,23 +52,11 @@ const hasValue = function ([, value]) {
   return value !== undefined
 }
 
-const serializeRecurse = function ({
-  value,
-  beforeSerialize,
-  afterSerialize,
-  parents,
-}) {
+const serializeRecurse = function (value, events, parents) {
   if (Array.isArray(value)) {
     return value
       .filter((child) => !parents.includes(child))
-      .map((child) =>
-        serializeDeep({
-          value: child,
-          beforeSerialize,
-          afterSerialize,
-          parents,
-        }),
-      )
+      .map((child) => serializeDeep(child, events, parents))
   }
 
   if (isPlainObj(value)) {
@@ -96,12 +65,7 @@ const serializeRecurse = function ({
         .filter((propName) => !parents.includes(value[propName]))
         .map((propName) => [
           propName,
-          serializeDeep({
-            value: value[propName],
-            beforeSerialize,
-            afterSerialize,
-            parents,
-          }),
+          serializeDeep(value[propName], events, parents),
         ]),
     )
   }
