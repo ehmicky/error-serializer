@@ -17,7 +17,7 @@ Convert errors to/from plain objects.
   `process.send()`)
 - Keeps both native (`TypeError`, etc.) and [custom](#classes) error classes
 - Preserves errors' [additional properties](#additional-error-properties)
-- Can keep [constructor's arguments](#constructors-arguments)
+- Can keep [constructor's arguments](#constructors)
 - Works [recursively](#errorcause-and-aggregateerror) with
   [`error.cause`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/cause)
   and
@@ -240,11 +240,11 @@ const newError = parse(errorObject)
 //   [errors]: [Error: one, Error: two]
 ```
 
-## Constructor's arguments
+## Constructors
 
 By default, when an error with custom [`classes`](#classes) is parsed, its
-constructor is not called. In most cases, this is not a problem though since any
-property previously set by the constructor is still preserved, providing it is
+constructor is not called. In most cases, this is not a problem since any
+property previously set by that constructor is still preserved, providing it is
 serializable and enumerable.
 
 However, if the `error.constructorArgs` property is set, the constructor will be

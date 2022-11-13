@@ -4,7 +4,7 @@
 
 - When parsing an error and the [`classes` option](README.md#classes) was
   defined, the `constructor` is not called anymore unless
-  [`error.constructorArgs`](README.md#constructors-arguments) was set
+  [`error.constructorArgs`](README.md#constructors) was set
 
 # 3.7.0
 
