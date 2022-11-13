@@ -36,10 +36,10 @@ export interface SerializeOptions {
    *
    * @example
    * ```js
-   * const error = new Error('test')
-   * error.prop = new Error('prop')
-   * serialize(error).prop // { name: 'Error', message: 'prop', ... }
-   * serialize(error, { shallow: true }).prop // Error: prop ...
+   * const error = new Error('example')
+   * error.inner = new Error('inner')
+   * serialize(error).inner // { name: 'Error', message: 'inner', ... }
+   * serialize(error, { shallow: true }).inner // Error: inner ...
    * ```
    */
   readonly shallow?: boolean
@@ -190,17 +190,18 @@ type ErrorClass = new (message: string) => Error
 export interface ParseOptions {
   /**
    * Unless this option is `true`, nested error plain objects are also parsed.
+   * They can be inside other errors, plain objects or arrays.
    *
    * @default false
    *
    * @example
    * ```js
-   * const error = new Error('test')
-   * error.prop = new Error('prop')
+   * const error = new Error('example')
+   * error.inner = new Error('inner')
    * const errorObject = serialize(error)
    *
-   * parse(errorObject).prop // Error: prop ...
-   * parse(errorObject, { shallow: true }).prop // { name: 'Error', message: ... }
+   * parse(errorObject).inner // Error: inner ...
+   * parse(errorObject, { shallow: true }).inner // { name: 'Error', message: ... }
    * ```
    */
   readonly shallow?: boolean
