@@ -8,20 +8,20 @@ import { listProps, SET_CORE_PROPS, NON_ENUMERABLE_PROPS } from '../props.js'
 import { createError } from './create.js'
 
 // Parse error plain objects into error instances deeply
-export const parseDeep = function (value, onError, classes) {
-  const valueA = parseRecurse(value, onError, classes)
-  return parseShallow(valueA, onError, classes)
+export const parseDeep = function (value, afterParse, classes) {
+  const valueA = parseRecurse(value, afterParse, classes)
+  return parseShallow(valueA, afterParse, classes)
 }
 
 // Parse a possible error plain object into an error instance
-export const parseShallow = function (value, onError, classes) {
+export const parseShallow = function (value, afterParse, classes) {
   if (!isErrorObject(value)) {
     return value
   }
 
   const valueA = parseErrorObject(value, classes)
   const error = normalizeException(valueA)
-  callEvent(error, onError)
+  callEvent(error, afterParse)
   return error
 }
 
@@ -62,16 +62,16 @@ const setProp = function (error, object, propName) {
   })
 }
 
-const parseRecurse = function (value, onError, classes) {
+const parseRecurse = function (value, afterParse, classes) {
   if (Array.isArray(value)) {
-    return value.map((child) => parseDeep(child, onError, classes))
+    return value.map((child) => parseDeep(child, afterParse, classes))
   }
 
   if (isPlainObj(value)) {
     return Object.fromEntries(
       safeListKeys(value).map((propName) => [
         propName,
-        parseDeep(value[propName], onError, classes),
+        parseDeep(value[propName], afterParse, classes),
       ]),
     )
   }

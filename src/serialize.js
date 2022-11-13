@@ -9,31 +9,31 @@ import { callEvent } from './event.js'
 import { listProps } from './props.js'
 
 // Serialize error instances into plain objects deeply
-export const serializeDeep = function (value, onError, parents) {
+export const serializeDeep = function (value, beforeSerialize, parents) {
   const parentsA = [...parents, value]
 
   if (!isErrorInstance(value)) {
-    return serializeRecurse(value, onError, parentsA)
+    return serializeRecurse(value, beforeSerialize, parentsA)
   }
 
-  const valueA = serializeError(value, onError)
-  const valueB = serializeRecurse(valueA, onError, parentsA)
+  const valueA = serializeError(value, beforeSerialize)
+  const valueB = serializeRecurse(valueA, beforeSerialize, parentsA)
   return safeJsonValue(valueB, { shallow: false }).value
 }
 
 // Serialize a possible error instance into a plain object
-export const serializeShallow = function (value, onError) {
+export const serializeShallow = function (value, beforeSerialize) {
   if (!isErrorInstance(value)) {
     return value
   }
 
-  const valueA = serializeError(value, onError)
+  const valueA = serializeError(value, beforeSerialize)
   return safeJsonValue(valueA, { shallow: true }).value
 }
 
-const serializeError = function (error, onError) {
+const serializeError = function (error, beforeSerialize) {
   const errorA = normalizeException(error)
-  callEvent(errorA, onError)
+  callEvent(errorA, beforeSerialize)
   return Object.fromEntries([
     ...getProps(errorA),
     ...setConstructorArgs(errorA),
@@ -50,11 +50,11 @@ const hasValue = function ([, value]) {
   return value !== undefined
 }
 
-const serializeRecurse = function (value, onError, parents) {
+const serializeRecurse = function (value, beforeSerialize, parents) {
   if (Array.isArray(value)) {
     return value
       .filter((child) => !parents.includes(child))
-      .map((child) => serializeDeep(child, onError, parents))
+      .map((child) => serializeDeep(child, beforeSerialize, parents))
   }
 
   if (isPlainObj(value)) {
@@ -63,7 +63,7 @@ const serializeRecurse = function (value, onError, parents) {
         .filter((propName) => !parents.includes(value[propName]))
         .map((propName) => [
           propName,
-          serializeDeep(value[propName], onError, parents),
+          serializeDeep(value[propName], beforeSerialize, parents),
         ]),
     )
   }

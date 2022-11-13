@@ -1,11 +1,11 @@
-// Call `opts.onError(error)`
+// Call `opts.beforeSerialize|afterParse(error)`
 // Exceptions are ignored to guarantee error handling safety.
-export const callEvent = function (error, onError) {
-  if (onError === undefined) {
+export const callEvent = function (error, eventCallback) {
+  if (eventCallback === undefined) {
     return
   }
 
   try {
-    onError(error)
+    eventCallback(error)
   } catch {}
 }
