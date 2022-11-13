@@ -12,7 +12,8 @@ Convert errors to/from plain objects.
 
 - Ensures errors are [safe to serialize with JSON](#json-safety)
 - Can be used as [`error.toJSON()`](#errortojson)
-- [Deep serialization/parsing](#shallow)
+- [Deep serialization/parsing](#shallow), including
+  [event callbacks](#afterparseerror)
 - [Custom serialization/parsing](#custom-serializationparsing) (e.g. YAML or
   `process.send()`)
 - Keeps both native (`TypeError`, etc.) and [custom](#classes) error classes
@@ -92,18 +93,24 @@ serialize('example') // 'example'
 serialize('example', { normalize: true }) // { name: 'Error', message: 'example', ... }
 ```
 
-#### onError(error)
+#### beforeSerialize(error)
 
 _Type_: `(Error) => void`
 
 Called before serializing each `errorInstance`.
 
+<!-- eslint-disable fp/no-mutation -->
+
 ```js
-serialize(new Error('test'), {
-  onError(error) {
-    error.prop = 'example'
+const originalError = new Error('test')
+originalError.date = new Date()
+
+const errorObject = serialize(originalError, {
+  beforeSerialize(error) {
+    error.date = error.date.toString()
   },
-}) // { name: 'Error', prop: 'example', ... }
+})
+console.log(errorObject.date) // Date string
 ```
 
 ## parse(errorObject, options?)
@@ -163,7 +170,7 @@ parse('example') // 'example'
 parse('example', { normalize: true }) // Error: example
 ```
 
-#### onError(error)
+#### afterParse(error)
 
 _Type_: `(Error) => void`
 
@@ -176,17 +183,18 @@ const originalError = new Error('test')
 originalError.date = new Date()
 
 const errorObject = serialize(originalError, {
-  onError(error) {
+  beforeSerialize(error) {
     error.date = error.date.toString()
   },
 })
+console.log(errorObject.date) // Date string
 
 const newError = parse(errorObject, {
-  onError(error) {
+  afterParse(error) {
     error.date = new Date(error.date)
   },
 })
-console.log(newError.date)
+console.log(newError.date) // `Date` instance
 ```
 
 # Usage
