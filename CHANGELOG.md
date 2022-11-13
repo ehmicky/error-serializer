@@ -1,3 +1,9 @@
+# 4.2.0
+
+## Features
+
+- Improve input validation
+
 # 4.1.0
 
 ## Features

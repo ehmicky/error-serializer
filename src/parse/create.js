@@ -19,7 +19,7 @@ export const createError = function (
 // error names from their classes, since the parsing logic might have different
 // sets of error instances than the serializing logic.
 const getErrorClass = function (name, classes) {
-  if (typeof classes[name] === 'function') {
+  if (classes[name] !== undefined) {
     return classes[name]
   }
 

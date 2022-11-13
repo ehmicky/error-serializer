@@ -1,8 +1,11 @@
 import isErrorInstance from 'is-error-instance'
 import normalizeException from 'normalize-exception'
 
+import { normalizeOptions, validateOptions } from './options.js'
 import { parseDeep, parseShallow } from './parse/main.js'
 import { serializeDeep, serializeShallow } from './serialize.js'
+
+export { validateOptions }
 
 // Normalize and convert an error instance into a plain object, ready to be
 // serialized.
@@ -11,10 +14,9 @@ import { serializeDeep, serializeShallow } from './serialize.js'
 //    enough to provide features like ensuring the classes are correct
 // We apply `normalize-exception` to ensure a strict input.
 //  - We allow arguments that are not `error` instances
-export const serialize = function (
-  value,
-  { normalize = false, shallow = false, beforeSerialize, afterSerialize } = {},
-) {
+export const serialize = function (value, options) {
+  const { normalize, shallow, beforeSerialize, afterSerialize } =
+    normalizeOptions(options)
   const valueA = applyNormalize(value, normalize)
   const events = { beforeSerialize, afterSerialize }
   return shallow
@@ -28,16 +30,9 @@ export const serialize = function (
 //  - This prevents throwing exceptions which would be a problem if used inside
 //    some error handling logic
 // We apply `normalize-exception` to ensure a strict output.
-export const parse = function (
-  value,
-  {
-    normalize = false,
-    shallow = false,
-    beforeParse,
-    afterParse,
-    classes = {},
-  } = {},
-) {
+export const parse = function (value, options) {
+  const { normalize, shallow, beforeParse, afterParse, classes } =
+    normalizeOptions(options)
   const events = { beforeParse, afterParse }
   const valueA = shallow
     ? parseShallow(value, events, classes)

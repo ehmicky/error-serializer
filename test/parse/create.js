@@ -15,6 +15,16 @@ test('Re-use builtin error classes', (t) => {
   t.is(parse({ ...SIMPLE_ERROR_OBJECT, name: 'TypeError' }).name, 'TypeError')
 })
 
+test('Ignore classes option that are undefined', (t) => {
+  t.is(
+    parse(
+      { ...SIMPLE_ERROR_OBJECT, name: 'TypeError' },
+      { classes: { TypeError: undefined } },
+    ).name,
+    'TypeError',
+  )
+})
+
 test('Can re-use aggregate error classes', (t) => {
   const object = {
     ...SIMPLE_ERROR_OBJECT,
