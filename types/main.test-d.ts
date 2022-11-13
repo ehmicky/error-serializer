@@ -139,12 +139,61 @@ expectNotAssignable<TestError>(
 
 expectAssignable<SerializeOptions>({ normalize: false })
 expectNotAssignable<SerializeOptions>({ normalize: 'true' })
-expectAssignable<ParseOptions>({ normalize: false })
-expectNotAssignable<ParseOptions>({ normalize: 'true' })
 expectType<true>(serialize(true))
 expectType<true>(serialize(true, { normalize: false }))
 expectAssignable<ErrorObject>(serialize(true, { normalize: true }))
 expectType<'TestError'>(serialize(error, { normalize: true }).name)
+
+expectNotAssignable<SerializeOptions>({ beforeSerialize: false })
+expectNotAssignable<SerializeOptions>({
+  beforeSerialize(error: boolean) {},
+})
+expectAssignable<SerializeOptions>({ beforeSerialize() {} })
+expectAssignable<SerializeOptions>({ beforeSerialize(error: Error) {} })
+expectAssignable<SerializeOptions>({
+  beforeSerialize(error: Error) {
+    return true
+  },
+})
+
+expectNotAssignable<SerializeOptions>({ afterSerialize: false })
+expectNotAssignable<SerializeOptions>({
+  afterSerialize(error: boolean) {},
+})
+expectAssignable<SerializeOptions>({ afterSerialize() {} })
+expectAssignable<SerializeOptions>({ afterSerialize(error: Error) {} })
+expectAssignable<SerializeOptions>({
+  afterSerialize(error: Error) {
+    return true
+  },
+})
+
+expectNotAssignable<ParseOptions>({ beforeParse: false })
+expectNotAssignable<ParseOptions>({
+  beforeParse(errorObject: boolean) {},
+})
+expectAssignable<ParseOptions>({ beforeParse() {} })
+expectAssignable<ParseOptions>({ beforeParse(errorObject: ErrorObject) {} })
+expectAssignable<ParseOptions>({
+  beforeParse(errorObject: ErrorObject) {
+    return true
+  },
+})
+
+expectNotAssignable<ParseOptions>({ afterParse: false })
+expectNotAssignable<ParseOptions>({
+  afterParse(errorObject: boolean) {},
+})
+expectAssignable<ParseOptions>({ afterParse() {} })
+expectAssignable<ParseOptions>({ afterParse(errorObject: ErrorObject) {} })
+expectAssignable<ParseOptions>({
+  afterParse(errorObject: ErrorObject) {
+    return true
+  },
+})
+
+expectAssignable<ParseOptions>({ normalize: false })
+expectNotAssignable<ParseOptions>({ normalize: 'true' })
 expectType<true>(parse(true))
 expectType<true>(parse(true, { normalize: false }))
 expectType<Error>(parse(true, { normalize: true }))
