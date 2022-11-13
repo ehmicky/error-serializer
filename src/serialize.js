@@ -16,9 +16,12 @@ export const serializeDeep = function (value, events, parents) {
     return serializeRecurse(value, events, parentsA)
   }
 
-  const errorObject = serializeError(value, events)
-  const valueA = serializeRecurse(errorObject, events, parentsA)
-  return safeJsonValue(valueA, { shallow: false }).value
+  const error = normalizeException(value)
+  const errorObject = serializeError(error, events)
+  const errorObjectA = serializeRecurse(errorObject, events, parentsA)
+  const errorObjectB = safeJsonValue(errorObjectA, { shallow: false }).value
+  callEvent(events.afterSerialize, error, errorObjectB)
+  return errorObjectB
 }
 
 // Serialize a possible error instance into a plain object
@@ -27,19 +30,16 @@ export const serializeShallow = function (value, events) {
     return value
   }
 
-  const errorObject = serializeError(value, events)
-  return safeJsonValue(errorObject, { shallow: true }).value
+  const error = normalizeException(value)
+  const errorObject = serializeError(error, events)
+  const errorObjectA = safeJsonValue(errorObject, { shallow: true }).value
+  callEvent(events.afterSerialize, error, errorObjectA)
+  return errorObjectA
 }
 
-const serializeError = function (error, { beforeSerialize, afterSerialize }) {
-  const errorA = normalizeException(error)
-  callEvent(beforeSerialize, errorA)
-  const errorObject = Object.fromEntries([
-    ...getProps(errorA),
-    ...setConstructorArgs(errorA),
-  ])
-  callEvent(afterSerialize, errorA, errorObject)
-  return errorObject
+const serializeError = function (error, { beforeSerialize }) {
+  callEvent(beforeSerialize, error)
+  return Object.fromEntries([...getProps(error), ...setConstructorArgs(error)])
 }
 
 const getProps = function (error) {

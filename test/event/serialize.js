@@ -39,6 +39,14 @@ test('afterSerialize() is called with the right arguments', (t) => {
   t.deepEqual(error.args, [errorObject])
 })
 
+test('afterSerialize() is called after full serialization', (t) => {
+  const error = new Error('test')
+  const date = new Date()
+  error.date = date
+  serialize(error, { afterSerialize: addArgs })
+  t.is(error.args[0].date, date.toJSON())
+})
+
 each(['beforeSerialize', 'afterSerialize'], ({ title }, eventName) => {
   test(`Serialization events are called deeply | ${title}`, (t) => {
     const error = new Error('test')

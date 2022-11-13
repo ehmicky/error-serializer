@@ -13,6 +13,10 @@ const addArgs = function (errorObject, ...args) {
   errorObject.set.add(args)
 }
 
+const addCause = function (errorObject, error) {
+  errorObject.set.add(error.cause)
+}
+
 const unsafeEvent = function () {
   throw new Error('unsafe')
 }
@@ -35,6 +39,12 @@ test('afterParse() is called with the right arguments', (t) => {
   const set = new Set([])
   const error = parse({ ...SIMPLE_ERROR_OBJECT, set }, { afterParse: addArgs })
   t.deepEqual([...set], [[error]])
+})
+
+test('afterParse() is called after full parsing', (t) => {
+  const set = new Set([])
+  parse({ ...SIMPLE_ERROR_OBJECT, set, cause: true }, { afterParse: addCause })
+  t.true([...set][0] instanceof Error)
 })
 
 each(['beforeParse', 'afterParse'], ({ title }, eventName) => {
