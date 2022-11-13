@@ -98,9 +98,9 @@ _Type_: `(errorInstance) => void`
 
 Called [before serializing](#events) each `errorInstance`.
 
-#### afterSerialize(errorInstance)
+#### afterSerialize(errorInstance, errorObject)
 
-_Type_: `(errorInstance) => void`
+_Type_: `(errorInstance, errorObject) => void`
 
 Called [after serializing](#events) each `errorInstance`.
 
@@ -167,9 +167,9 @@ _Type_: `(errorObject) => void`
 
 Called [before parsing](#events) each `errorObject`.
 
-#### afterParse(errorObject)
+#### afterParse(errorObject, errorInstance)
 
-_Type_: `(errorObject) => void`
+_Type_: `(errorObject, errorInstance) => void`
 
 Called [after parsing](#events) each `errorObject`.
 
@@ -248,30 +248,29 @@ console.log(newError.prop) // true
 <!-- eslint-disable fp/no-mutation, no-param-reassign -->
 
 ```js
-const error = new Error('test')
-error.date = new Date()
-const errors = [error]
+const errors = [new Error('test')]
+errors[0].date = new Date()
 
 const errorObjects = serialize(errors, {
   // Serialize `Date` instances as strings
-  beforeSerialize(errorArg) {
-    errorArg.date = errorArg.date.toString()
+  beforeSerialize(error) {
+    error.date = error.date.toString()
   },
   // Restore `error.date` after serializing it
-  afterSerialize(errorArg) {
-    errorArg.date = new Date(errorArg.date)
+  afterSerialize(error, errorObject) {
+    error.date = new Date(error.date)
   },
 })
 console.log(errorObjects[0].date) // Date string
 
 const newErrors = parse(errorObjects, {
   // Parse date strings as `Date` instances
-  beforeParse(errorObjectArg) {
-    errorObjectArg.date = new Date(errorObjectArg.date)
+  beforeParse(errorObject) {
+    errorObject.date = new Date(errorObject.date)
   },
   // Restore `errorObject.date` after parsing
-  afterParse(errorObjectArg) {
-    errorObjectArg.date = errorObjectArg.date.toString()
+  afterParse(errorObject, error) {
+    errorObject.date = errorObject.date.toString()
   },
 })
 console.log(newErrors[0].date) // `Date` instance
