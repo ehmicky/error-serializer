@@ -250,8 +250,9 @@ console.log(newError.prop) // true
 ```js
 const error = new Error('test')
 error.date = new Date()
+const errors = [error]
 
-const errorObject = serialize(error, {
+const errorObjects = serialize(errors, {
   // Serialize `Date` instances as strings
   beforeSerialize(errorArg) {
     errorArg.date = errorArg.date.toString()
@@ -261,9 +262,9 @@ const errorObject = serialize(error, {
     errorArg.date = new Date(errorArg.date)
   },
 })
-console.log(errorObject.date) // Date string
+console.log(errorObjects[0].date) // Date string
 
-const newError = parse(errorObject, {
+const newErrors = parse(errorObjects, {
   // Parse date strings as `Date` instances
   beforeParse(errorObjectArg) {
     errorObjectArg.date = new Date(errorObjectArg.date)
@@ -273,7 +274,7 @@ const newError = parse(errorObject, {
     errorObjectArg.date = errorObjectArg.date.toString()
   },
 })
-console.log(newError.date) // `Date` instance
+console.log(newErrors[0].date) // `Date` instance
 ```
 
 ## `error.cause` and `AggregateError`
