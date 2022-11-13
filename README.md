@@ -270,7 +270,7 @@ const newError = parse(errorObject, {
   },
   // Restore `errorObject.date` after parsing
   afterParse(errorObjectArg) {
-    errorObjectArg.date = new Date(errorObjectArg.date)
+    errorObjectArg.date = errorObjectArg.date.toString()
   },
 })
 console.log(newError.date) // `Date` instance
