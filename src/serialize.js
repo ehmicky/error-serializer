@@ -5,7 +5,7 @@ import safeJsonValue from 'safe-json-value'
 
 import { setConstructorArgs } from './args.js'
 import { safeListKeys } from './check.js'
-import { callOnError } from './event.js'
+import { callEvent } from './event.js'
 import { listProps } from './props.js'
 
 // Serialize error instances into plain objects deeply
@@ -33,7 +33,7 @@ export const serializeShallow = function (value, onError) {
 
 const serializeError = function (error, onError) {
   const errorA = normalizeException(error)
-  callOnError(errorA, onError)
+  callEvent(errorA, onError)
   return Object.fromEntries([
     ...getProps(errorA),
     ...setConstructorArgs(errorA),
