@@ -12,8 +12,7 @@ Convert errors to/from plain objects.
 
 - Ensures errors are [safe to serialize with JSON](#json-safety)
 - Can be used as [`error.toJSON()`](#errortojson)
-- [Deep serialization/parsing](#shallow), including
-  [event callbacks](#afterparseerror)
+- [Deep serialization/parsing](#shallow), including [event callbacks](#events)
 - [Custom serialization/parsing](#custom-serializationparsing) (e.g. YAML or
   `process.send()`)
 - Keeps both native (`TypeError`, etc.) and [custom](#classes) error classes
@@ -93,25 +92,17 @@ serialize('example') // 'example'
 serialize('example', { normalize: true }) // { name: 'Error', message: 'example', ... }
 ```
 
-#### beforeSerialize(error)
+#### beforeSerialize(errorInstance)
 
-_Type_: `(Error) => void`
+_Type_: `(errorInstance) => void`
 
-Called before serializing each `errorInstance`.
+Called [before serializing](#events) each `errorInstance`.
 
-<!-- eslint-disable fp/no-mutation -->
+#### afterSerialize(errorInstance)
 
-```js
-const originalError = new Error('test')
-originalError.date = new Date()
+_Type_: `(errorInstance) => void`
 
-const errorObject = serialize(originalError, {
-  beforeSerialize(error) {
-    error.date = error.date.toString()
-  },
-})
-console.log(errorObject.date) // Date string
-```
+Called [after serializing](#events) each `errorInstance`.
 
 ## parse(errorObject, options?)
 
@@ -170,32 +161,17 @@ parse('example') // 'example'
 parse('example', { normalize: true }) // Error: example
 ```
 
-#### afterParse(error)
+#### beforeParse(errorObject)
 
-_Type_: `(Error) => void`
+_Type_: `(errorObject) => void`
 
-Called after parsing each `errorInstance`.
+Called [before parsing](#events) each `errorObject`.
 
-<!-- eslint-disable fp/no-mutation -->
+#### afterParse(errorObject)
 
-```js
-const originalError = new Error('test')
-originalError.date = new Date()
+_Type_: `(errorObject) => void`
 
-const errorObject = serialize(originalError, {
-  beforeSerialize(error) {
-    error.date = error.date.toString()
-  },
-})
-console.log(errorObject.date) // Date string
-
-const newError = parse(errorObject, {
-  afterParse(error) {
-    error.date = new Date(error.date)
-  },
-})
-console.log(newError.date) // `Date` instance
-```
+Called [after parsing](#events) each `errorObject`.
 
 # Usage
 
@@ -265,6 +241,39 @@ const errorObject = serialize(error)
 console.log(errorObject.prop) // true
 const newError = parse(errorObject)
 console.log(newError.prop) // true
+```
+
+## Events
+
+<!-- eslint-disable fp/no-mutation, no-param-reassign -->
+
+```js
+const error = new Error('test')
+error.date = new Date()
+
+const errorObject = serialize(error, {
+  // Serialize `Date` instances as strings
+  beforeSerialize(errorArg) {
+    errorArg.date = errorArg.date.toString()
+  },
+  // Restore `error.date` after serializing it
+  afterSerialize(errorArg) {
+    errorArg.date = new Date(errorArg.date)
+  },
+})
+console.log(errorObject.date) // Date string
+
+const newError = parse(errorObject, {
+  // Parse date strings as `Date` instances
+  beforeParse(errorObjectArg) {
+    errorObjectArg.date = new Date(errorObjectArg.date)
+  },
+  // Restore `errorObject.date` after parsing
+  afterParse(errorObjectArg) {
+    errorObjectArg.date = new Date(errorObjectArg.date)
+  },
+})
+console.log(newError.date) // `Date` instance
 ```
 
 ## `error.cause` and `AggregateError`
