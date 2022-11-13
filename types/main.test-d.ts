@@ -148,6 +148,9 @@ expectNotAssignable<SerializeOptions>({ beforeSerialize: false })
 expectNotAssignable<SerializeOptions>({
   beforeSerialize(error: boolean) {},
 })
+expectNotAssignable<SerializeOptions>({
+  beforeSerialize(error: Error, extra: boolean) {},
+})
 expectAssignable<SerializeOptions>({ beforeSerialize() {} })
 expectAssignable<SerializeOptions>({ beforeSerialize(error: Error) {} })
 expectAssignable<SerializeOptions>({
@@ -160,10 +163,16 @@ expectNotAssignable<SerializeOptions>({ afterSerialize: false })
 expectNotAssignable<SerializeOptions>({
   afterSerialize(error: boolean) {},
 })
+expectNotAssignable<SerializeOptions>({
+  afterSerialize(error: Error, errorObject: ErrorObject, extra: boolean) {},
+})
 expectAssignable<SerializeOptions>({ afterSerialize() {} })
 expectAssignable<SerializeOptions>({ afterSerialize(error: Error) {} })
 expectAssignable<SerializeOptions>({
-  afterSerialize(error: Error) {
+  afterSerialize(error: Error, errorObject: ErrorObject) {},
+})
+expectAssignable<SerializeOptions>({
+  afterSerialize(error: Error, errorObject: ErrorObject) {
     return true
   },
 })
@@ -171,6 +180,9 @@ expectAssignable<SerializeOptions>({
 expectNotAssignable<ParseOptions>({ beforeParse: false })
 expectNotAssignable<ParseOptions>({
   beforeParse(errorObject: boolean) {},
+})
+expectNotAssignable<ParseOptions>({
+  beforeParse(errorObject: ErrorObject, extra: boolean) {},
 })
 expectAssignable<ParseOptions>({ beforeParse() {} })
 expectAssignable<ParseOptions>({ beforeParse(errorObject: ErrorObject) {} })
@@ -184,10 +196,15 @@ expectNotAssignable<ParseOptions>({ afterParse: false })
 expectNotAssignable<ParseOptions>({
   afterParse(errorObject: boolean) {},
 })
+expectNotAssignable<ParseOptions>({
+  afterParse(errorObject: ErrorObject, error: Error, extra: boolean) {},
+})
 expectAssignable<ParseOptions>({ afterParse() {} })
-expectAssignable<ParseOptions>({ afterParse(errorObject: ErrorObject) {} })
 expectAssignable<ParseOptions>({
-  afterParse(errorObject: ErrorObject) {
+  afterParse(errorObject: ErrorObject, error: Error) {},
+})
+expectAssignable<ParseOptions>({
+  afterParse(errorObject: ErrorObject, error: Error) {
     return true
   },
 })
