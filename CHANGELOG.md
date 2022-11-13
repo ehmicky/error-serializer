@@ -6,6 +6,14 @@
   defined, the `constructor` is not called anymore unless
   [`error.constructorArgs`](README.md#constructors) was set
 
+## Features
+
+- Added options [`beforeSerialize()`](README.md#beforeserializeerrorinstance),
+  [`afterSerialize()`](README.md#afterserializeerrorinstance),
+  [`beforeParse()`](README.md#beforeparseerrorobject) and
+  [`afterParse()`](README.md#afterparseerrorobject) to
+  [customize](README.md#events) the serialization and parsing of each error
+
 # 3.7.0
 
 ## Features
