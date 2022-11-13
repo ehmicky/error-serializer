@@ -247,9 +247,9 @@ constructor is not called. In most cases, this is not a problem since any
 property previously set by that constructor is still preserved, providing it is
 serializable and enumerable.
 
-However, if the `error.constructorArgs` property is set, the constructor will be
-called with those arguments. It it throws, `Error` will be used as a fallback
-error class.
+However, the `error.constructorArgs` property can be set to call the constructor
+with those arguments. It it throws, `Error` will be used as a fallback error
+class.
 
 <!-- eslint-disable fp/no-class, fp/no-this, fp/no-mutation -->
 
