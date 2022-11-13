@@ -23,7 +23,9 @@ const getErrorClass = function (name, classes) {
     return classes[name]
   }
 
-  return BUILTIN_CLASSES.has(name) ? globalThis[name] : Error
+  return BUILTIN_CLASSES.has(name) && name in globalThis
+    ? globalThis[name]
+    : Error
 }
 
 // Common global error classes
