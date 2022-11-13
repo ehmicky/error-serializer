@@ -92,6 +92,20 @@ serialize('example') // 'example'
 serialize('example', { normalize: true }) // { name: 'Error', message: 'example', ... }
 ```
 
+#### onError(error)
+
+_Type_: `(Error) => void`
+
+Called before serializing each `errorInstance`.
+
+```js
+serialize(new Error('test'), {
+  onError(error) {
+    error.prop = 'example'
+  },
+}) // { name: 'Error', prop: 'example', ... }
+```
+
 ## parse(errorObject, options?)
 
 `errorObject` `any`\
@@ -147,6 +161,32 @@ Convert `errorObject` to an error plain object if it is not one.
 ```js
 parse('example') // 'example'
 parse('example', { normalize: true }) // Error: example
+```
+
+#### onError(error)
+
+_Type_: `(Error) => void`
+
+Called after parsing each `errorInstance`.
+
+<!-- eslint-disable fp/no-mutation -->
+
+```js
+const originalError = new Error('test')
+originalError.date = new Date()
+
+const errorObject = serialize(originalError, {
+  onError(error) {
+    error.date = error.date.toString()
+  },
+})
+
+const newError = parse(errorObject, {
+  onError(error) {
+    error.date = new Date(error.date)
+  },
+})
+console.log(newError.date)
 ```
 
 # Usage
