@@ -1,7 +1,12 @@
 import test from 'ava'
 import { serialize, parse } from 'error-serializer'
+import { each } from 'test-each'
 
-import { SIMPLE_ERROR_OBJECT, FULL_ERROR } from './helpers/main.js'
+import { SIMPLE_ERROR_OBJECT } from './helpers/main.js'
+
+const addArgs = function (error, ...args) {
+  error.args = args
+}
 
 const addProp = function (error) {
   error.prop = true
@@ -11,78 +16,90 @@ const addName = function (error) {
   error.propName = error.name
 }
 
-const addStack = function (error) {
-  error.propStack = error.stack
-}
-
-const addGivenProp = function (error) {
-  error.propProp = error.prop
+const addSetArgs = function (errorObject, ...args) {
+  errorObject.set.add(args)
 }
 
 const unsafeEvent = function () {
   throw new Error('unsafe')
 }
 
-test('beforeSerialize() is called', (t) => {
-  t.true(serialize(FULL_ERROR, { beforeSerialize: addProp }).prop)
-})
-
-test('beforeSerialize() is called deeply', (t) => {
-  t.true(
-    serialize({ deep: FULL_ERROR }, { beforeSerialize: addProp }).deep.prop,
-  )
-})
-
-test('beforeSerialize() is not called on non-errors', (t) => {
-  t.false('prop' in serialize({}, { beforeSerialize: addProp }))
-})
-
-test('beforeSerialize() is called after normalization', (t) => {
+test('beforeSerialize() is called before serialization', (t) => {
   const error = new Error('test')
-  error.name = true
-  t.true(error.name)
-  t.is(serialize(error, { beforeSerialize: addName }).propName, 'Error')
+  t.true(serialize(error, { beforeSerialize: addProp }).prop)
 })
 
-test('beforeSerialize() is ignored if throwing', (t) => {
-  t.is(
-    serialize(FULL_ERROR, { beforeSerialize: unsafeEvent }).name,
-    FULL_ERROR.name,
-  )
+test('afterSerialize() is called after serialization', (t) => {
+  const error = new Error('test')
+  t.false('prop' in serialize(error, { afterSerialize: addProp }))
 })
 
-test('afterParse() is called', (t) => {
-  t.true(parse({ ...SIMPLE_ERROR_OBJECT }, { afterParse: addProp }).prop)
+each(['beforeSerialize', 'afterSerialize'], ({ title }, eventName) => {
+  test(`Serialization events are called | ${title}`, (t) => {
+    const error = new Error('test')
+    serialize(error, { [eventName]: addArgs })
+    t.deepEqual(error.args, [])
+  })
+
+  test(`Serialization events are called deeply | ${title}`, (t) => {
+    const error = new Error('test')
+    serialize({ deep: error }, { [eventName]: addProp })
+    t.true(error.prop)
+  })
+
+  test(`Serialization events are not called on non-errors | ${title}`, (t) => {
+    const nonError = {}
+    serialize(nonError, { [eventName]: addProp })
+    t.false('prop' in nonError)
+  })
+
+  test(`Serialization events are called after normalization | ${title}`, (t) => {
+    const error = new Error('test')
+    error.name = true
+    serialize(error, { [eventName]: addName })
+    t.is(error.propName, 'Error')
+  })
+
+  test(`Serialization events are ignored if throwing | ${title}`, (t) => {
+    const error = new Error('test')
+    t.is(serialize(error, { [eventName]: unsafeEvent }).name, 'Error')
+  })
 })
 
-test('afterParse() is called deeply', (t) => {
-  t.true(
-    parse({ deep: { ...SIMPLE_ERROR_OBJECT } }, { afterParse: addProp }).deep
-      .prop,
-  )
+test('beforeParse() is called before parsing', (t) => {
+  t.true(parse({ ...SIMPLE_ERROR_OBJECT }, { beforeParse: addProp }).prop)
 })
 
-test('afterParse() is not called on non-errors', (t) => {
-  t.false('prop' in parse({}, { afterParse: addProp }))
+test('afterParse() is called after parsing', (t) => {
+  t.false('prop' in parse({ ...SIMPLE_ERROR_OBJECT }, { afterParse: addProp }))
 })
 
-test('afterParse() is called after normalization', (t) => {
-  const errorObject = { ...SIMPLE_ERROR_OBJECT, stack: '' }
-  t.true(
-    parse(errorObject, { afterParse: addStack }).propStack.includes(
+each(['beforeParse', 'afterParse'], ({ title }, eventName) => {
+  test(`Parsing events are called | ${title}`, (t) => {
+    const set = new Set([])
+    parse({ ...SIMPLE_ERROR_OBJECT, set }, { [eventName]: addSetArgs })
+    t.deepEqual([...set], [[]])
+  })
+
+  test(`Parsing events are called deeply | ${title}`, (t) => {
+    const set = new Set([])
+    parse(
+      { deep: { ...SIMPLE_ERROR_OBJECT, set } },
+      { [eventName]: addSetArgs },
+    )
+    t.is([...set].length, 1)
+  })
+
+  test(`Parsing events are not called on non-error objects | ${title}`, (t) => {
+    const nonError = {}
+    parse(nonError, { [eventName]: addProp })
+    t.false('prop' in nonError)
+  })
+
+  test(`Parsing events are ignored if throwing | ${title}`, (t) => {
+    t.is(
+      parse({ ...SIMPLE_ERROR_OBJECT }, { [eventName]: unsafeEvent }).name,
       SIMPLE_ERROR_OBJECT.name,
-    ),
-  )
-})
-
-test('afterParse() is called after full parsing', (t) => {
-  const errorObject = { ...SIMPLE_ERROR_OBJECT, prop: true }
-  t.true(parse(errorObject, { afterParse: addGivenProp }).propProp)
-})
-
-test('afterParse() is ignored if throwing', (t) => {
-  t.is(
-    parse(SIMPLE_ERROR_OBJECT, { afterParse: unsafeEvent }).name,
-    SIMPLE_ERROR_OBJECT.name,
-  )
+    )
+  })
 })

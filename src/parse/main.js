@@ -8,30 +8,40 @@ import { listProps, SET_CORE_PROPS, NON_ENUMERABLE_PROPS } from '../props.js'
 import { createError } from './create.js'
 
 // Parse error plain objects into error instances deeply
-export const parseDeep = function (value, afterParse, classes) {
-  const valueA = parseRecurse(value, afterParse, classes)
-  return parseShallow(valueA, afterParse, classes)
+export const parseDeep = function ({
+  value,
+  beforeParse,
+  afterParse,
+  classes,
+}) {
+  const valueA = parseRecurse({ value, beforeParse, afterParse, classes })
+  return parseShallow({ value: valueA, beforeParse, afterParse, classes })
 }
 
 // Parse a possible error plain object into an error instance
-export const parseShallow = function (value, afterParse, classes) {
+export const parseShallow = function ({
+  value,
+  beforeParse,
+  afterParse,
+  classes,
+}) {
   if (!isErrorObject(value)) {
     return value
   }
 
-  const valueA = parseErrorObject(value, classes)
-  const error = normalizeException(valueA)
-  callEvent(error, afterParse)
-  return error
+  callEvent(value, beforeParse)
+  const error = parseErrorObject(value, classes)
+  callEvent(value, afterParse)
+  return normalizeException(error)
 }
 
 // This is done before `normalize-exception`.
 //  - It does not reuse `normalize-exception`'s object parsing logic
 //  - reason: keep projects separate since they have different purposes and
 //    features
-const parseErrorObject = function (object, classes) {
-  const error = createError(object, classes)
-  setProps(error, object)
+const parseErrorObject = function (errorObject, classes) {
+  const error = createError(errorObject, classes)
+  setProps(error, errorObject)
   return error
 }
 
@@ -62,16 +72,18 @@ const setProp = function (error, object, propName) {
   })
 }
 
-const parseRecurse = function (value, afterParse, classes) {
+const parseRecurse = function ({ value, beforeParse, afterParse, classes }) {
   if (Array.isArray(value)) {
-    return value.map((child) => parseDeep(child, afterParse, classes))
+    return value.map((child) =>
+      parseDeep({ value: child, beforeParse, afterParse, classes }),
+    )
   }
 
   if (isPlainObj(value)) {
     return Object.fromEntries(
       safeListKeys(value).map((propName) => [
         propName,
-        parseDeep(value[propName], afterParse, classes),
+        parseDeep({ value: value[propName], beforeParse, afterParse, classes }),
       ]),
     )
   }
