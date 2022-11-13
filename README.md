@@ -110,10 +110,8 @@ _Type_: `object`
 
 Custom error classes to keep when parsing.
 
-- Each key is an `errorObject.name`.
-- Each value is the error class to use. The constructor will be called with a
-  single `message` argument. It it throws, `Error` will be used as the error
-  class instead.
+- Each key is an `errorObject.name`
+- Each value is the error class to use
 
 ```js
 const errorObject = serialize(new CustomError('example'))
@@ -244,11 +242,14 @@ const newError = parse(errorObject)
 
 ## Constructor's arguments
 
-[`parse()`](#parseerrorobject-options) calls `new ErrorClass(message, {})` by
-default. This works well with regular error classes.
+By default, when an error with custom [`classes`](#classes) is parsed, its
+constructor is not called. In most cases, this is not a problem though since any
+property set by the constructor is preserved providing it is serializable and
+enumerable.
 
-When more advanced error [`classes`](#classes) are used, the constructor's
-arguments can be explicitly set as an `error.constructorArgs` property.
+However, if the `error.constructorArgs` property is set, the constructor will be
+called with those arguments. It it throws, `Error` will be used as the error
+class instead.
 
 <!-- eslint-disable fp/no-class, fp/no-this, fp/no-mutation -->
 

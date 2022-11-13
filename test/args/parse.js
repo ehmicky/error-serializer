@@ -17,7 +17,15 @@ class CustomError extends Error {
   }
 }
 
+// eslint-disable-next-line fp/no-class
+class UnsafeError extends Error {
+  constructor() {
+    throw new Error('unsafe')
+  }
+}
+
 const CUSTOM_ERROR_OBJECT = { ...SIMPLE_ERROR_OBJECT, name: CustomError.name }
+const UNSAFE_ERROR_OBJECT = { ...SIMPLE_ERROR_OBJECT, name: UnsafeError.name }
 
 test('constructorArgs can be parsed', (t) => {
   t.deepEqual(
@@ -40,12 +48,12 @@ test('constructorArgs can be unpacked', (t) => {
 })
 
 test('constructorArgs that are not arrays are ignored', (t) => {
-  t.deepEqual(
-    parse(
-      { ...CUSTOM_ERROR_OBJECT, constructorArgs: true },
-      { classes: { CustomError } },
-    ).args,
-    [CUSTOM_ERROR_OBJECT.message, {}],
+  t.false(
+    'args' in
+      parse(
+        { ...CUSTOM_ERROR_OBJECT, constructorArgs: true },
+        { classes: { CustomError } },
+      ),
   )
 })
 
@@ -76,5 +84,15 @@ test('Properties set by constructor are overridden by serialized ones', (t) => {
       { classes: { CustomError } },
     ).args,
     [false],
+  )
+})
+
+test('Handle unsafe constructors', (t) => {
+  t.is(
+    parse(
+      { ...UNSAFE_ERROR_OBJECT, constructorArgs: [] },
+      { classes: { UnsafeError } },
+    ).name,
+    'Error',
   )
 })

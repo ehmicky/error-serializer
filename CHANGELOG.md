@@ -1,3 +1,11 @@
+# 4.0.0
+
+## Breaking changes
+
+- When parsing an error and the [`classes` option](README.md#classes) was
+  defined, the `constructor` is not called anymore unless
+  [`error.constructorArgs`](README.md#constructors-arguments) was set
+
 # 3.7.0
 
 ## Features

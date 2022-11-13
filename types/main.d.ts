@@ -149,10 +149,8 @@ export interface ParseOptions {
   /**
    * Custom error classes to keep when parsing.
    *
-   *  - Each key is an `errorObject.name`.
-   *  - Each value is the error class to use.
-   *    The constructor will be called with a single `message` argument.
-   *    It it throws, `Error` will be used as the error class instead.
+   *  - Each key is an `errorObject.name`
+   *  - Each value is the error class to use
    *
    * @example
    * ```js

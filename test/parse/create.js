@@ -36,33 +36,18 @@ test('Does not re-use other error classes by default', (t) => {
 })
 
 test('Re-uses other error classes if specified', (t) => {
-  const classes = { CustomError: TypeError }
-  t.is(
-    parse({ ...SIMPLE_ERROR_OBJECT, name: 'CustomError' }, { classes }).name,
-    classes.CustomError.name,
+  const CustomError = TypeError
+  const error = parse(
+    { ...SIMPLE_ERROR_OBJECT, name: 'CustomError' },
+    { classes: { CustomError } },
   )
+  t.is(error.name, CustomError.name)
+  t.is(error.constructor, CustomError)
+  t.true(error.stack.includes(CustomError.name))
 })
 
 test('Can map builtin classes', (t) => {
   const classes = { Error: TypeError }
-  t.is(
-    parse({ ...SIMPLE_ERROR_OBJECT, name: 'Error' }, { classes }).name,
-    classes.Error.name,
-  )
-})
-
-test('Handle unsafe constructors', (t) => {
-  // eslint-disable-next-line fp/no-class
-  class CustomError extends Error {
-    constructor() {
-      throw new Error('unsafe')
-    }
-  }
-  t.is(
-    parse(
-      { ...SIMPLE_ERROR_OBJECT, name: 'CustomError' },
-      { classes: { CustomError } },
-    ).name,
-    'Error',
-  )
+  const error = parse({ ...SIMPLE_ERROR_OBJECT, name: 'Error' }, { classes })
+  t.is(error.name, classes.Error.name)
 })
