@@ -66,8 +66,7 @@ test('Can be used as toJSON()', (t) => {
       return serialize(this)
     }
   }
-  const message = 'test'
-  t.is(new CustomError(message).toJSON().message, message)
+  t.is(new CustomError('test').toJSON().message, 'test')
 })
 
 each([true, false], ({ title }, shallow) => {
@@ -104,8 +103,7 @@ test('Remove unsafe non-core properties when serializing', (t) => {
 })
 
 test('Remove circular non-core properties when serializing', (t) => {
-  const error = new Error('test')
-  t.is(serialize(error).prop, undefined)
+  t.is(serialize(new Error('test')).prop, undefined)
 })
 
 test('Make non-core properties JSON-safe when serializing', (t) => {
