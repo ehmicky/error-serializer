@@ -1,3 +1,12 @@
+# 4.1.0
+
+## Features
+
+- A second argument `error` is now passed to
+  [`afterSerialize()`](README.md#afterserializeerrorinstance)
+- A second argument `errorObject` is now passed to
+  [`afterParse()`](README.md#afterparseerrorobject)
+
 # 4.0.0
 
 ## Breaking changes
