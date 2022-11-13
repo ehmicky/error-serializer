@@ -5,7 +5,7 @@ import safeJsonValue from 'safe-json-value'
 
 import { setConstructorArgs } from './args.js'
 import { safeListKeys } from './check.js'
-import { callOnError } from './on_error.js'
+import { callOnError } from './event.js'
 import { listProps } from './props.js'
 
 // Serialize error instances into plain objects deeply
