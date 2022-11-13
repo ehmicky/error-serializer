@@ -244,12 +244,12 @@ const newError = parse(errorObject)
 
 By default, when an error with custom [`classes`](#classes) is parsed, its
 constructor is not called. In most cases, this is not a problem though since any
-property set by the constructor is preserved providing it is serializable and
-enumerable.
+property previously set by the constructor is still preserved, providing it is
+serializable and enumerable.
 
 However, if the `error.constructorArgs` property is set, the constructor will be
-called with those arguments. It it throws, `Error` will be used as the error
-class instead.
+called with those arguments. It it throws, `Error` will be used as a fallback
+error class.
 
 <!-- eslint-disable fp/no-class, fp/no-this, fp/no-mutation -->
 
