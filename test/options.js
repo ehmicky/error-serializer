@@ -5,7 +5,7 @@ import { each } from 'test-each'
 each(
   [
     true,
-    { normalize: 'true' },
+    { loose: 'true' },
     { shallow: 'true' },
     { beforeSerialize: true },
     { afterSerialize: true },

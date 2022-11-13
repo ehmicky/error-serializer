@@ -50,7 +50,10 @@ test('afterParse() is called after full parsing', (t) => {
 each(['beforeParse', 'afterParse'], ({ title }, eventName) => {
   test(`Parsing events are called deeply | ${title}`, (t) => {
     const set = new Set([])
-    parse({ deep: { ...SIMPLE_ERROR_OBJECT, set } }, { [eventName]: addArgs })
+    parse(
+      { deep: { ...SIMPLE_ERROR_OBJECT, set } },
+      { loose: true, [eventName]: addArgs },
+    )
     t.is([...set].length, 1)
   })
 

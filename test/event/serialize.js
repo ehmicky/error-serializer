@@ -50,7 +50,7 @@ test('afterSerialize() is called after full serialization', (t) => {
 each(['beforeSerialize', 'afterSerialize'], ({ title }, eventName) => {
   test(`Serialization events are called deeply | ${title}`, (t) => {
     const error = new Error('test')
-    serialize({ deep: error }, { [eventName]: addProp })
+    serialize({ deep: error }, { loose: true, [eventName]: addProp })
     t.true(error.prop)
   })
 

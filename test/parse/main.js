@@ -69,8 +69,11 @@ test('Does not parse error.errors if they are Error instances', (t) => {
 })
 
 each([true, false], ({ title }, shallow) => {
-  test(`Parse deeply or not with "shallow" | ${title}`, (t) => {
-    const [{ error }] = parse([{ error: SIMPLE_ERROR_OBJECT }], { shallow })
+  test(`Parse deeply or not with "shallow" and "loose" | ${title}`, (t) => {
+    const [{ error }] = parse([{ error: SIMPLE_ERROR_OBJECT }], {
+      shallow,
+      loose: true,
+    })
     t.not(error instanceof Error, shallow)
     t.is(error.message, SIMPLE_ERROR_OBJECT.message)
   })

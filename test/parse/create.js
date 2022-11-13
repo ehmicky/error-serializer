@@ -4,11 +4,7 @@ import { parse } from 'error-serializer'
 import { SIMPLE_ERROR_OBJECT } from '../helpers/main.js'
 
 test('Default to Error class if no name', (t) => {
-  t.is(
-    parse({ ...SIMPLE_ERROR_OBJECT, name: undefined }, { normalize: true })
-      .name,
-    'Error',
-  )
+  t.is(parse({ ...SIMPLE_ERROR_OBJECT, name: undefined }).name, 'Error')
 })
 
 test('Re-use builtin error classes', (t) => {

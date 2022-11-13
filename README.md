@@ -12,7 +12,8 @@ Convert errors to/from plain objects.
 
 - Ensures errors are [safe to serialize with JSON](#json-safety)
 - Can be used as [`error.toJSON()`](#errortojson)
-- [Deep serialization/parsing](#shallow), including [event callbacks](#events)
+- [Deep serialization/parsing](#deep-serializationparsing), including
+  [event callbacks](#events)
 - [Custom serialization/parsing](#custom-serializationparsing) (e.g. YAML or
   `process.send()`)
 - Keeps both native (`TypeError`, etc.) and [custom](#classes) error classes
@@ -22,7 +23,7 @@ Convert errors to/from plain objects.
   [`error.cause`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/cause)
   and
   [`AggregateError`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AggregateError)
-- [Normalizes](#normalize) invalid errors
+- [Normalizes](#loose) invalid errors
 - Safe: this never throws
 
 # Example
@@ -59,7 +60,7 @@ not `require()`.
 
 `errorInstance` `any`\
 `options` [`Options?`](#options)\
-_Return value_: `object`
+_Return value_: `ErrorObject`
 
 Convert an `Error` instance into a plain object.
 
@@ -75,21 +76,26 @@ _Default_: `false`
 Unless this option is `true`, nested errors are also serialized. They can be
 inside other errors, plain objects or arrays.
 
+<!-- eslint-disable no-unused-expressions -->
+
 ```js
-serialize([{ error: new Error('test') }]) // [{ error: { name: 'Error', ... } }]
-serialize([{ error: new Error('test') }], { shallow: true }) // [{ error: Error }]
+const error = new Error('test')
+error.prop = new Error('prop')
+serialize(error).prop // { name: 'Error', message: 'prop', ... }
+serialize(error, { shallow: true }).prop // Error: prop ...
 ```
 
-#### normalize
+#### loose
 
 _Type_: `boolean`\
 _Default_: `false`
 
-Convert `errorInstance` to an `Error` instance if it is not one.
+By default, when the argument is not an `Error` instance, it is converted to
+one. If this option is `true`, it is kept as is instead.
 
 ```js
-serialize('example') // 'example'
-serialize('example', { normalize: true }) // { name: 'Error', message: 'example', ... }
+serialize('example') // { name: 'Error', message: 'example', ... }
+serialize('example', { loose: true }) // 'example'
 ```
 
 #### beforeSerialize(errorInstance)
@@ -140,25 +146,28 @@ _Default_: `false`
 
 Unless this option is `true`, nested error plain objects are also parsed.
 
-```js
-const errorObject = serialize(new Error('test'))
+<!-- eslint-disable no-unused-expressions -->
 
-parse([{ error: errorObject }])
-// [{ error: Error }]
-parse([{ error: errorObject }], { shallow: true })
-// [{ error: { name: 'Error', ... } }]
+```js
+const error = new Error('test')
+error.prop = new Error('prop')
+const errorObject = serialize(error)
+
+parse(errorObject).prop // Error: prop ...
+parse(errorObject, { shallow: true }).prop // { name: 'Error', message: ... }
 ```
 
-#### normalize
+#### loose
 
 _Type_: `boolean`\
 _Default_: `false`
 
-Convert `errorObject` to an error plain object if it is not one.
+By default, when the argument is not an error plain object, it is converted to
+one. If this option is `true`, it is kept as is instead.
 
 ```js
-parse('example') // 'example'
-parse('example', { normalize: true }) // Error: example
+parse('example') // Error: example
+parse('example', { loose: true }) // 'example'
 ```
 
 #### beforeParse(errorObject)
@@ -243,6 +252,21 @@ const newError = parse(errorObject)
 console.log(newError.prop) // true
 ```
 
+## Deep serialization/parsing
+
+The [`loose` option](#loose) can be used to deeply serialize/parse objects and
+arrays.
+
+```js
+const error = new Error('example')
+const deepArray = serialize([{}, { error }], { loose: true })
+
+const jsonString = JSON.stringify(deepArray)
+const newDeepArray = JSON.parse(jsonString)
+
+const newError = parse(newDeepArray, { loose: true })[1].error // Error: example
+```
+
 ## Events
 
 <!-- eslint-disable fp/no-mutation, no-param-reassign -->
@@ -252,6 +276,7 @@ const errors = [new Error('test')]
 errors[0].date = new Date()
 
 const errorObjects = serialize(errors, {
+  loose: true,
   // Serialize `Date` instances as strings
   beforeSerialize(error) {
     error.date = error.date.toString()
@@ -264,6 +289,7 @@ const errorObjects = serialize(errors, {
 console.log(errorObjects[0].date) // Date string
 
 const newErrors = parse(errorObjects, {
+  loose: true,
   // Parse date strings as `Date` instances
   beforeParse(errorObject) {
     errorObject.date = new Date(errorObject.date)

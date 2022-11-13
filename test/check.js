@@ -21,16 +21,6 @@ const nonErrors = [
   () => {},
 ]
 
-each(nonErrors, [true, false], ({ title }, value, shallow) => {
-  test(`Non-errors are not serialized without "normalize: true" | ${title}`, (t) => {
-    t.deepEqual(serialize(value, { shallow }), value)
-  })
-
-  test(`Non-error objects are not parsed without "normalize: true" | ${title}`, (t) => {
-    t.deepEqual(parse(value, { shallow }), value)
-  })
-})
-
 each(
   [
     ...nonErrors,
@@ -44,31 +34,41 @@ each(
   ],
   [true, false],
   ({ title }, value, shallow) => {
-    test(`Non-errors are serialized with "normalize: true" | ${title}`, (t) => {
-      t.is(
-        typeof serialize(value, { normalize: true, shallow }).message,
-        'string',
-      )
+    test(`Non-errors are serialized by default | ${title}`, (t) => {
+      t.is(typeof serialize(value, { shallow }).message, 'string')
     })
 
-    test(`Non-error objects are parsed with "normalize: true" | ${title}`, (t) => {
-      t.true(parse(value, { normalize: true, shallow }) instanceof Error)
+    test(`Non-error objects are parsed by default | ${title}`, (t) => {
+      t.true(parse(value, { shallow }) instanceof Error)
     })
   },
 )
 
-test('Parsing an error instance without "normalize: true" is a noop', (t) => {
+each(nonErrors, [true, false], ({ title }, value, shallow) => {
+  test(`Non-errors are kept during serialization with "loose: true" | ${title}`, (t) => {
+    t.deepEqual(serialize(value, { shallow, loose: true }), value)
+  })
+
+  test(`Non-error objects are kept during parsing with "loose: true" | ${title}`, (t) => {
+    t.deepEqual(parse(value, { shallow, loose: true }), value)
+  })
+})
+
+test('Parsing an error instance with "loose: true" is a noop', (t) => {
   const error = new Error('test')
-  t.is(parse(error), error)
+  t.is(parse(error, { loose: true }), error)
 })
 
-test('Serializing an error object without "normalize: true" is a noop', (t) => {
-  t.deepEqual(serialize(SIMPLE_ERROR_OBJECT), SIMPLE_ERROR_OBJECT)
+test('Serializing an error object with "loose: true" is a noop', (t) => {
+  t.deepEqual(
+    serialize(SIMPLE_ERROR_OBJECT, { loose: true }),
+    SIMPLE_ERROR_OBJECT,
+  )
 })
 
-test('Serializing a cross-realm error without "normalize: true" is not a noop', (t) => {
+test('Serializing a cross-realm error with "loose: true" is not a noop', (t) => {
   const error = runInNewContext('new Error("test")')
-  t.not(serialize(error), error)
+  t.not(serialize(error, { loose: true }), error)
 })
 
 test('parse() and serialize() undo each other', (t) => {

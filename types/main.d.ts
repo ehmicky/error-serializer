@@ -36,26 +36,27 @@ export interface SerializeOptions {
    *
    * @example
    * ```js
-   * console.log(serialize([{ error: new Error('test') }]))
-   * // [{ error: { name: 'Error', ... } }]
-   * console.log(serialize([{ error: new Error('test') }], { shallow: true }))
-   * // [{ error: Error }]
+   * const error = new Error('test')
+   * error.prop = new Error('prop')
+   * serialize(error).prop // { name: 'Error', message: 'prop', ... }
+   * serialize(error, { shallow: true }).prop // Error: prop ...
    * ```
    */
   readonly shallow?: boolean
 
   /**
-   * Convert `errorInstance` to an `Error` instance if it is not one.
+   * By default, when the argument is not an `Error` instance, it is converted
+   * to one. If this option is `true`, it is kept as is instead.
    *
    * @default false
    *
    * @example
    * ```js
-   * console.log(serialize('example')) // 'example'
-   * console.log(serialize('example', { normalize: true })) // { name: 'Error', message: 'example', ... }
+   * serialize('example') // { name: 'Error', message: 'example', ... }
+   * serialize('example', { loose: true }) // 'example'
    * ```
    */
-  readonly normalize?: boolean
+  readonly loose?: boolean
 
   /**
    * Called before serializing each `errorInstance`.
@@ -101,6 +102,7 @@ export interface SerializeOptions {
    * errors[0].date = new Date()
    *
    * const errorObjects = serialize(errors, {
+   *   loose: true,
    *   // Serialize `Date` instances as strings
    *   beforeSerialize(error) {
    *     error.date = error.date.toString()
@@ -113,6 +115,7 @@ export interface SerializeOptions {
    * console.log(errorObjects[0].date) // Date string
    *
    * const newErrors = parse(errorObjects, {
+   *   loose: true,
    *   // Parse date strings as `Date` instances
    *   beforeParse(errorObject) {
    *     errorObject.date = new Date(errorObject.date)
@@ -157,11 +160,7 @@ export function serialize<Value, Options extends SerializeOptions = {}>(
 type SerializeNormalize<
   Value,
   Options extends SerializeOptions,
-> = Options['normalize'] extends true
-  ? Value extends Error
-    ? Value
-    : Error
-  : Value
+> = Options['loose'] extends true ? Value : Value extends Error ? Value : Error
 
 type SerializeShallow<Value> = Value extends Error
   ? ErrorObject & {
@@ -196,28 +195,29 @@ export interface ParseOptions {
    *
    * @example
    * ```js
-   * const errorObject = serialize(new Error('test'))
+   * const error = new Error('test')
+   * error.prop = new Error('prop')
+   * const errorObject = serialize(error)
    *
-   * console.log(parse([{ error: errorObject }]))
-   * // [{ error: Error }]
-   * console.log(parse([{ error: errorObject }], { shallow: true }))
-   * // [{ error: { name: 'Error', ... } }]
+   * parse(errorObject).prop // Error: prop ...
+   * parse(errorObject, { shallow: true }).prop // { name: 'Error', message: ... }
    * ```
    */
   readonly shallow?: boolean
 
   /**
-   * Convert `errorObject` to an error plain object if it is not one.
+   * By default, when the argument is not an error plain object, it is
+   * converted to one. If this option is `true`, it is kept as is instead.
    *
    * @default false
    *
    * @example
    * ```js
-   * console.log(parse('example')) // 'example'
-   * console.log(parse('example', { normalize: true })) // Error: example
+   * parse('example') // Error: example
+   * parse('example', { loose: true }) // 'example'
    * ```
    */
-  readonly normalize?: boolean
+  readonly loose?: boolean
 
   /**
    * Custom error classes to keep when parsing.
@@ -245,6 +245,7 @@ export interface ParseOptions {
    * errors[0].date = new Date()
    *
    * const errorObjects = serialize(errors, {
+   *   loose: true,
    *   // Serialize `Date` instances as strings
    *   beforeSerialize(error) {
    *     error.date = error.date.toString()
@@ -257,6 +258,7 @@ export interface ParseOptions {
    * console.log(errorObjects[0].date) // Date string
    *
    * const newErrors = parse(errorObjects, {
+   *   loose: true,
    *   // Parse date strings as `Date` instances
    *   beforeParse(errorObject) {
    *     errorObject.date = new Date(errorObject.date)
@@ -280,6 +282,7 @@ export interface ParseOptions {
    * errors[0].date = new Date()
    *
    * const errorObjects = serialize(errors, {
+   *   loose: true,
    *   // Serialize `Date` instances as strings
    *   beforeSerialize(error) {
    *     error.date = error.date.toString()
@@ -292,6 +295,7 @@ export interface ParseOptions {
    * console.log(errorObjects[0].date) // Date string
    *
    * const newErrors = parse(errorObjects, {
+   *   loose: true,
    *   // Parse date strings as `Date` instances
    *   beforeParse(errorObject) {
    *     errorObject.date = new Date(errorObject.date)
@@ -336,11 +340,7 @@ export function parse<Value, Options extends ParseOptions = {}>(
 type ParseNormalize<
   Value,
   Options extends ParseOptions,
-> = Options['normalize'] extends true
-  ? Value extends Error
-    ? Value
-    : Error
-  : Value
+> = Options['loose'] extends true ? Value : Value extends Error ? Value : Error
 
 type ParseShallow<
   Value,

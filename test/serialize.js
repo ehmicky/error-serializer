@@ -39,7 +39,7 @@ test('Normalizes invalid error core properties shallowly', (t) => {
 test('Normalizes invalid error core properties deeply', (t) => {
   const error = new Error('test')
   error.message = true
-  t.is(serialize({ error }).error.message, '')
+  t.is(serialize({ error }, { loose: true }).error.message, '')
 })
 
 const recursiveCauseError = new Error('test')
@@ -71,14 +71,17 @@ test('Can be used as toJSON()', (t) => {
 })
 
 each([true, false], ({ title }, shallow) => {
-  test(`Serialize deeply or not with "shallow" | ${title}`, (t) => {
-    const [{ error }] = serialize([{ error: FULL_ERROR }], { shallow })
+  test(`Serialize deeply or not with "shallow" and "loose" | ${title}`, (t) => {
+    const [{ error }] = serialize([{ error: FULL_ERROR }], {
+      shallow,
+      loose: true,
+    })
     t.not(isPlainObj(error), shallow)
     t.is(error.message, FULL_ERROR.message)
   })
 
   test(`Keep non-error properties JSON-unsafe when serializing | ${title}`, (t) => {
-    t.is(serialize(Number.NaN, { shallow }), Number.NaN)
+    t.is(serialize(Number.NaN, { shallow, loose: true }), Number.NaN)
   })
 
   test(`Keep deep non-error properties JSON-unsafe when serializing | ${title}`, (t) => {

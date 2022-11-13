@@ -15,9 +15,9 @@ export { validateOptions }
 // We apply `normalize-exception` to ensure a strict input.
 //  - We allow arguments that are not `error` instances
 export const serialize = function (value, options) {
-  const { normalize, shallow, beforeSerialize, afterSerialize } =
+  const { loose, shallow, beforeSerialize, afterSerialize } =
     normalizeOptions(options)
-  const valueA = applyNormalize(value, normalize)
+  const valueA = applyLoose(value, loose)
   const events = { beforeSerialize, afterSerialize }
   return shallow
     ? serializeShallow(valueA, events)
@@ -31,17 +31,15 @@ export const serialize = function (value, options) {
 //    some error handling logic
 // We apply `normalize-exception` to ensure a strict output.
 export const parse = function (value, options) {
-  const { normalize, shallow, beforeParse, afterParse, classes } =
+  const { loose, shallow, beforeParse, afterParse, classes } =
     normalizeOptions(options)
   const events = { beforeParse, afterParse }
   const valueA = shallow
     ? parseShallow(value, events, classes)
     : parseDeep(value, events, classes)
-  return applyNormalize(valueA, normalize)
+  return applyLoose(valueA, loose)
 }
 
-const applyNormalize = function (value, normalize) {
-  return normalize && !isErrorInstance(value)
-    ? normalizeException(value)
-    : value
+const applyLoose = function (value, loose) {
+  return loose || isErrorInstance(value) ? value : normalizeException(value)
 }

@@ -20,7 +20,7 @@ export const validateOptions = function (options) {
 }
 
 const validateAllOptions = function ({
-  normalize,
+  loose,
   shallow,
   beforeSerialize,
   afterSerialize,
@@ -28,7 +28,7 @@ const validateAllOptions = function ({
   afterParse,
   classes,
 }) {
-  validateBoolean(normalize, 'normalize')
+  validateBoolean(loose, 'loose')
   validateBoolean(shallow, 'shallow')
   validateOptionalFunction(beforeSerialize, 'beforeSerialize')
   validateOptionalFunction(afterSerialize, 'afterSerialize')
@@ -82,7 +82,7 @@ const validateClass = function ([name, ErrorClass]) {
 const { isPrototypeOf: isProto } = Object.prototype
 
 const addDefaultOptions = function ({
-  normalize = false,
+  loose = false,
   shallow = false,
   classes = {},
   beforeSerialize,
@@ -91,7 +91,7 @@ const addDefaultOptions = function ({
   afterParse,
 } = {}) {
   return {
-    normalize,
+    loose,
     shallow,
     classes,
     beforeSerialize,
