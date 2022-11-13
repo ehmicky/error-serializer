@@ -13,10 +13,12 @@ import { serializeDeep, serializeShallow } from './serialize.js'
 //  - We allow arguments that are not `error` instances
 export const serialize = function (
   value,
-  { normalize = false, shallow = false } = {},
+  { normalize = false, shallow = false, onError } = {},
 ) {
   const valueA = applyNormalize(value, normalize)
-  return shallow ? serializeShallow(valueA) : serializeDeep(valueA, [])
+  return shallow
+    ? serializeShallow(valueA, onError)
+    : serializeDeep(valueA, onError, [])
 }
 
 // Normalize and convert an already parsed plain object representing an error
@@ -27,11 +29,11 @@ export const serialize = function (
 // We apply `normalize-exception` to ensure a strict output.
 export const parse = function (
   value,
-  { normalize = false, shallow = false, classes = {} } = {},
+  { normalize = false, shallow = false, onError, classes = {} } = {},
 ) {
   const valueA = shallow
-    ? parseShallow(value, classes)
-    : parseDeep(value, classes)
+    ? parseShallow(value, onError, classes)
+    : parseDeep(value, onError, classes)
   return applyNormalize(valueA, normalize)
 }
 

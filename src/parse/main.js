@@ -2,24 +2,27 @@ import isPlainObj from 'is-plain-obj'
 import normalizeException from 'normalize-exception'
 
 import { isErrorObject, safeListKeys } from '../check.js'
+import { callOnError } from '../on_error.js'
 import { listProps, SET_CORE_PROPS, NON_ENUMERABLE_PROPS } from '../props.js'
 
 import { createError } from './create.js'
 
 // Parse error plain objects into error instances deeply
-export const parseDeep = function (value, classes) {
-  const valueA = parseRecurse(value, classes)
-  return parseShallow(valueA, classes)
+export const parseDeep = function (value, onError, classes) {
+  const valueA = parseRecurse(value, onError, classes)
+  return parseShallow(valueA, onError, classes)
 }
 
 // Parse a possible error plain object into an error instance
-export const parseShallow = function (value, classes) {
+export const parseShallow = function (value, onError, classes) {
   if (!isErrorObject(value)) {
     return value
   }
 
   const valueA = parseErrorObject(value, classes)
-  return normalizeException(valueA)
+  const error = normalizeException(valueA)
+  callOnError(error, onError)
+  return error
 }
 
 // This is done before `normalize-exception`.
@@ -59,16 +62,16 @@ const setProp = function (error, object, propName) {
   })
 }
 
-const parseRecurse = function (value, classes) {
+const parseRecurse = function (value, onError, classes) {
   if (Array.isArray(value)) {
-    return value.map((child) => parseDeep(child, classes))
+    return value.map((child) => parseDeep(child, onError, classes))
   }
 
   if (isPlainObj(value)) {
     return Object.fromEntries(
       safeListKeys(value).map((propName) => [
         propName,
-        parseDeep(value[propName], classes),
+        parseDeep(value[propName], onError, classes),
       ]),
     )
   }
