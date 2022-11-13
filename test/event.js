@@ -26,7 +26,7 @@ const unsafeEvent = function () {
 
 test('beforeSerialize() is called before serialization', (t) => {
   const error = new Error('test')
-  t.true(serialize(error, { beforeSerialize: addProp }).prop)
+  t.true('prop' in serialize(error, { beforeSerialize: addProp }))
 })
 
 test('afterSerialize() is called after serialization', (t) => {
@@ -34,13 +34,18 @@ test('afterSerialize() is called after serialization', (t) => {
   t.false('prop' in serialize(error, { afterSerialize: addProp }))
 })
 
-each(['beforeSerialize', 'afterSerialize'], ({ title }, eventName) => {
-  test(`Serialization events are called | ${title}`, (t) => {
-    const error = new Error('test')
-    serialize(error, { [eventName]: addArgs })
-    t.deepEqual(error.args, [])
-  })
+test('beforeSerialize() is called with the right arguments', (t) => {
+  const error = new Error('test')
+  t.deepEqual(serialize(error, { beforeSerialize: addArgs }).args, [])
+})
 
+test('afterSerialize() is called with the right arguments', (t) => {
+  const error = new Error('test')
+  const errorObject = serialize(error, { afterSerialize: addArgs })
+  t.deepEqual(error.args, [errorObject])
+})
+
+each(['beforeSerialize', 'afterSerialize'], ({ title }, eventName) => {
   test(`Serialization events are called deeply | ${title}`, (t) => {
     const error = new Error('test')
     serialize({ deep: error }, { [eventName]: addProp })
@@ -67,20 +72,29 @@ each(['beforeSerialize', 'afterSerialize'], ({ title }, eventName) => {
 })
 
 test('beforeParse() is called before parsing', (t) => {
-  t.true(parse({ ...SIMPLE_ERROR_OBJECT }, { beforeParse: addProp }).prop)
+  t.true('prop' in parse({ ...SIMPLE_ERROR_OBJECT }, { beforeParse: addProp }))
 })
 
 test('afterParse() is called after parsing', (t) => {
   t.false('prop' in parse({ ...SIMPLE_ERROR_OBJECT }, { afterParse: addProp }))
 })
 
-each(['beforeParse', 'afterParse'], ({ title }, eventName) => {
-  test(`Parsing events are called | ${title}`, (t) => {
-    const set = new Set([])
-    parse({ ...SIMPLE_ERROR_OBJECT, set }, { [eventName]: addSetArgs })
-    t.deepEqual([...set], [[]])
-  })
+test('beforeParse() is called with the right arguments', (t) => {
+  const set = new Set([])
+  parse({ ...SIMPLE_ERROR_OBJECT, set }, { beforeParse: addSetArgs })
+  t.deepEqual([...set], [[]])
+})
 
+test('afterParse() is called with the right arguments', (t) => {
+  const set = new Set([])
+  const error = parse(
+    { ...SIMPLE_ERROR_OBJECT, set },
+    { afterParse: addSetArgs },
+  )
+  t.deepEqual([...set], [[error]])
+})
+
+each(['beforeParse', 'afterParse'], ({ title }, eventName) => {
   test(`Parsing events are called deeply | ${title}`, (t) => {
     const set = new Set([])
     parse(

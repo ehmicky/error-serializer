@@ -23,9 +23,9 @@ export const parseShallow = function (
     return value
   }
 
-  callEvent(value, beforeParse)
+  callEvent(beforeParse, value)
   const error = parseErrorObject(value, classes)
-  callEvent(value, afterParse)
+  callEvent(afterParse, value, error)
   return normalizeException(error)
 }
 

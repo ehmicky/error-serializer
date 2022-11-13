@@ -33,12 +33,12 @@ export const serializeShallow = function (value, events) {
 
 const serializeError = function (error, { beforeSerialize, afterSerialize }) {
   const errorA = normalizeException(error)
-  callEvent(errorA, beforeSerialize)
+  callEvent(beforeSerialize, errorA)
   const errorObject = Object.fromEntries([
     ...getProps(errorA),
     ...setConstructorArgs(errorA),
   ])
-  callEvent(errorA, afterSerialize)
+  callEvent(afterSerialize, errorA, errorObject)
   return errorObject
 }
 
