@@ -1,3 +1,9 @@
+# 5.1.0
+
+## Features
+
+- Improve documentation
+
 # 5.0.0
 
 ## Breaking changes
