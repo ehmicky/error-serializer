@@ -54,7 +54,7 @@ each(['beforeParse', 'afterParse'], ({ title }, eventName) => {
       { deep: { ...SIMPLE_ERROR_OBJECT, set } },
       { loose: true, [eventName]: addArgs },
     )
-    t.is([...set].length, 1)
+    t.is(set.size, 1)
   })
 
   test(`Parsing events are not called on non-error objects | ${title}`, (t) => {
