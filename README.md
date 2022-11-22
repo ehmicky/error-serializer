@@ -356,7 +356,7 @@ const newError = parse(errorObject, { classes: { CustomError } })
 # Related projects
 
 - [`modern-errors`](https://github.com/ehmicky/modern-errors): Handle errors
-  like it's 2022 🔮
+  like it's 2023 🔮
 - [`modern-errors-serialize`](https://github.com/ehmicky/modern-errors-serialize):
   Serialize/parse errors
 - [`error-custom-class`](https://github.com/ehmicky/error-custom-class): Create
