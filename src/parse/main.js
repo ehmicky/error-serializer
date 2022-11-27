@@ -2,7 +2,7 @@ import isPlainObj from 'is-plain-obj'
 import normalizeException from 'normalize-exception'
 
 import { isErrorObject, safeListKeys } from '../check.js'
-import { callEvent } from '../event.js'
+import { callEvent } from '../event/main.js'
 import { listProps, SET_CORE_PROPS, NON_ENUMERABLE_PROPS } from '../props.js'
 
 import { createError } from './create.js'

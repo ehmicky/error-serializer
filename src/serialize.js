@@ -3,9 +3,9 @@ import isPlainObj from 'is-plain-obj'
 import normalizeException from 'normalize-exception'
 import safeJsonValue from 'safe-json-value'
 
-import { setConstructorArgs } from './args.js'
+import { setConstructorArgs } from './args/main.js'
 import { safeListKeys } from './check.js'
-import { callEvent } from './event.js'
+import { callEvent } from './event/main.js'
 import { listProps } from './props.js'
 
 // Serialize error instances into plain objects deeply

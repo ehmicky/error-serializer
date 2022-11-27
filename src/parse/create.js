@@ -1,6 +1,6 @@
 import setErrorClass from 'set-error-class'
 
-import { unpackConstructorArgs } from '../args.js'
+import { unpackConstructorArgs } from '../args/main.js'
 
 // Custom error classes might throw due to missing parameters in the
 // constructor. When this happens, we silently revert to `Error`.
