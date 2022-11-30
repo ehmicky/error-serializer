@@ -2,7 +2,7 @@ import test from 'ava'
 import { parse } from 'error-serializer'
 import { each } from 'test-each'
 
-import { SIMPLE_ERROR_OBJECT } from '../helpers/main.js'
+import { SIMPLE_ERROR_OBJECT } from '../helpers/main.test.js'
 
 each(
   [

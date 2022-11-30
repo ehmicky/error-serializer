@@ -3,7 +3,7 @@ import { serialize } from 'error-serializer'
 import isPlainObj from 'is-plain-obj'
 import { each } from 'test-each'
 
-import { FULL_ERROR } from './helpers/main.js'
+import { FULL_ERROR } from './helpers/main.test.js'
 
 const serializedNormalError = serialize(FULL_ERROR)
 

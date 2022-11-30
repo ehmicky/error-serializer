@@ -1,7 +1,7 @@
 import test from 'ava'
 import { parse } from 'error-serializer'
 
-import { SIMPLE_ERROR_OBJECT } from '../helpers/main.js'
+import { SIMPLE_ERROR_OBJECT } from '../helpers/main.test.js'
 
 // eslint-disable-next-line fp/no-class
 class CustomError extends Error {

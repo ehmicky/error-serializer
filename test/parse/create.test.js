@@ -1,7 +1,7 @@
 import test from 'ava'
 import { parse } from 'error-serializer'
 
-import { SIMPLE_ERROR_OBJECT } from '../helpers/main.js'
+import { SIMPLE_ERROR_OBJECT } from '../helpers/main.test.js'
 
 test('Default to Error class if no name', (t) => {
   t.is(parse({ ...SIMPLE_ERROR_OBJECT, name: undefined }).name, 'Error')

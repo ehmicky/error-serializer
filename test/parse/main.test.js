@@ -3,7 +3,7 @@ import { parse } from 'error-serializer'
 import isErrorInstance from 'is-error-instance'
 import { each } from 'test-each'
 
-import { SIMPLE_ERROR_OBJECT } from '../helpers/main.js'
+import { SIMPLE_ERROR_OBJECT } from '../helpers/main.test.js'
 
 test('Cause is set', (t) => {
   const message = 'test'

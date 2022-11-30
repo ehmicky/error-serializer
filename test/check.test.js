@@ -4,7 +4,7 @@ import test from 'ava'
 import { serialize, parse } from 'error-serializer'
 import { each } from 'test-each'
 
-import { SIMPLE_ERROR_OBJECT, FULL_ERROR } from './helpers/main.js'
+import { SIMPLE_ERROR_OBJECT, FULL_ERROR } from './helpers/main.test.js'
 
 const CORE_PROPS = ['name', 'message', 'stack']
 const nonErrors = [
