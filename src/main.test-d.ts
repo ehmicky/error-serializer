@@ -1,9 +1,4 @@
-import {
-  expectType,
-  expectAssignable,
-  expectNotAssignable,
-  expectError,
-} from 'tsd'
+import { expectType, expectAssignable, expectNotAssignable } from 'tsd'
 
 import {
   serialize,
@@ -66,12 +61,14 @@ expectAssignable<Error>(
 )
 
 serialize(error, {})
-expectError(serialize(error, true))
+// @ts-expect-error
+serialize(error, true)
 expectAssignable<SerializeOptions>({})
 expectNotAssignable<SerializeOptions>({ unknown: true })
 
 parse(errorObject, {})
-expectError(parse(errorObject, true))
+// @ts-expect-error
+parse(errorObject, true)
 expectAssignable<ParseOptions>({})
 expectNotAssignable<ParseOptions>({ unknown: true })
 
