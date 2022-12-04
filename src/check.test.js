@@ -1,10 +1,11 @@
 import { runInNewContext } from 'node:vm'
 
 import test from 'ava'
-import { serialize, parse } from 'error-serializer'
 import { each } from 'test-each'
 
 import { SIMPLE_ERROR_OBJECT, FULL_ERROR } from './helpers/main.test.js'
+
+import { serialize, parse } from 'error-serializer'
 
 const CORE_PROPS = ['name', 'message', 'stack']
 const nonErrors = [

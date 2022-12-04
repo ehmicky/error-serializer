@@ -1,9 +1,10 @@
 import test from 'ava'
-import { serialize } from 'error-serializer'
 import isPlainObj from 'is-plain-obj'
 import { each } from 'test-each'
 
 import { FULL_ERROR } from './helpers/main.test.js'
+
+import { serialize } from 'error-serializer'
 
 const serializedNormalError = serialize(FULL_ERROR)
 
