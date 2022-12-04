@@ -10,8 +10,8 @@ import {
 
 // eslint-disable-next-line fp/no-class
 class TestError extends Error {
-  name: 'TestError' = 'TestError'
-  other: true = true
+  name = 'TestError' as const
+  other = true as const
 }
 const classes = { TestError }
 const error = new Error('test') as Error & { name: 'TestError' }
