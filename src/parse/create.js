@@ -4,10 +4,7 @@ import { unpackConstructorArgs } from '../args.js'
 
 // Custom error classes might throw due to missing parameters in the
 // constructor. When this happens, we silently revert to `Error`.
-export const createError = function (
-  { name, message, constructorArgs },
-  classes,
-) {
+export const createError = ({ name, message, constructorArgs }, classes) => {
   const ErrorClass = getErrorClass(name, classes)
   return Array.isArray(constructorArgs)
     ? createErrorWithArgs(message, ErrorClass, constructorArgs)
@@ -18,7 +15,7 @@ export const createError = function (
 // The option is an object instead of an array, as this allows dissociating
 // error names from their classes, since the parsing logic might have different
 // sets of error instances than the serializing logic.
-const getErrorClass = function (name, classes) {
+const getErrorClass = (name, classes) => {
   if (classes[name] !== undefined) {
     return classes[name]
   }
@@ -60,7 +57,7 @@ const BUILTIN_CLASSES = new Set([
 //               - Value is set in constructor
 //               - Key cannot be serialized, i.e. it is symbol, private, upper
 //                 scope or non-enumerable
-const createErrorWithArgs = function (message, ErrorClass, constructorArgs) {
+const createErrorWithArgs = (message, ErrorClass, constructorArgs) => {
   const args = unpackConstructorArgs(constructorArgs, message)
 
   try {
@@ -79,7 +76,7 @@ const createErrorWithArgs = function (message, ErrorClass, constructorArgs) {
 //  - Setting variables in an upper scope, including global variables
 // This can sometimes be worked around by setting those separately after
 // parsing, e.g. using an `init()` method.
-const createErrorWithoutArgs = function (message, ErrorClass) {
+const createErrorWithoutArgs = (message, ErrorClass) => {
   const error = new Error(message)
   setErrorClass(error, ErrorClass)
   return error

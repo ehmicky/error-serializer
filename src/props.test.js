@@ -92,7 +92,7 @@ test('Ignore toJSON() when serializing', (t) => {
 })
 
 const UNSAFE_DESCRIPTOR = {
-  get() {
+  get: () => {
     throw new Error('unsafe')
   },
   enumerable: true,

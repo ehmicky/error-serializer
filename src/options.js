@@ -1,13 +1,13 @@
 import isPlainObj from 'is-plain-obj'
 
 // Normalize and validate options
-export const normalizeOptions = function (options) {
+export const normalizeOptions = (options) => {
   validateOptions(options)
   return addDefaultOptions(options)
 }
 
 // Exported for `modern-errors-serialize`, but undocumented
-export const validateOptions = function (options) {
+export const validateOptions = (options) => {
   if (options === undefined) {
     return
   }
@@ -19,7 +19,7 @@ export const validateOptions = function (options) {
   validateAllOptions(options)
 }
 
-const validateAllOptions = function ({
+const validateAllOptions = ({
   loose,
   shallow,
   beforeSerialize,
@@ -27,7 +27,7 @@ const validateAllOptions = function ({
   beforeParse,
   afterParse,
   classes,
-}) {
+}) => {
   validateBoolean(loose, 'loose')
   validateBoolean(shallow, 'shallow')
   validateOptionalFunction(beforeSerialize, 'beforeSerialize')
@@ -37,19 +37,19 @@ const validateAllOptions = function ({
   validateClasses(classes)
 }
 
-const validateBoolean = function (value, name) {
+const validateBoolean = (value, name) => {
   if (value !== undefined && typeof value !== 'boolean') {
     throw new TypeError(`Option "${name}" must be a boolean: ${value}`)
   }
 }
 
-const validateOptionalFunction = function (value, name) {
+const validateOptionalFunction = (value, name) => {
   if (value !== undefined && typeof value !== 'function') {
     throw new TypeError(`Option "${name}" must be a function: ${value}`)
   }
 }
 
-const validateClasses = function (classes) {
+const validateClasses = (classes) => {
   if (classes === undefined) {
     return
   }
@@ -61,7 +61,7 @@ const validateClasses = function (classes) {
   Object.entries(classes).forEach(validateClass)
 }
 
-const validateClass = function ([name, ErrorClass]) {
+const validateClass = ([name, ErrorClass]) => {
   if (ErrorClass === undefined) {
     return
   }
@@ -81,7 +81,7 @@ const validateClass = function ([name, ErrorClass]) {
 
 const { isPrototypeOf: isProto } = Object.prototype
 
-const addDefaultOptions = function ({
+const addDefaultOptions = ({
   loose = false,
   shallow = false,
   classes = {},
@@ -89,14 +89,12 @@ const addDefaultOptions = function ({
   afterSerialize,
   beforeParse,
   afterParse,
-} = {}) {
-  return {
-    loose,
-    shallow,
-    classes,
-    beforeSerialize,
-    afterSerialize,
-    beforeParse,
-    afterParse,
-  }
-}
+} = {}) => ({
+  loose,
+  shallow,
+  classes,
+  beforeSerialize,
+  afterSerialize,
+  beforeParse,
+  afterParse,
+})

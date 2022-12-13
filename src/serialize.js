@@ -9,7 +9,7 @@ import { callEvent } from './event.js'
 import { listProps } from './props.js'
 
 // Serialize error instances into plain objects deeply
-export const serializeDeep = function (value, events, parents) {
+export const serializeDeep = (value, events, parents) => {
   const parentsA = [...parents, value]
 
   if (!isErrorInstance(value)) {
@@ -25,7 +25,7 @@ export const serializeDeep = function (value, events, parents) {
 }
 
 // Serialize a possible error instance into a plain object
-export const serializeShallow = function (value, events) {
+export const serializeShallow = (value, events) => {
   if (!isErrorInstance(value)) {
     return value
   }
@@ -37,22 +37,19 @@ export const serializeShallow = function (value, events) {
   return errorObjectA
 }
 
-const serializeError = function (error, { beforeSerialize }) {
+const serializeError = (error, { beforeSerialize }) => {
   callEvent(beforeSerialize, error)
   return Object.fromEntries([...getProps(error), ...setConstructorArgs(error)])
 }
 
-const getProps = function (error) {
-  return listProps(error)
+const getProps = (error) =>
+  listProps(error)
     .map((propName) => [propName, error[propName]])
     .filter(hasValue)
-}
 
-const hasValue = function ([, value]) {
-  return value !== undefined
-}
+const hasValue = ([, value]) => value !== undefined
 
-const serializeRecurse = function (value, events, parents) {
+const serializeRecurse = (value, events, parents) => {
   if (Array.isArray(value)) {
     return value
       .filter((child) => !parents.includes(child))

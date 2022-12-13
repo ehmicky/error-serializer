@@ -14,7 +14,7 @@ each(
     { afterParse: true },
     { classes: true },
     { classes: { CustomError: true } },
-    { classes: { CustomError() {} } },
+    { classes: { CustomError: () => {} } },
   ],
   [serialize, parse],
   ({ title }, options, func) => {

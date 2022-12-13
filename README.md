@@ -279,11 +279,11 @@ errors[0].date = new Date()
 const errorObjects = serialize(errors, {
   loose: true,
   // Serialize `Date` instances as strings
-  beforeSerialize(error) {
+  beforeSerialize: (error) => {
     error.date = error.date.toString()
   },
   // Restore `error.date` after serializing it
-  afterSerialize(error, errorObject) {
+  afterSerialize: (error, errorObject) => {
     error.date = new Date(error.date)
   },
 })
@@ -292,11 +292,11 @@ console.log(errorObjects[0].date) // Date string
 const newErrors = parse(errorObjects, {
   loose: true,
   // Parse date strings as `Date` instances
-  beforeParse(errorObject) {
+  beforeParse: (errorObject) => {
     errorObject.date = new Date(errorObject.date)
   },
   // Restore `errorObject.date` after parsing
-  afterParse(errorObject, error) {
+  afterParse: (errorObject, error) => {
     errorObject.date = errorObject.date.toString()
   },
 })

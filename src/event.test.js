@@ -5,19 +5,19 @@ import { SIMPLE_ERROR_OBJECT } from './helpers/main.test.js'
 
 import { parse, serialize } from 'error-serializer'
 
-const addErrorProp = function (error) {
+const addErrorProp = (error) => {
   error.prop = true
 }
 
-const addErrorArgs = function (error, ...args) {
+const addErrorArgs = (error, ...args) => {
   error.args = args
 }
 
-const addErrorName = function (error) {
+const addErrorName = (error) => {
   error.propName = error.name
 }
 
-const unsafeEvent = function () {
+const unsafeEvent = () => {
   throw new Error('unsafe')
 }
 
@@ -76,16 +76,16 @@ each(['beforeSerialize', 'afterSerialize'], ({ title }, eventName) => {
   })
 })
 
-const addObjectProp = function (errorObject) {
+const addObjectProp = (errorObject) => {
   // eslint-disable-next-line fp/no-mutation, no-param-reassign
   errorObject.prop = true
 }
 
-const addObjectArgs = function (errorObject, ...args) {
+const addObjectArgs = (errorObject, ...args) => {
   errorObject.set.add(args)
 }
 
-const addObjectCause = function (errorObject, error) {
+const addObjectCause = (errorObject, error) => {
   errorObject.set.add(error.cause)
 }
 

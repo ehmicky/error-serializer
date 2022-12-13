@@ -8,17 +8,13 @@ import { listProps, SET_CORE_PROPS, NON_ENUMERABLE_PROPS } from '../props.js'
 import { createError } from './create.js'
 
 // Parse error plain objects into error instances deeply
-export const parseDeep = function (value, events, classes) {
+export const parseDeep = (value, events, classes) => {
   const valueA = parseRecurse(value, events, classes)
   return parseShallow(valueA, events, classes)
 }
 
 // Parse a possible error plain object into an error instance
-export const parseShallow = function (
-  value,
-  { beforeParse, afterParse },
-  classes,
-) {
+export const parseShallow = (value, { beforeParse, afterParse }, classes) => {
   if (!isErrorObject(value)) {
     return value
   }
@@ -34,19 +30,19 @@ export const parseShallow = function (
 //  - It does not reuse `normalize-exception`'s object parsing logic
 //  - reason: keep projects separate since they have different purposes and
 //    features
-const parseErrorObject = function (errorObject, classes) {
+const parseErrorObject = (errorObject, classes) => {
   const error = createError(errorObject, classes)
   setProps(error, errorObject)
   return error
 }
 
-const setProps = function (error, object) {
+const setProps = (error, object) => {
   listProps(object).forEach((propName) => {
     setProp(error, object, propName)
   })
 }
 
-const setProp = function (error, object, propName) {
+const setProp = (error, object, propName) => {
   if (SET_CORE_PROPS.has(propName)) {
     return
   }
@@ -67,7 +63,7 @@ const setProp = function (error, object, propName) {
   })
 }
 
-const parseRecurse = function (value, events, classes) {
+const parseRecurse = (value, events, classes) => {
   if (Array.isArray(value)) {
     return value.map((child) => parseDeep(child, events, classes))
   }

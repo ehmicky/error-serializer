@@ -26,15 +26,13 @@ export const NON_ENUMERABLE_PROPS = new Set([
 //     - Reason: not supported by JSON
 // When parsing, we do the same since JSON should only have enumerable, own,
 // non-symbol keys.
-export const listProps = function (objectOrError) {
+export const listProps = (objectOrError) => {
   const propNames = Object.keys(objectOrError).filter(isNotIgnoredProp)
   const propNamesA = [...new Set([...propNames, ...CORE_PROPS])]
   return listSafeKeys(objectOrError, propNamesA)
 }
 
-const isNotIgnoredProp = function (propName) {
-  return !IGNORED_PROPS.has(propName)
-}
+const isNotIgnoredProp = (propName) => !IGNORED_PROPS.has(propName)
 
 // We ignore `error.toJSON()` to ensure the plain object can be parsed back
 const IGNORED_PROPS = new Set(['toJSON', 'constructorArgs'])
