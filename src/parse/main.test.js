@@ -1,10 +1,10 @@
 import test from 'ava'
+import { parse } from 'error-serializer'
 import isErrorInstance from 'is-error-instance'
 import { each } from 'test-each'
 
 import { SIMPLE_ERROR_OBJECT } from '../helpers/main.test.js'
 
-import { parse } from 'error-serializer'
 
 each(
   [
