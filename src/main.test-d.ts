@@ -1,3 +1,5 @@
+import { expectType, expectAssignable, expectNotAssignable } from 'tsd'
+
 import {
   serialize,
   parse,
@@ -5,7 +7,6 @@ import {
   type SerializeOptions,
   type ErrorObject,
 } from 'error-serializer'
-import { expectType, expectAssignable, expectNotAssignable } from 'tsd'
 
 // eslint-disable-next-line fp/no-class
 class TestError extends Error {
