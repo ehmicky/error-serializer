@@ -1,6 +1,7 @@
 import test from 'ava'
-import { serialize, parse, validateOptions } from 'error-serializer'
 import { each } from 'test-each'
+
+import { serialize, parse, validateOptions } from 'error-serializer'
 
 each(
   [
