@@ -7,7 +7,6 @@ import {
 } from 'error-serializer'
 import { expectType, expectAssignable, expectNotAssignable } from 'tsd'
 
-
 // eslint-disable-next-line fp/no-class
 class TestError extends Error {
   name = 'TestError' as const

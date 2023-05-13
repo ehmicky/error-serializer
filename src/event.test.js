@@ -4,7 +4,6 @@ import { each } from 'test-each'
 
 import { SIMPLE_ERROR_OBJECT } from './helpers/main.test.js'
 
-
 const addErrorProp = (error) => {
   error.prop = true
 }

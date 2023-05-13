@@ -4,7 +4,6 @@ import { each } from 'test-each'
 
 import { SIMPLE_ERROR_OBJECT } from './helpers/main.test.js'
 
-
 test('Keep non-core properties when serializing', (t) => {
   const error = new Error('test')
   error.prop = true

@@ -2,7 +2,6 @@ import test from 'ava'
 import { serialize, parse, validateOptions } from 'error-serializer'
 import { each } from 'test-each'
 
-
 each(
   [
     true,

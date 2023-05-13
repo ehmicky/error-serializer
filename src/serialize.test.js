@@ -5,7 +5,6 @@ import { each } from 'test-each'
 
 import { FULL_ERROR } from './helpers/main.test.js'
 
-
 const serializedNormalError = serialize(FULL_ERROR)
 
 each(['name', 'message', 'stack'], ({ title }, propName) => {

@@ -5,7 +5,6 @@ import { each } from 'test-each'
 
 import { SIMPLE_ERROR_OBJECT } from '../helpers/main.test.js'
 
-
 each(
   [
     { propName: 'name', value: 'TypeError' },
