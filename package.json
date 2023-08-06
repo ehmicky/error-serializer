@@ -42,7 +42,10 @@
   ],
   "license": "MIT",
   "homepage": "https://www.github.com/ehmicky/error-serializer",
-  "repository": "ehmicky/error-serializer",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ehmicky/error-serializer.git"
+  },
   "bugs": {
     "url": "https://github.com/ehmicky/error-serializer/issues"
   },
