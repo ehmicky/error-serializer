@@ -58,7 +58,7 @@
     "is-plain-obj": "^4.1.0",
     "normalize-exception": "^3.0.0",
     "safe-json-value": "^3.0.0",
-    "set-error-class": "^2.0.0"
+    "set-error-class": "^3.0.0"
   },
   "devDependencies": {
     "@ehmicky/dev-tasks": "^2.0.102",
