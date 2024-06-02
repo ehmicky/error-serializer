@@ -5,42 +5,40 @@ import safeJsonValue from 'safe-json-value'
 
 import { setConstructorArgs } from './args.js'
 import { safeListKeys } from './check.js'
-import { callEvent } from './event.js'
 import { listProps } from './props.js'
+import { applyTransformObject } from './transform.js'
 
 // Serialize error instances into plain objects deeply
-export const serializeDeep = (value, events, parents) => {
+export const serializeDeep = (value, transformObject, parents) => {
   const parentsA = [...parents, value]
 
   if (!isErrorInstance(value)) {
-    return serializeRecurse(value, events, parentsA)
+    return serializeRecurse(value, transformObject, parentsA)
   }
 
   const error = normalizeException(value)
-  const errorObject = serializeError(error, events)
-  const errorObjectA = serializeRecurse(errorObject, events, parentsA)
+  const errorObject = serializeError(error)
+  const errorObjectA = serializeRecurse(errorObject, transformObject, parentsA)
+  applyTransformObject(transformObject, errorObjectA, error)
   const errorObjectB = safeJsonValue(errorObjectA, { shallow: false }).value
-  callEvent(events.afterSerialize, error, errorObjectB)
   return errorObjectB
 }
 
 // Serialize a possible error instance into a plain object
-export const serializeShallow = (value, events) => {
+export const serializeShallow = (value, transformObject) => {
   if (!isErrorInstance(value)) {
     return value
   }
 
   const error = normalizeException(value)
-  const errorObject = serializeError(error, events)
+  const errorObject = serializeError(error)
+  applyTransformObject(transformObject, errorObject, error)
   const errorObjectA = safeJsonValue(errorObject, { shallow: true }).value
-  callEvent(events.afterSerialize, error, errorObjectA)
   return errorObjectA
 }
 
-const serializeError = (error, { beforeSerialize }) => {
-  callEvent(beforeSerialize, error)
-  return Object.fromEntries([...getProps(error), ...setConstructorArgs(error)])
-}
+const serializeError = (error) =>
+  Object.fromEntries([...getProps(error), ...setConstructorArgs(error)])
 
 const getProps = (error) =>
   listProps(error)
@@ -49,11 +47,11 @@ const getProps = (error) =>
 
 const hasValue = ([, value]) => value !== undefined
 
-const serializeRecurse = (value, events, parents) => {
+const serializeRecurse = (value, transformObject, parents) => {
   if (Array.isArray(value)) {
     return value
       .filter((child) => !parents.includes(child))
-      .map((child) => serializeDeep(child, events, parents))
+      .map((child) => serializeDeep(child, transformObject, parents))
   }
 
   if (isPlainObj(value)) {
@@ -62,7 +60,7 @@ const serializeRecurse = (value, events, parents) => {
         .filter((propName) => !parents.includes(value[propName]))
         .map((propName) => [
           propName,
-          serializeDeep(value[propName], events, parents),
+          serializeDeep(value[propName], transformObject, parents),
         ]),
     )
   }

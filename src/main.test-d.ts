@@ -146,71 +146,108 @@ expectAssignable<ErrorObject>(serialize(true))
 expectAssignable<ErrorObject>(serialize(true, { loose: false }))
 expectType<'TestError'>(serialize(error).name)
 
-expectNotAssignable<SerializeOptions>({ beforeSerialize: false })
+expectNotAssignable<SerializeOptions>({ transformObject: false })
 expectNotAssignable<SerializeOptions>({
-  beforeSerialize: (errorArg: boolean) => {},
-})
-expectNotAssignable<SerializeOptions>({
-  beforeSerialize: (errorArg: Error, extra: boolean) => {},
-})
-expectAssignable<SerializeOptions>({ beforeSerialize: () => {} })
-expectAssignable<SerializeOptions>({ beforeSerialize: (errorArg: Error) => {} })
-expectAssignable<SerializeOptions>({
-  beforeSerialize: (errorArg: Error) => true,
-})
-
-expectNotAssignable<SerializeOptions>({ afterSerialize: false })
-expectNotAssignable<SerializeOptions>({
-  afterSerialize: (errorArg: boolean) => {},
+  transformObject: (errorObjectArg: boolean) => {},
 })
 expectNotAssignable<SerializeOptions>({
-  afterSerialize: (
-    errorArg: Error,
-    errorObjectArg: ErrorObject,
-    extra: boolean,
-  ) => {},
+  transformObject: (errorObjectArg: ErrorObject, errorArg: boolean) => {},
 })
-expectAssignable<SerializeOptions>({ afterSerialize: () => {} })
-expectAssignable<SerializeOptions>({ afterSerialize: (errorArg: Error) => {} })
-expectAssignable<SerializeOptions>({
-  afterSerialize: (errorArg: Error, errorObjectArg: ErrorObject) => {},
-})
-expectAssignable<SerializeOptions>({
-  afterSerialize: (errorArg: Error, errorObjectArg: ErrorObject) => true,
-})
-
-expectNotAssignable<ParseOptions>({ beforeParse: false })
-expectNotAssignable<ParseOptions>({
-  beforeParse: (errorObjectArg: boolean) => {},
-})
-expectNotAssignable<ParseOptions>({
-  beforeParse: (errorObjectArg: ErrorObject, extra: boolean) => {},
-})
-expectAssignable<ParseOptions>({ beforeParse: () => {} })
-expectAssignable<ParseOptions>({
-  beforeParse: (errorObjectArg: ErrorObject) => {},
-})
-expectAssignable<ParseOptions>({
-  beforeParse: (errorObjectArg: ErrorObject) => true,
-})
-
-expectNotAssignable<ParseOptions>({ afterParse: false })
-expectNotAssignable<ParseOptions>({
-  afterParse: (errorObjectArg: boolean) => {},
-})
-expectNotAssignable<ParseOptions>({
-  afterParse: (
+expectNotAssignable<SerializeOptions>({
+  transformObject: (
     errorObjectArg: ErrorObject,
     errorArg: Error,
     extra: boolean,
   ) => {},
 })
-expectAssignable<ParseOptions>({ afterParse: () => {} })
+expectAssignable<SerializeOptions>({ transformObject: () => {} })
+expectAssignable<SerializeOptions>({
+  transformObject: (errorObjectArg: ErrorObject) => {},
+})
+expectAssignable<SerializeOptions>({
+  transformObject: (errorObjectArg: ErrorObject, errorArg: Error) => {},
+})
+expectAssignable<SerializeOptions>({
+  transformObject: (errorObjectArg: ErrorObject, errorArg: Error) => true,
+})
+
+expectNotAssignable<ParseOptions>({ transformInstance: false })
+expectNotAssignable<ParseOptions>({
+  transformInstance: (errorArg: boolean) => {},
+})
+expectNotAssignable<ParseOptions>({
+  transformInstance: (errorArg: Error, errorObjectArg: boolean) => {},
+})
+expectNotAssignable<ParseOptions>({
+  transformInstance: (
+    errorArg: Error,
+    errorObjectArg: ErrorObject,
+    extra: boolean,
+  ) => {},
+})
+expectAssignable<ParseOptions>({ transformInstance: () => {} })
 expectAssignable<ParseOptions>({
-  afterParse: (errorObjectArg: ErrorObject, errorArg: Error) => {},
+  transformInstance: (errorArg: Error, errorObjectArg: ErrorObject) => {},
 })
 expectAssignable<ParseOptions>({
-  afterParse: (errorObjectArg: ErrorObject, errorArg: Error) => true,
+  transformInstance: (errorArg: Error, errorObjectArg: ErrorObject) => true,
+})
+
+expectNotAssignable<ParseOptions>({ transformArgs: false })
+expectNotAssignable<ParseOptions>({
+  transformArgs: (constructorArgs: boolean) => {},
+})
+expectNotAssignable<ParseOptions>({
+  transformArgs: (constructorArgs: [unknown]) => {},
+})
+expectNotAssignable<ParseOptions>({
+  transformArgs: (constructorArgs: [string]) => {},
+})
+expectNotAssignable<ParseOptions>({
+  transformArgs: (constructorArgs: [string, object]) => {},
+})
+expectNotAssignable<ParseOptions>({
+  transformArgs: (constructorArgs: string[]) => {},
+})
+expectNotAssignable<ParseOptions>({
+  transformArgs: (constructorArgs: unknown[], errorObjectArg: boolean) => {},
+})
+expectNotAssignable<ParseOptions>({
+  transformArgs: (
+    constructorArgs: unknown[],
+    errorObjectArg: ErrorObject,
+    ErrorClass: boolean,
+  ) => {},
+})
+expectNotAssignable<ParseOptions>({
+  // eslint-disable-next-line @typescript-eslint/max-params
+  transformArgs: (
+    constructorArgs: unknown[],
+    errorObjectArg: ErrorObject,
+    ErrorClass: typeof TestError,
+    extra: boolean,
+  ) => {},
+})
+expectAssignable<ParseOptions>({ transformArgs: () => {} })
+expectAssignable<ParseOptions>({
+  transformArgs: (constructorArgs: unknown[]) => {},
+})
+expectAssignable<ParseOptions>({
+  transformArgs: (
+    constructorArgs: unknown[],
+    errorObjectArg: ErrorObject,
+  ) => {},
+})
+expectAssignable<ParseOptions>({
+  transformArgs: (constructorArgs: unknown[], errorObjectArg: ErrorObject) =>
+    true,
+})
+expectAssignable<ParseOptions>({
+  transformArgs: (
+    constructorArgs: unknown[],
+    errorObjectArg: ErrorObject,
+    ErrorClass: new (firstArgument: string) => Error,
+  ) => {},
 })
 
 expectAssignable<ParseOptions>({ loose: true })

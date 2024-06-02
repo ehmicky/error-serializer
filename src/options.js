@@ -22,18 +22,16 @@ export const validateOptions = (options) => {
 const validateAllOptions = ({
   loose,
   shallow,
-  beforeSerialize,
-  afterSerialize,
-  beforeParse,
-  afterParse,
+  transformObject,
+  transformArgs,
+  transformInstance,
   classes,
 }) => {
   validateBoolean(loose, 'loose')
   validateBoolean(shallow, 'shallow')
-  validateOptionalFunction(beforeSerialize, 'beforeSerialize')
-  validateOptionalFunction(afterSerialize, 'afterSerialize')
-  validateOptionalFunction(beforeParse, 'beforeParse')
-  validateOptionalFunction(afterParse, 'afterParse')
+  validateOptionalFunction(transformObject, 'transformObject')
+  validateOptionalFunction(transformArgs, 'transformArgs')
+  validateOptionalFunction(transformInstance, 'transformInstance')
   validateClasses(classes)
 }
 
@@ -85,16 +83,14 @@ const addDefaultOptions = ({
   loose = false,
   shallow = false,
   classes = {},
-  beforeSerialize,
-  afterSerialize,
-  beforeParse,
-  afterParse,
+  transformObject,
+  transformArgs,
+  transformInstance,
 } = {}) => ({
   loose,
   shallow,
   classes,
-  beforeSerialize,
-  afterSerialize,
-  beforeParse,
-  afterParse,
+  transformObject,
+  transformArgs,
+  transformInstance,
 })

@@ -1,3 +1,58 @@
+# 8.0.0
+
+## Breaking changes
+
+- The
+  [`beforeSerialize(errorInstance)`](https://github.com/ehmicky/error-serializer/tree/7.0.0#beforeserializeerrorinstance)
+  and
+  [`afterSerialize(errorInstance, errorObject)`](https://github.com/ehmicky/error-serializer/tree/7.0.0#afterserializeerrorinstance-errorobject)
+  options have been removed. Please use the
+  [`transformObject(errorObject, errorInstance)`](README.md#transformobjecterrorobject-errorinstance)
+  new option instead.
+
+```diff
+serialize(error, {
+-  beforeSerialize: (error) => {
+-    error.date = error.date.toString()
+-  },
+-  afterSerialize: (error, errorObject) => {
+-    error.date = new Date(error.date)
+-  },
++  transformObject: (errorObject, error) => {
++    errorObject.date = errorObject.date.toString()
++  },
+})
+```
+
+- The
+  [`beforeParse(errorObject)`](https://github.com/ehmicky/error-serializer/tree/7.0.0#beforeparseerrorobject)
+  and
+  [`afterParse(errorObject, errorInstance)`](https://github.com/ehmicky/error-serializer/tree/7.0.0#afterparseerrorobject-errorinstance)
+  options have been removed. Please use the
+  [`transformInstance(errorInstance, errorObject)`](README.md#transforminstanceerrorinstance-errorobject)
+  new option instead.
+
+```diff
+parse(errorObject, {
+-  beforeParse: (errorObject) => {
+-    errorObject.date = new Date(errorObject.date)
+-  },
+-  afterParse: (errorObject, error) => {
+-    errorObject.date = errorObject.date.toString()
+-  },
++  transformInstance: (error, errorObject) => {
++    error.date = new Date(error.date)
++  },
+})
+```
+
+## Features
+
+- Added the
+  [`transformArgs(constructorArgs)`](README.md#transformargsconstructorargs-errorobject-errorclass)
+  option to transform an error message during
+  [`parse(errorObject)`](README.md#parseerrorobject-options).
+
 # 7.0.0
 
 ## Breaking changes
@@ -57,11 +112,14 @@
 
 ## Features
 
-- Added options [`beforeSerialize()`](README.md#beforeserializeerrorinstance),
-  [`afterSerialize()`](README.md#afterserializeerrorinstance-errorobject),
-  [`beforeParse()`](README.md#beforeparseerrorobject) and
-  [`afterParse()`](README.md#afterparseerrorobject-errorinstance) to
-  [customize](README.md#events) the serialization and parsing of each error
+- Added options
+  [`beforeSerialize()`](https://github.com/ehmicky/error-serializer/tree/7.0.0#beforeserializeerrorinstance),
+  [`afterSerialize()`](https://github.com/ehmicky/error-serializer/tree/7.0.0#afterserializeerrorinstance-errorobject),
+  [`beforeParse()`](https://github.com/ehmicky/error-serializer/tree/7.0.0#beforeparseerrorobject)
+  and
+  [`afterParse()`](https://github.com/ehmicky/error-serializer/tree/7.0.0#afterparseerrorobject-errorinstance)
+  to [customize](https://github.com/ehmicky/error-serializer/tree/7.0.0#events)
+  the serialization and parsing of each error
 
 # 3.7.0
 

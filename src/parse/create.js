@@ -2,13 +2,30 @@ import setErrorClass from 'set-error-class'
 
 import { unpackConstructorArgs } from '../args.js'
 
+import { applyTransformArgs } from './transform_args.js'
+
 // Custom error classes might throw due to missing parameters in the
 // constructor. When this happens, we silently revert to `Error`.
-export const createError = ({ name, message, constructorArgs }, classes) => {
+export const createError = ({
+  errorObject,
+  errorObject: { name, message, constructorArgs },
+  transformArgs,
+  classes,
+}) => {
   const ErrorClass = getErrorClass(name, classes)
-  return Array.isArray(constructorArgs)
-    ? createErrorWithArgs(message, ErrorClass, constructorArgs)
-    : createErrorWithoutArgs(message, ErrorClass)
+
+  if (!Array.isArray(constructorArgs) && transformArgs === undefined) {
+    return createErrorWithoutArgs(message, ErrorClass)
+  }
+
+  const constructorArgsA = getConstructorArgs(constructorArgs, message)
+  applyTransformArgs({
+    transformArgs,
+    constructorArgs: constructorArgsA,
+    errorObject,
+    ErrorClass,
+  })
+  return createErrorWithArgs(message, ErrorClass, constructorArgsA)
 }
 
 // Custom error classes can be passed to the `classes` option.
@@ -42,7 +59,28 @@ const BUILTIN_CLASSES = new Set([
   'DOMException',
 ])
 
-// With `constructorArgs`, tries to call the constructor, or default to `Error`.
+// Without `constructorArgs` or `transformArgs`, we default to not calling the
+// `constructor` and setting the prototype manually.
+// This means some logic performed in the constructor might be missing:
+//  - Setting properties
+//     - With non-enumerable or symbol keys
+//     - Or that are not JSON-serializable
+//  - Setting variables in an upper scope, including global variables
+// This can sometimes be worked around by setting those separately after
+// parsing, e.g. using an `init()` method.
+const createErrorWithoutArgs = (message, ErrorClass) => {
+  const error = new Error(message)
+  setErrorClass(error, ErrorClass)
+  return error
+}
+
+const getConstructorArgs = (constructorArgs, message) =>
+  Array.isArray(constructorArgs)
+    ? unpackConstructorArgs(constructorArgs, message)
+    : [message]
+
+// With `constructorArgs` or `transformArgs`, tries to call the constructor, or
+// default to `Error`.
 // Static properties are still set after initialization
 //  - So `constructorArgs` is only useful with custom `classes`
 //  - They might override properties set by the constructor
@@ -58,26 +96,9 @@ const BUILTIN_CLASSES = new Set([
 //               - Key cannot be serialized, i.e. it is symbol, private, upper
 //                 scope or non-enumerable
 const createErrorWithArgs = (message, ErrorClass, constructorArgs) => {
-  const args = unpackConstructorArgs(constructorArgs, message)
-
   try {
-    return new ErrorClass(...args)
+    return new ErrorClass(...constructorArgs)
   } catch {
     return new Error(message)
   }
-}
-
-// Without `constructorArgs`, we default to not calling the `constructor` and
-// setting the prototype manually.
-// This means some logic performed in the constructor might be missing:
-//  - Setting properties
-//     - With non-enumerable or symbol keys
-//     - Or that are not JSON-serializable
-//  - Setting variables in an upper scope, including global variables
-// This can sometimes be worked around by setting those separately after
-// parsing, e.g. using an `init()` method.
-const createErrorWithoutArgs = (message, ErrorClass) => {
-  const error = new Error(message)
-  setErrorClass(error, ErrorClass)
-  return error
 }

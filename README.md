@@ -22,7 +22,7 @@ technical lead for 2.5 years. I am available for full-time remote positions.
 - Ensures errors are [safe to serialize with JSON](#json-safety)
 - Can be used as [`error.toJSON()`](#errortojson)
 - [Deep serialization/parsing](#deep-serializationparsing), including
-  [event callbacks](#events)
+  [transforming](#transforming)
 - [Custom serialization/parsing](#custom-serializationparsing) (e.g. YAML or
   `process.send()`)
 - Keeps both native (`TypeError`, etc.) and [custom](#classes) error classes
@@ -110,17 +110,15 @@ serialize('example') // { name: 'Error', message: 'example', ... }
 serialize('example', { loose: true }) // 'example'
 ```
 
-#### beforeSerialize(errorInstance)
+#### transformObject(errorObject, errorInstance)
 
-_Type_: `(errorInstance) => void`
+_Type_: `(errorObject, errorInstance) => void`
 
-Called [before serializing](#events) each `errorInstance`.
+[Transform](#transforming) each error plain object.
 
-#### afterSerialize(errorInstance, errorObject)
+`errorObject` is the error after serialization. It must be directly mutated.
 
-_Type_: `(errorInstance, errorObject) => void`
-
-Called [after serializing](#events) each `errorInstance`.
+`errorInstance` is the error before serialization.
 
 ## parse(errorObject, options?)
 
@@ -183,17 +181,31 @@ parse('example') // Error: example
 parse('example', { loose: true }) // 'example'
 ```
 
-#### beforeParse(errorObject)
+#### transformArgs(constructorArgs, errorObject, ErrorClass)
 
-_Type_: `(errorObject) => void`
+_Type_: `(constructorArgs, errorObject, ErrorClass) => void`
 
-Called [before parsing](#events) each `errorObject`.
+[Transform](#transforming) the arguments passed to each `new Error()`.
 
-#### afterParse(errorObject, errorInstance)
+`constructorArgs` is the array of arguments. Usually, `constructorArgs[0]` is
+the
+[error message](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/message)
+and `constructorArgs[1]` is the
+[constructor options object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/Error#parameters).
+`constructorArgs` must be directly mutated.
 
-_Type_: `(errorObject, errorInstance) => void`
+`errorObject` is the error before parsing. `ErrorClass` is its
+[class](#classes).
 
-Called [after parsing](#events) each `errorObject`.
+#### transformInstance(errorInstance, errorObject)
+
+_Type_: `(errorInstance, errorObject) => void`
+
+[Transform](#transforming) each `Error` instance.
+
+`errorInstance` is the error after parsing. It must be directly mutated.
+
+`errorObject` is the error before parsing.
 
 # Usage
 
@@ -280,38 +292,35 @@ const newDeepArray = JSON.parse(jsonString)
 const newError = parse(newDeepArray, { loose: true })[1].error // Error: example
 ```
 
-## Events
+## Transforming
 
 <!-- eslint-disable fp/no-mutation, no-param-reassign -->
 
 ```js
-const errors = [new Error('test')]
+const errors = [new Error('test secret')]
 errors[0].date = new Date()
 
 const errorObjects = serialize(errors, {
   loose: true,
   // Serialize `Date` instances as strings
-  beforeSerialize: (error) => {
-    error.date = error.date.toString()
-  },
-  // Restore `error.date` after serializing it
-  afterSerialize: (error, errorObject) => {
-    error.date = new Date(error.date)
+  transformObject: (errorObject) => {
+    errorObject.date = errorObject.date.toString()
   },
 })
 console.log(errorObjects[0].date) // Date string
 
 const newErrors = parse(errorObjects, {
   loose: true,
-  // Parse date strings as `Date` instances
-  beforeParse: (errorObject) => {
-    errorObject.date = new Date(errorObject.date)
+  // Transform error message
+  transformArgs: (constructorArgs) => {
+    constructorArgs[0] = constructorArgs[0].replace('secret', '***')
   },
-  // Restore `errorObject.date` after parsing
-  afterParse: (errorObject, error) => {
-    errorObject.date = errorObject.date.toString()
+  // Parse date strings as `Date` instances
+  transformInstance: (error) => {
+    error.date = new Date(error.date)
   },
 })
+console.log(newErrors[0].message) // 'test ***'
 console.log(newErrors[0].date) // `Date` instance
 ```
 

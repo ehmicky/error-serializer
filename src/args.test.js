@@ -1,23 +1,13 @@
 import test from 'ava'
 import { each } from 'test-each'
 
-import { SIMPLE_ERROR_OBJECT } from './helpers/main.test.js'
+import {
+  SIMPLE_ERROR_OBJECT,
+  CustomError,
+  CUSTOM_ERROR_OBJECT,
+} from './helpers/main.test.js'
 
 import { parse, serialize } from 'error-serializer'
-
-// eslint-disable-next-line fp/no-class
-class CustomError extends Error {
-  constructor(...args) {
-    super(...args)
-    // eslint-disable-next-line fp/no-mutation, fp/no-this
-    this.args = args
-
-    if (args[0] === 'setConstructorArgs') {
-      // eslint-disable-next-line fp/no-mutation, fp/no-this
-      this.constructorArgs = args
-    }
-  }
-}
 
 // eslint-disable-next-line fp/no-class
 class UnsafeError extends Error {
@@ -26,7 +16,6 @@ class UnsafeError extends Error {
   }
 }
 
-const CUSTOM_ERROR_OBJECT = { ...SIMPLE_ERROR_OBJECT, name: CustomError.name }
 const UNSAFE_ERROR_OBJECT = { ...SIMPLE_ERROR_OBJECT, name: UnsafeError.name }
 
 test('constructorArgs can be parsed', (t) => {
