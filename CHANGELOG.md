@@ -44,10 +44,8 @@
 
 ## Features
 
-- A second argument `error` is now passed to
-  [`afterSerialize()`](README.md#afterserializeerrorinstance)
-- A second argument `errorObject` is now passed to
-  [`afterParse()`](README.md#afterparseerrorobject)
+- A second argument `error` is now passed to `afterSerialize()`
+- A second argument `errorObject` is now passed to `afterParse()`
 
 # 4.0.0
 
@@ -60,9 +58,9 @@
 ## Features
 
 - Added options [`beforeSerialize()`](README.md#beforeserializeerrorinstance),
-  [`afterSerialize()`](README.md#afterserializeerrorinstance),
+  [`afterSerialize()`](README.md#afterserializeerrorinstance-errorobject),
   [`beforeParse()`](README.md#beforeparseerrorobject) and
-  [`afterParse()`](README.md#afterparseerrorobject) to
+  [`afterParse()`](README.md#afterparseerrorobject-errorinstance) to
   [customize](README.md#events) the serialization and parsing of each error
 
 # 3.7.0
@@ -110,15 +108,14 @@
 
 ## Features
 
-- Constructors parameters can now be kept
-  [by setting `error.constructorArgs`](README.md#constructors-arguments).
+- Constructors parameters can now be kept by setting `error.constructorArgs`
 
 # 3.0.0
 
 ## Breaking changes
 
-- The `loose` option was renamed to [`normalize`](README.md#normalize). Its
-  value has been inverted: `loose: true` is now `normalize: false`.
+- The `loose` option was renamed to `normalize`. Its value has been inverted:
+  `loose: true` is now `normalize: false`.
 - The default value of the `normalize` option is now `false`.
   - If the argument to `serialize()` is not an error instance, it is not
     normalized to one anymore, unless `normalize: true` is used

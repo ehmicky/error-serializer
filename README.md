@@ -214,7 +214,7 @@ serialize(error).cycle // undefined
 
 ## `error.toJSON()`
 
-[`serialize()`](#serializeerrorinstance) can be used as
+[`serialize()`](#serializeerrorinstance-options) can be used as
 [`error.toJSON()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#tojson_behavior).
 
 <!-- eslint-disable fp/no-class, fp/no-this -->
