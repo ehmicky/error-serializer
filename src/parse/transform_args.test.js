@@ -26,7 +26,7 @@ test('Constructor is called if transformArgs() is defined', (t) => {
       { ...CUSTOM_ERROR_OBJECT },
       { classes: { CustomError }, transformArgs: () => {} },
     ).args,
-    [''],
+    [CUSTOM_ERROR_OBJECT.message],
   )
 })
 
@@ -91,7 +91,7 @@ test('Handle unsafe transformArgs()', (t) => {
         },
       },
     ).args,
-    [''],
+    [CUSTOM_ERROR_OBJECT.message],
   )
 })
 

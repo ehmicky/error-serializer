@@ -1,5 +1,5 @@
 // Simple error plain object to test with
-export const SIMPLE_ERROR_OBJECT = { name: 'Error', message: '', stack: '' }
+export const SIMPLE_ERROR_OBJECT = { message: 'message' }
 
 // Error with `cause` and `errors` set
 // eslint-disable-next-line fp/no-mutating-methods

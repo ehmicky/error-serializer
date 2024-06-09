@@ -52,6 +52,10 @@ parse(errorObject, {
   [`transformArgs(constructorArgs)`](README.md#transformargsconstructorargs-errorobject-errorclass)
   option to transform an error message during
   [`parse(errorObject)`](README.md#parseerrorobject-options).
+- The `errorObject` passed to
+  [`parse(errorObject)`](README.md#parseerrorobject-options) previously required
+  the `name`, `message` and `stack` properties. Only the `message` property is
+  now required. In other words, `parse({message})` now works.
 
 # 7.0.0
 

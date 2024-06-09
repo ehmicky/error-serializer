@@ -10,9 +10,7 @@ type JSONValue =
   | { [key: string]: JSONValue }
 
 interface MinimalErrorObject {
-  name: string
   message: string
-  stack: string
   [key: PropertyKey]: JSONValue
 }
 
@@ -20,6 +18,8 @@ interface MinimalErrorObject {
  * Error instance converted to a plain object
  */
 export interface ErrorObject extends MinimalErrorObject {
+  name: string
+  stack: string
   cause?: ErrorObject
   errors?: ErrorObject[]
 }
@@ -357,6 +357,8 @@ type ParseDeep<
 type ParsedError<
   ErrorObjectArg extends MinimalErrorObject,
   Options extends ParseOptions,
-> = NonNullable<Options['classes']>[ErrorObjectArg['name']] extends ErrorClass
-  ? InstanceType<NonNullable<Options['classes']>[ErrorObjectArg['name']]>
+> = ErrorObjectArg extends { name: string }
+  ? NonNullable<Options['classes']>[ErrorObjectArg['name']] extends ErrorClass
+    ? InstanceType<NonNullable<Options['classes']>[ErrorObjectArg['name']]>
+    : Error
   : Error

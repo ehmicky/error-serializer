@@ -7,17 +7,14 @@ import { SIMPLE_ERROR_OBJECT, FULL_ERROR } from './helpers/main.test.js'
 
 import { serialize, parse } from 'error-serializer'
 
-const CORE_PROPS = ['name', 'message', 'stack']
 const nonErrors = [
   undefined,
   null,
   0n,
   'message',
   {},
-  ...CORE_PROPS.flatMap((propName) => [
-    { ...SIMPLE_ERROR_OBJECT, [propName]: undefined },
-    { ...SIMPLE_ERROR_OBJECT, [propName]: true },
-  ]),
+  { message: undefined },
+  { message: true },
   [],
   () => {},
 ]
@@ -25,13 +22,12 @@ const nonErrors = [
 each(
   [
     ...nonErrors,
-    ...CORE_PROPS.map((propName) => ({
-      ...SIMPLE_ERROR_OBJECT,
+    {
       // eslint-disable-next-line fp/no-get-set
-      get [propName]() {
+      get message() {
         throw new Error('unsafe')
       },
-    })),
+    },
   ],
   [true, false],
   ({ title }, value, shallow) => {

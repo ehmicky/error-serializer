@@ -8,7 +8,7 @@ import { applyTransformArgs } from './transform_args.js'
 // constructor. When this happens, we silently revert to `Error`.
 export const createError = ({
   errorObject,
-  errorObject: { name, message, constructorArgs },
+  errorObject: { name = DEFAULT_NAME, message, constructorArgs },
   transformArgs,
   classes,
 }) => {
@@ -27,6 +27,8 @@ export const createError = ({
   })
   return createErrorWithArgs(message, ErrorClass, constructorArgsA)
 }
+
+const DEFAULT_NAME = 'Error'
 
 // Custom error classes can be passed to the `classes` option.
 // The option is an object instead of an array, as this allows dissociating

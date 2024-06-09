@@ -20,9 +20,12 @@ const name = 'TestError' as const
 const message = 'test' as const
 const stack = 'testStack' as const
 const errorObject = { name, message, stack }
+const minimalErrorObject = { message }
+const namedErrorObject = { name, message }
 
 expectAssignable<ErrorObject>(serialize(error))
 
+expectAssignable<Error>(parse(minimalErrorObject))
 expectAssignable<Error>(parse(errorObject))
 
 expectAssignable<ErrorObject>(errorObject)
@@ -56,10 +59,9 @@ expectAssignable<ErrorObject>({ ...errorObject, prop: { one: true } })
 expectNotAssignable<ErrorObject>({ ...errorObject, prop: 0n })
 expectNotAssignable<ErrorObject>({ ...errorObject, prop: { one: 0n } })
 
+expectAssignable<Error>(parse(minimalErrorObject, { loose: true }))
 expectNotAssignable<Error>(parse({ name: '' }, { loose: true }))
-expectAssignable<Error>(
-  parse({ name: '', message: '', stack: '' }, { loose: true }),
-)
+expectNotAssignable<Error>(parse({ stack: '' }, { loose: true }))
 
 serialize(error, {})
 // @ts-expect-error
@@ -67,9 +69,9 @@ serialize(error, true)
 expectAssignable<SerializeOptions>({})
 expectNotAssignable<SerializeOptions>({ unknown: true })
 
-parse(errorObject, {})
+parse(minimalErrorObject, {})
 // @ts-expect-error
-parse(errorObject, true)
+parse(minimalErrorObject, true)
 expectAssignable<ParseOptions>({})
 expectNotAssignable<ParseOptions>({ unknown: true })
 
@@ -103,40 +105,50 @@ expectNotAssignable<ErrorObject>(
 
 expectAssignable<ParseOptions>({ shallow: false })
 expectNotAssignable<ParseOptions>({ shallow: 'true' })
-expectAssignable<Error>(parse(errorObject))
-expectAssignable<Error>(parse(errorObject, { shallow: true }))
-expectAssignable<TestError>(parse(errorObject, { classes }))
-expectAssignable<TestError>(parse(errorObject, { shallow: true, classes }))
+expectAssignable<Error>(parse(minimalErrorObject))
+expectAssignable<Error>(parse(minimalErrorObject, { shallow: true }))
+expectAssignable<TestError>(parse(namedErrorObject, { classes }))
+expectAssignable<TestError>(parse(namedErrorObject, { shallow: true, classes }))
 expectAssignable<TestError>(
-  parse({ errorObject }, { classes, loose: true }).errorObject,
+  parse({ namedErrorObject }, { classes, loose: true }).namedErrorObject,
 )
 expectNotAssignable<TestError>(
-  parse({ errorObject }, { loose: true, shallow: true, classes }).errorObject,
+  parse({ namedErrorObject }, { loose: true, shallow: true, classes })
+    .namedErrorObject,
 )
 expectAssignable<TestError>(
-  parse([errorObject] as const, { classes, loose: true })[0],
+  parse([namedErrorObject] as const, { classes, loose: true })[0],
 )
 expectNotAssignable<TestError>(
-  parse([errorObject] as const, { loose: true, shallow: true, classes })[0],
+  parse([namedErrorObject] as const, {
+    loose: true,
+    shallow: true,
+    classes,
+  })[0],
 )
-expectType<'TestError'>(parse(errorObject).name)
-expectType<'TestError'>(parse(errorObject, { shallow: true }).name)
-expectAssignable<true>(parse({ ...errorObject, prop: true as const }).prop)
+expectType<'TestError'>(parse(namedErrorObject).name)
+expectType<'TestError'>(parse(namedErrorObject, { shallow: true }).name)
+expectAssignable<true>(parse({ ...namedErrorObject, prop: true as const }).prop)
 expectAssignable<true>(
-  parse({ ...errorObject, prop: true as const }, { shallow: true }).prop,
+  parse({ ...namedErrorObject, prop: true as const }, { shallow: true }).prop,
 )
 expectAssignable<TestError>(
-  parse({ ...errorObject, prop: errorObject }, { classes }).prop,
+  parse({ ...namedErrorObject, prop: namedErrorObject }, { classes }).prop,
 )
 expectNotAssignable<TestError>(
-  parse({ ...errorObject, prop: errorObject }, { shallow: true, classes }).prop,
+  parse(
+    { ...namedErrorObject, prop: namedErrorObject },
+    { shallow: true, classes },
+  ).prop,
 )
 expectAssignable<TestError>(
-  parse({ ...errorObject, cause: errorObject }, { classes }).cause,
+  parse({ ...namedErrorObject, cause: namedErrorObject }, { classes }).cause,
 )
 expectNotAssignable<TestError>(
-  parse({ ...errorObject, cause: errorObject }, { shallow: true, classes })
-    .cause,
+  parse(
+    { ...namedErrorObject, cause: namedErrorObject },
+    { shallow: true, classes },
+  ).cause,
 )
 
 expectAssignable<SerializeOptions>({ loose: true })
@@ -255,7 +267,7 @@ expectNotAssignable<ParseOptions>({ loose: 'true' })
 expectType<true>(parse(true, { loose: true }))
 expectType<Error>(parse(true))
 expectType<Error>(parse(true, { loose: false }))
-expectType<'TestError'>(parse(errorObject).name)
+expectType<'TestError'>(parse(namedErrorObject).name)
 
 expectAssignable<ParseOptions>({ classes: {} })
 expectNotAssignable<ParseOptions>({ classes: true })
@@ -263,8 +275,8 @@ expectAssignable<ParseOptions>({ classes: { Error } })
 expectAssignable<ParseOptions>({ classes })
 expectNotAssignable<ParseOptions>({ classes: { Error: true } })
 expectNotAssignable<ParseOptions>({ classes: { Error: () => true } })
-expectAssignable<Error>(parse(errorObject))
-expectAssignable<Error>(parse(errorObject, {}))
-expectAssignable<Error>(parse(errorObject, { classes: {} }))
-expectNotAssignable<TestError>(parse(errorObject, { classes: {} }))
-expectAssignable<TestError>(parse(errorObject, { classes }))
+expectAssignable<Error>(parse(minimalErrorObject))
+expectAssignable<Error>(parse(minimalErrorObject, {}))
+expectAssignable<Error>(parse(namedErrorObject, { classes: {} }))
+expectNotAssignable<TestError>(parse(namedErrorObject, { classes: {} }))
+expectAssignable<TestError>(parse(namedErrorObject, { classes }))

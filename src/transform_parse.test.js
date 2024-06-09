@@ -64,8 +64,10 @@ test('transformInstance() is not called on non-error objects if loose', (t) => {
 
 test('transformInstance() is ignored if throwing', (t) => {
   t.is(
-    parse({ ...SIMPLE_ERROR_OBJECT }, { transformInstance: unsafeTransform })
-      .name,
-    SIMPLE_ERROR_OBJECT.name,
+    parse(
+      { ...SIMPLE_ERROR_OBJECT, name: 'TypeError' },
+      { transformInstance: unsafeTransform },
+    ).name,
+    'TypeError',
   )
 })

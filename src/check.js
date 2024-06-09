@@ -3,10 +3,7 @@ import isPlainObj from 'is-plain-obj'
 // Check if a value conforms to the error plain object shape.
 // This enforces strict outputs.
 export const isErrorObject = (value) =>
-  isPlainObj(value) &&
-  isStringProp(value, 'name') &&
-  isStringProp(value, 'message') &&
-  isStringProp(value, 'stack')
+  isPlainObj(value) && isStringProp(value, 'message')
 
 const isStringProp = (object, propName) =>
   isSafeProp(object, propName) && typeof object[propName] === 'string'
