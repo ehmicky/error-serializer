@@ -16,11 +16,11 @@ export { validateOptions }
 // We apply `normalize-exception` to ensure a strict input.
 //  - We allow arguments that are not `error` instances
 export const serialize = (value, options) => {
-  const { loose, shallow, transformObject } = normalizeOptions(options)
+  const { loose, shallow, ...otherOptions } = normalizeOptions(options)
   const valueA = applySerializeLoose(value, loose)
   return shallow
-    ? serializeShallow(valueA, transformObject)
-    : serializeDeep(valueA, transformObject, [])
+    ? serializeShallow(valueA, otherOptions)
+    : serializeDeep(valueA, otherOptions, [])
 }
 
 const applySerializeLoose = (value, loose) =>
@@ -33,20 +33,19 @@ const applySerializeLoose = (value, loose) =>
 //    some error handling logic
 // We apply `normalize-exception` to ensure a strict output.
 export const parse = (value, options) => {
-  const { loose, shallow, transformArgs, transformInstance, classes } =
-    normalizeOptions(options)
+  const { loose, shallow, ...otherOptions } = normalizeOptions(options)
   const valueA = shallow
-    ? parseShallow({ value, transformArgs, transformInstance, classes })
-    : parseDeep({ value, transformArgs, transformInstance, classes })
-  return applyParseLoose(valueA, loose, transformInstance)
+    ? parseShallow(value, otherOptions)
+    : parseDeep(value, otherOptions)
+  return applyParseLoose(valueA, loose, otherOptions)
 }
 
-const applyParseLoose = (value, loose, transformInstance) => {
+const applyParseLoose = (value, loose, options) => {
   if (loose || isErrorInstance(value)) {
     return value
   }
 
   const error = normalizeException(value)
-  applyTransformInstance(transformInstance, error, value)
+  applyTransformInstance(error, value, options)
   return error
 }

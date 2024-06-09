@@ -48,7 +48,11 @@ parse(errorObject, {
 
 ## Features
 
-- Added the
+- Add the [`include`](README.md#include) and [`exclude`](README.md#exclude)
+  options to pick/omit specific properties. For example, this can be used to
+  omit [error additional properties](README.md#omit-additional-error-properties)
+  or [stack trace](README.md#omit-stack-traces).
+- Add the
   [`transformArgs(constructorArgs)`](README.md#transformargsconstructorargs-errorobject-errorclass)
   option to transform an error message during
   [`parse(errorObject)`](README.md#parseerrorobject-options).

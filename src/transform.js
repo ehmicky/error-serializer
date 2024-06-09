@@ -2,7 +2,11 @@
 // Exceptions are ignored to guarantee error handling safety.
 // Users must directly mutate the object. This is faster, avoids cycles and
 // ensures the result is a proper error object/instance.
-export const applyTransformObject = (transformObject, errorObject, error) => {
+export const applyTransformObject = (
+  errorObject,
+  error,
+  { transformObject },
+) => {
   try {
     transformObject?.(errorObject, error)
   } catch {}
@@ -10,9 +14,9 @@ export const applyTransformObject = (transformObject, errorObject, error) => {
 
 // Call `opts.transformInstance()` with `parse()`
 export const applyTransformInstance = (
-  transformInstance,
   error,
   errorObject,
+  { transformInstance },
 ) => {
   try {
     transformInstance?.(error, errorObject)

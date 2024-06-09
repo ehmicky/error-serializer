@@ -29,7 +29,9 @@ export const NON_ENUMERABLE_PROPS = new Set([
 export const listProps = (objectOrError) => {
   const propNames = Object.keys(objectOrError).filter(isNotIgnoredProp)
   const propNamesA = [...new Set([...propNames, ...CORE_PROPS])]
-  return listSafeKeys(objectOrError, propNamesA)
+  return listSafeKeys(objectOrError, propNamesA).filter(
+    (propName) => objectOrError[propName] !== undefined,
+  )
 }
 
 const isNotIgnoredProp = (propName) => !IGNORED_PROPS.has(propName)

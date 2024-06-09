@@ -59,6 +59,45 @@ export interface SerializeOptions {
   readonly loose?: boolean
 
   /**
+   * Only pick specific properties.
+   *
+   * @example
+   * ```js
+   * serialize(error, { include: ['message'] }) // { message: 'example' }
+   * ```
+   *
+   * @example
+   * ```js
+   * const error = new Error('example')
+   * error.prop = true
+   *
+   * const errorObject = serialize(error, { include: ['name', 'message', 'stack'] })
+   * console.log(errorObject.prop) // undefined
+   * console.log(errorObject) // { name: 'Error', message: 'example', stack: '...' }
+   * ```
+   */
+  readonly include?: readonly string[]
+
+  /**
+   * Omit specific properties.
+   *
+   * @example
+   * ```js
+   * serialize(error, { exclude: ['stack'] }) // { name: 'Error', message: 'example' }
+   * ```
+   *
+   * @example
+   * ```js
+   * const error = new Error('example')
+   *
+   * const errorObject = serialize(error, { exclude: ['stack'] })
+   * console.log(errorObject.stack) // undefined
+   * console.log(errorObject) // { name: 'Error', message: 'example' }
+   * ```
+   */
+  readonly exclude?: readonly string[]
+
+  /**
    * Transform each error plain object.
    *
    * `errorObject` is the error after serialization. It must be directly

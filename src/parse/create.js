@@ -9,8 +9,7 @@ import { applyTransformArgs } from './transform_args.js'
 export const createError = ({
   errorObject,
   errorObject: { name = DEFAULT_NAME, message, constructorArgs },
-  transformArgs,
-  classes,
+  options: { transformArgs, classes },
 }) => {
   const ErrorClass = getErrorClass(name, classes)
 

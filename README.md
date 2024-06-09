@@ -110,6 +110,26 @@ serialize('example') // { name: 'Error', message: 'example', ... }
 serialize('example', { loose: true }) // 'example'
 ```
 
+#### include
+
+_Type_: `string[]`
+
+Only pick [specific properties](#omit-additional-error-properties).
+
+```js
+serialize(error, { include: ['message'] }) // { message: 'example' }
+```
+
+#### exclude
+
+_Type_: `string[]`
+
+Omit [specific properties](#omit-stack-traces).
+
+```js
+serialize(error, { exclude: ['stack'] }) // { name: 'Error', message: 'example' }
+```
+
 #### transformObject(errorObject, errorInstance)
 
 _Type_: `(errorObject, errorInstance) => void`
@@ -275,6 +295,27 @@ const errorObject = serialize(error)
 console.log(errorObject.prop) // true
 const newError = parse(errorObject)
 console.log(newError.prop) // true
+```
+
+## Omit additional error properties
+
+```js
+const error = new Error('example')
+error.prop = true
+
+const errorObject = serialize(error, { include: ['name', 'message', 'stack'] })
+console.log(errorObject.prop) // undefined
+console.log(errorObject) // { name: 'Error', message: 'example', stack: '...' }
+```
+
+## Omit stack traces
+
+```js
+const error = new Error('example')
+
+const errorObject = serialize(error, { exclude: ['stack'] })
+console.log(errorObject.stack) // undefined
+console.log(errorObject) // { name: 'Error', message: 'example' }
 ```
 
 ## Deep serialization/parsing

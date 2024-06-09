@@ -50,9 +50,8 @@ test('transformObject() is called deeply', (t) => {
 })
 
 test('transformObject() is called bottom-up', (t) => {
-  const error = new Error('test', { cause: 'cause' })
   const causes = []
-  const errorObject = serialize(error, {
+  const errorObject = serialize(new Error('test', { cause: 'cause' }), {
     transformObject: ({ cause }) => {
       // eslint-disable-next-line fp/no-mutating-methods
       causes.push(cause)

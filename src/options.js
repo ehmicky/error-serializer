@@ -22,6 +22,8 @@ export const validateOptions = (options) => {
 const validateAllOptions = ({
   loose,
   shallow,
+  include,
+  exclude,
   transformObject,
   transformArgs,
   transformInstance,
@@ -29,6 +31,8 @@ const validateAllOptions = ({
 }) => {
   validateBoolean(loose, 'loose')
   validateBoolean(shallow, 'shallow')
+  validateList(include, 'include')
+  validateList(exclude, 'exclude')
   validateOptionalFunction(transformObject, 'transformObject')
   validateOptionalFunction(transformArgs, 'transformArgs')
   validateOptionalFunction(transformInstance, 'transformInstance')
@@ -38,6 +42,24 @@ const validateAllOptions = ({
 const validateBoolean = (value, name) => {
   if (value !== undefined && typeof value !== 'boolean') {
     throw new TypeError(`Option "${name}" must be a boolean: ${value}`)
+  }
+}
+
+const validateList = (value, name) => {
+  if (value === undefined) {
+    return
+  }
+
+  if (!Array.isArray(value)) {
+    throw new TypeError(`Option "${name}" must be an array: ${value}`)
+  }
+
+  const invalidItem = value.find((item) => typeof item !== 'string')
+
+  if (invalidItem !== undefined) {
+    throw new TypeError(
+      `Option "${name}" must only contain strings: ${String(invalidItem)}`,
+    )
   }
 }
 
@@ -83,14 +105,5 @@ const addDefaultOptions = ({
   loose = false,
   shallow = false,
   classes = {},
-  transformObject,
-  transformArgs,
-  transformInstance,
-} = {}) => ({
-  loose,
-  shallow,
-  classes,
-  transformObject,
-  transformArgs,
-  transformInstance,
-})
+  ...otherOptions
+} = {}) => ({ ...otherOptions, loose, shallow, classes })

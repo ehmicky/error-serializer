@@ -158,6 +158,22 @@ expectAssignable<ErrorObject>(serialize(true))
 expectAssignable<ErrorObject>(serialize(true, { loose: false }))
 expectType<'TestError'>(serialize(error).name)
 
+expectAssignable<SerializeOptions>({ include: [] as const })
+expectAssignable<SerializeOptions>({ include: [''] as readonly [string] })
+expectAssignable<SerializeOptions>({ include: [''] as readonly string[] })
+expectNotAssignable<SerializeOptions>({ include: false })
+expectNotAssignable<SerializeOptions>({ include: [false] })
+expectNotAssignable<SerializeOptions>({ include: [Symbol('')] })
+expectNotAssignable<ParseOptions>({ include: [''] })
+
+expectAssignable<SerializeOptions>({ exclude: [] as const })
+expectAssignable<SerializeOptions>({ exclude: [''] as readonly [string] })
+expectAssignable<SerializeOptions>({ exclude: [''] as readonly string[] })
+expectNotAssignable<SerializeOptions>({ exclude: false })
+expectNotAssignable<SerializeOptions>({ exclude: [false] })
+expectNotAssignable<SerializeOptions>({ exclude: [Symbol('')] })
+expectNotAssignable<ParseOptions>({ exclude: [''] })
+
 expectNotAssignable<SerializeOptions>({ transformObject: false })
 expectNotAssignable<SerializeOptions>({
   transformObject: (errorObjectArg: boolean) => {},

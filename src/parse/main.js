@@ -8,40 +8,20 @@ import { applyTransformInstance } from '../transform.js'
 import { createError } from './create.js'
 
 // Parse error plain objects into error instances deeply
-export const parseDeep = ({
-  value,
-  transformArgs,
-  transformInstance,
-  classes,
-}) => {
-  const valueA = parseRecurse({
-    value,
-    transformArgs,
-    transformInstance,
-    classes,
-  })
-  return parseShallow({
-    value: valueA,
-    transformArgs,
-    transformInstance,
-    classes,
-  })
+export const parseDeep = (value, options) => {
+  const valueA = parseRecurse(value, options)
+  return parseShallow(valueA, options)
 }
 
 // Parse a possible error plain object into an error instance
-export const parseShallow = ({
-  value,
-  transformArgs,
-  transformInstance,
-  classes,
-}) => {
+export const parseShallow = (value, options) => {
   if (!isErrorObject(value)) {
     return value
   }
 
-  const error = parseErrorObject(value, transformArgs, classes)
+  const error = parseErrorObject(value, options)
   const errorA = normalizeException(error)
-  applyTransformInstance(transformInstance, errorA, value)
+  applyTransformInstance(errorA, value, options)
   return errorA
 }
 
@@ -49,56 +29,43 @@ export const parseShallow = ({
 //  - It does not reuse `normalize-exception`'s object parsing logic
 //  - reason: keep projects separate since they have different purposes and
 //    features
-const parseErrorObject = (errorObject, transformArgs, classes) => {
-  const error = createError({ errorObject, transformArgs, classes })
+const parseErrorObject = (errorObject, options) => {
+  const error = createError({ errorObject, options })
   setProps(error, errorObject)
   return error
 }
 
 const setProps = (error, object) => {
-  listProps(object).forEach((propName) => {
-    setProp(error, object, propName)
-  })
+  listProps(object)
+    .filter(isNotCoreProp)
+    .forEach((propName) => {
+      setProp(error, object, propName)
+    })
 }
 
+const isNotCoreProp = (propName) => !SET_CORE_PROPS.has(propName)
+
 const setProp = (error, object, propName) => {
-  if (SET_CORE_PROPS.has(propName)) {
-    return
-  }
-
-  const value = object[propName]
-
-  if (value === undefined) {
-    return
-  }
-
   const enumerable = !NON_ENUMERABLE_PROPS.has(propName)
   // eslint-disable-next-line fp/no-mutating-methods
   Object.defineProperty(error, propName, {
-    value,
+    value: object[propName],
     enumerable,
     writable: true,
     configurable: true,
   })
 }
 
-const parseRecurse = ({ value, transformArgs, transformInstance, classes }) => {
+const parseRecurse = (value, options) => {
   if (Array.isArray(value)) {
-    return value.map((child) =>
-      parseDeep({ value: child, transformArgs, transformInstance, classes }),
-    )
+    return value.map((child) => parseDeep(child, options))
   }
 
   if (isPlainObj(value)) {
     return Object.fromEntries(
       safeListKeys(value).map((propName) => [
         propName,
-        parseDeep({
-          value: value[propName],
-          transformArgs,
-          transformInstance,
-          classes,
-        }),
+        parseDeep(value[propName], options),
       ]),
     )
   }

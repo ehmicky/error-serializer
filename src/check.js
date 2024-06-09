@@ -8,10 +8,13 @@ export const isErrorObject = (value) =>
 const isStringProp = (object, propName) =>
   isSafeProp(object, propName) && typeof object[propName] === 'string'
 
+// Ensure error plain objects can be parsed back
+export const REQUIRED_PROPERTY = 'message'
+
 export const safeListKeys = (value) => listSafeKeys(value, Object.keys(value))
 
-export const listSafeKeys = (value, keys) =>
-  keys.filter((propName) => isSafeProp(value, propName))
+export const listSafeKeys = (object, keys) =>
+  keys.filter((propName) => isSafeProp(object, propName))
 
 // Ensure retrieving a property does not throw due to a getter or proxy
 const isSafeProp = (object, propName) => {
