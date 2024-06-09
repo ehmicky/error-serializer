@@ -61,7 +61,7 @@
     "set-error-class": "^3.0.0"
   },
   "devDependencies": {
-    "@ehmicky/dev-tasks": "^2.0.126",
+    "@ehmicky/dev-tasks": "^2.0.127",
     "test-each": "^7.0.0"
   },
   "engines": {
