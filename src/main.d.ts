@@ -183,8 +183,8 @@ type SerializeDeep<Value> = Value extends Error
         : never]: SerializeDeep<Value[Key]>
     }
   : Value extends object
-  ? { [Key in keyof Value]: SerializeDeep<Value[Key]> }
-  : Value
+    ? { [Key in keyof Value]: SerializeDeep<Value[Key]> }
+    : Value
 
 // `Error` is both a `CallableFunction` and a `NewableFunction`, which makes
 // `typeof Error` not work as expected.
@@ -390,8 +390,8 @@ type ParseDeep<
         : Key]: ParseDeep<Value[Key], Options>
     }
   : Value extends object
-  ? { [Key in keyof Value]: ParseDeep<Value[Key], Options> }
-  : Value
+    ? { [Key in keyof Value]: ParseDeep<Value[Key], Options> }
+    : Value
 
 type ParsedError<
   ErrorObjectArg extends MinimalErrorObject,
