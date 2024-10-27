@@ -19,9 +19,9 @@ const error = new Error('test') as Error & { name: 'TestError' }
 const name = 'TestError'
 const message = 'test'
 const stack = 'testStack'
-const errorObject = { name, message, stack }
-const minimalErrorObject = { message }
-const namedErrorObject = { name, message }
+const errorObject = { name, message, stack } as const
+const minimalErrorObject = { message } as const
+const namedErrorObject = { name, message } as const
 
 expectAssignable<ErrorObject>(serialize(error))
 

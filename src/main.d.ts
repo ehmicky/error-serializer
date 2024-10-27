@@ -156,7 +156,7 @@ export interface SerializeOptions {
  * // Error instance: 'TypeError: example ...'
  * ```
  */
-export function serialize<Value, Options extends SerializeOptions = {}>(
+export function serialize<Value, Options extends SerializeOptions = object>(
   errorInstance: Value,
   options?: Options,
 ): Options['shallow'] extends true
@@ -348,7 +348,7 @@ export interface ParseOptions {
  * // Error instance: 'TypeError: example ...'
  * ```
  */
-export function parse<Value, Options extends ParseOptions = {}>(
+export function parse<Value, Options extends ParseOptions = object>(
   errorObject: Value,
   options?: Options,
 ): Options['shallow'] extends true
