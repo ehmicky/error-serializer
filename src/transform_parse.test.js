@@ -47,7 +47,6 @@ test('transformInstance() is called bottom-up', (t) => {
   const causes = []
   const error = parse(errorObject, {
     transformInstance: ({ cause }) => {
-      // eslint-disable-next-line fp/no-mutating-methods
       causes.push(cause)
     },
   })

@@ -34,7 +34,6 @@ each(
       const causes = []
       const errorObject = serialize(error, {
         transformObject: ({ cause }) => {
-          // eslint-disable-next-line fp/no-mutating-methods
           causes.push(cause)
         },
         ...options,
@@ -113,7 +112,6 @@ each(
 )
 
 const definePropertyTransform = (descriptor, errorObject) => {
-  // eslint-disable-next-line fp/no-mutating-methods
   Object.defineProperty(errorObject, 'prop', {
     enumerable: true,
     writable: true,

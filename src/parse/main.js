@@ -47,7 +47,6 @@ const isNotCoreProp = (propName) => !SET_CORE_PROPS.has(propName)
 
 const setProp = (error, object, propName) => {
   const enumerable = !NON_ENUMERABLE_PROPS.has(propName)
-  // eslint-disable-next-line fp/no-mutating-methods
   Object.defineProperty(error, propName, {
     value: object[propName],
     enumerable,

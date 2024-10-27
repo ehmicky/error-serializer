@@ -16,9 +16,9 @@ class TestError extends Error {
 const classes = { TestError }
 const error = new Error('test') as Error & { name: 'TestError' }
 
-const name = 'TestError' as const
-const message = 'test' as const
-const stack = 'testStack' as const
+const name = 'TestError'
+const message = 'test'
+const stack = 'testStack'
 const errorObject = { name, message, stack }
 const minimalErrorObject = { message }
 const namedErrorObject = { name, message }

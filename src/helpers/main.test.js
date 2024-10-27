@@ -2,7 +2,6 @@
 export const SIMPLE_ERROR_OBJECT = { message: 'message' }
 
 // Error with `cause` and `errors` set
-// eslint-disable-next-line fp/no-mutating-methods
 export const FULL_ERROR = Object.defineProperties(new Error('test'), {
   cause: {
     value: new Error('inner'),

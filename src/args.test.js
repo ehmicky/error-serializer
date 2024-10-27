@@ -96,7 +96,6 @@ test('constructorArgs can be set', (t) => {
 
 test('constructorArgs can be non-enumerable', (t) => {
   const error = new Error('test')
-  // eslint-disable-next-line fp/no-mutating-methods
   Object.defineProperty(error, 'constructorArgs', {
     value: [true],
     enumerable: false,
