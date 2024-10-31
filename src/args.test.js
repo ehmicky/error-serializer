@@ -2,9 +2,9 @@ import test from 'ava'
 import { each } from 'test-each'
 
 import {
-  SIMPLE_ERROR_OBJECT,
-  CustomError,
   CUSTOM_ERROR_OBJECT,
+  CustomError,
+  SIMPLE_ERROR_OBJECT,
 } from './helpers/main.test.js'
 
 import { parse, serialize } from 'error-serializer'

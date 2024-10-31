@@ -2,7 +2,7 @@ import isPlainObj from 'is-plain-obj'
 import normalizeException from 'normalize-exception'
 
 import { isErrorObject, safeListKeys } from '../check.js'
-import { listProps, SET_CORE_PROPS, NON_ENUMERABLE_PROPS } from '../props.js'
+import { listProps, NON_ENUMERABLE_PROPS, SET_CORE_PROPS } from '../props.js'
 import { applyTransformInstance } from '../transform.js'
 
 import { createError } from './create.js'

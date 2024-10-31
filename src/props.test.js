@@ -3,7 +3,7 @@ import { each } from 'test-each'
 
 import { SIMPLE_ERROR_OBJECT } from './helpers/main.test.js'
 
-import { serialize, parse } from 'error-serializer'
+import { parse, serialize } from 'error-serializer'
 
 test('Keep non-core properties when serializing', (t) => {
   const error = new Error('test')

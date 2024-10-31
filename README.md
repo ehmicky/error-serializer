@@ -38,7 +38,7 @@ technical lead for 2.5 years. I am available for full-time remote positions.
 # Example
 
 ```js
-import { serialize, parse } from 'error-serializer'
+import { parse, serialize } from 'error-serializer'
 
 const error = new TypeError('example')
 const errorObject = serialize(error)

@@ -1,11 +1,11 @@
-import { expectType, expectAssignable, expectNotAssignable } from 'tsd'
+import { expectAssignable, expectNotAssignable, expectType } from 'tsd'
 
 import {
-  serialize,
   parse,
+  serialize,
+  type ErrorObject,
   type ParseOptions,
   type SerializeOptions,
-  type ErrorObject,
 } from 'error-serializer'
 
 // eslint-disable-next-line fp/no-class

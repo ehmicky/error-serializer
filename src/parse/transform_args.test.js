@@ -1,6 +1,6 @@
 import test from 'ava'
 
-import { CustomError, CUSTOM_ERROR_OBJECT } from '../helpers/main.test.js'
+import { CUSTOM_ERROR_OBJECT, CustomError } from '../helpers/main.test.js'
 
 import { parse } from 'error-serializer'
 

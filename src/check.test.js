@@ -3,9 +3,9 @@ import { runInNewContext } from 'node:vm'
 import test from 'ava'
 import { each } from 'test-each'
 
-import { SIMPLE_ERROR_OBJECT, FULL_ERROR } from './helpers/main.test.js'
+import { FULL_ERROR, SIMPLE_ERROR_OBJECT } from './helpers/main.test.js'
 
-import { serialize, parse } from 'error-serializer'
+import { parse, serialize } from 'error-serializer'
 
 const nonErrors = [
   undefined,

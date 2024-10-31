@@ -2,8 +2,8 @@ import test from 'ava'
 
 import {
   addProp,
-  setTransformArgs,
   setErrorNames,
+  setTransformArgs,
   unsafeTransform,
 } from './helpers/main.test.js'
 

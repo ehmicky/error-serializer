@@ -1,10 +1,10 @@
 import test from 'ava'
 
 import {
-  SIMPLE_ERROR_OBJECT,
   addProp,
-  setTransformArgs,
   setErrorNames,
+  setTransformArgs,
+  SIMPLE_ERROR_OBJECT,
   unsafeTransform,
 } from './helpers/main.test.js'
 
