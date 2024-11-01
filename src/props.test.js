@@ -36,11 +36,13 @@ const DESCRIPTOR = {
 
 test('Ignore non-enumerable properties when serializing', (t) => {
   const error = new Error('test')
+  // eslint-disable-next-line fp/no-mutating-methods
   Object.defineProperty(error, 'prop', DESCRIPTOR)
   t.is(serialize(error).prop, undefined)
 })
 
 test('Ignore non-enumerable properties when parsing', (t) => {
+  // eslint-disable-next-line fp/no-mutating-methods
   const object = Object.defineProperty(SIMPLE_ERROR_OBJECT, 'prop', DESCRIPTOR)
   t.is(parse(object).prop, undefined)
 })
@@ -99,6 +101,7 @@ const UNSAFE_DESCRIPTOR = {
 
 each([{}, new Error('test')], ({ title }, value) => {
   test(`Ignore unsafe non-core properties when serializing | ${title}`, (t) => {
+    // eslint-disable-next-line fp/no-mutating-methods
     Object.defineProperty(value, 'prop', UNSAFE_DESCRIPTOR)
     t.is(serialize(value).prop, undefined)
   })
@@ -106,6 +109,7 @@ each([{}, new Error('test')], ({ title }, value) => {
 
 each([{}, { ...SIMPLE_ERROR_OBJECT }], ({ title }, object) => {
   test(`Ignore unsafe non-core properties when parsing | ${title}`, (t) => {
+    // eslint-disable-next-line fp/no-mutating-methods
     Object.defineProperty(object, 'prop', UNSAFE_DESCRIPTOR)
     t.is(parse(object).prop, undefined)
   })
