@@ -436,6 +436,8 @@ const newError = parse(errorObject, { classes: { CustomError } })
   Polyfill `error.cause`
 - [`handle-cli-error`](https://github.com/ehmicky/handle-cli-error): 💣 Error
   handler for CLI applications 💥
+- [`beautiful-error`](https://github.com/ehmicky/beautiful-error): Prettify
+  error messages and stacks
 - [`safe-json-value`](https://github.com/ehmicky/safe-json-value): ⛑️ JSON
   serialization should never fail
 - [`log-process-errors`](https://github.com/ehmicky/log-process-errors): Show
