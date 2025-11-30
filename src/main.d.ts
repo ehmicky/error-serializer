@@ -6,12 +6,16 @@ type JSONValue =
   | boolean
   | number
   | string
-  | JSONValue[]
-  | { [key: string]: JSONValue }
+  | readonly JSONValue[]
+  | { readonly [key: string]: JSONValue }
 
 interface MinimalErrorObject {
   message: string
-  [key: PropertyKey]: JSONValue
+  [key: PropertyKey]:
+    | JSONValue
+    | MinimalErrorObject
+    | readonly MinimalErrorObject[]
+    | undefined
 }
 
 /**
@@ -21,7 +25,7 @@ export interface ErrorObject extends MinimalErrorObject {
   name: string
   stack: string
   cause?: ErrorObject
-  errors?: ErrorObject[]
+  errors?: readonly ErrorObject[]
 }
 
 /**

@@ -151,6 +151,32 @@ expectNotAssignable<TestError>(
   ).cause,
 )
 
+const deepMinimalErrorObject = {
+  ...minimalErrorObject,
+  cause: {
+    ...minimalErrorObject,
+    cause: undefined,
+    hello: 'test',
+  } as const,
+  errors: [
+    {
+      ...minimalErrorObject,
+      cause: undefined,
+      hello: 'test',
+    } as const,
+  ],
+} as const
+const deepShallowResult = parse(deepMinimalErrorObject, { shallow: true })
+/* eslint-disable @typescript-eslint/no-unsafe-argument,
+@typescript-eslint/no-unsafe-member-access */
+expectType<'test'>(deepShallowResult.cause.hello)
+expectType<'test'>(deepShallowResult.errors[0].hello)
+const deepResult = parse(deepMinimalErrorObject)
+expectType<'test'>(deepResult.cause.hello)
+expectType<'test'>(deepResult.errors[0].hello)
+/* eslint-enable @typescript-eslint/no-unsafe-argument,
+@typescript-eslint/no-unsafe-member-access */
+
 expectAssignable<SerializeOptions>({ loose: true })
 expectNotAssignable<SerializeOptions>({ loose: 'true' })
 expectType<true>(serialize(true, { loose: true }))
