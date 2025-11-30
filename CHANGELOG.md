@@ -1,3 +1,9 @@
+# 8.0.2
+
+## Types
+
+- Fix TypeScript types of `error.cause` and `error.errors` (#17)
+
 # 8.0.1
 
 ## Documentation
